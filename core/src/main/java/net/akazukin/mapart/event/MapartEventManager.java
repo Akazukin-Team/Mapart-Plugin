@@ -1,0 +1,13 @@
+package net.akazukin.mapart.event;
+
+import net.akazukin.library.event.EventManager;
+import net.akazukin.mapart.mapart.MapartManager;
+
+public final class MapartEventManager extends EventManager {
+    @Override
+    public void registerListeners() {
+        registerListeners(
+                new MapartManager()
+        );
+    }
+}

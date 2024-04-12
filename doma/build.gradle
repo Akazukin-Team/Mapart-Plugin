@@ -1,0 +1,9 @@
+plugins {
+    id 'buildlogic.java-doma-conventions'
+    id 'application'
+}
+
+application {
+    mainClassName = "net.akazukin.mapart.doma.TestMain"
+}
+

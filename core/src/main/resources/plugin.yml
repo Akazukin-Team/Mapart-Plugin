@@ -1,0 +1,42 @@
+name: ${NAME}
+version: ${VERSION}
+description: A plugin for mapart
+author: Akazukin-Team
+website: https://discord.gg/De8T2NS74X
+
+depend:
+  - AkazukinLibrary
+  - WorldEdit
+  - WorldGuard
+softdepend:
+  - FastAsyncWorldEdit
+  - GrimAC
+  - Towny
+
+database: false
+
+main: net.akazukin.mapart.MapartPlugin
+api-version: 1.19
+
+commands:
+  mapart:
+    description: Mapart command
+    permission: akazukin.mapart.use
+    permission-message: You do not have permission!
+    usage: /<command> help
+  mfly:
+    description: Toggle fly at mapart world
+    usage: /<command>
+permissions:
+  akazukin.mapart.use:
+    description: Allows mapart command
+    default: true
+  akazukin.mapart.manage:
+    description: Allows mapart command
+    default: op
+  akazukin.mapart.*:
+    description: Wildcard permission
+    default: op
+    children:
+      akazukin.mapart.use: true
+      akazukin.mapart.manage: true

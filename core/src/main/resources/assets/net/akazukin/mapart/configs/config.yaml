@@ -1,0 +1,7 @@
+locale: en_us
+locales: [ en_us ]
+
+workers:
+  thread: 50
+
+world: mapart

@@ -1,0 +1,4 @@
+SELECT /*%expand*/*
+    FROM D_MAPART_LAND_COLLABORATOR
+WHERE
+    LAND_ID = /* land */0

@@ -1,0 +1,27 @@
+plugins {
+    id 'buildlogic.java-common-conventions'
+    id 'buildlogic.java-minecraft-conventions'
+    id 'application'
+}
+
+dependencies {
+    include("com.google.code.gson:gson:2.10.1")
+    compileOnly 'com.github.MWHunter:GrimAPI:9f5aaef74b'
+}
+
+application {
+    mainClassName = "net.akazukin.mapart.Main"
+}
+
+jar {
+    archiveClassifier.set("src")
+    archiveBaseName = project.plugin_name
+    enabled = true
+}
+
+compileJava.dependsOn(processResources)
+processResources {
+    filesMatching("plugin.yml") {
+        expand(NAME: parent.getProperties().plugin_name, VERSION: parent.getProperties().version, PACKAGE: project.group.toString())
+    }
+}

@@ -1,0 +1,11 @@
+plugins {
+    id 'buildlogic.java-module-conventions'
+}
+
+dependencies {
+    include(project(":core"))
+    include(project(":module:1_13_to_1_20"))
+    include(project(":module:1_8_to_1_12"))
+    include(project(":module:1_15_to_1_16"))
+    include(project(":module:1_8_to_1_14"))
+}
