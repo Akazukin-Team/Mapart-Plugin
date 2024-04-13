@@ -1,7 +1,7 @@
 package net.akazukin.mapart.module.m1_8_to_1_16;
 
 import net.akazukin.library.utils.ServerUtils;
-import net.akazukin.mapart.mapart.MapartManager;
+import net.akazukin.mapart.manager.MapartManager;
 import net.akazukin.mapart.module.m1_13_to_1_20.Module_1_13_to_1_20;
 import net.akazukin.mapart.module.m1_8_to_1_12.Module_1_8_to_1_12;
 import org.bukkit.Bukkit;

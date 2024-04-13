@@ -1,6 +1,6 @@
 package net.akazukin.mapart.module.m1_17_to_1_20;
 
-import net.akazukin.mapart.mapart.MapartManager;
+import net.akazukin.mapart.manager.MapartManager;
 import net.akazukin.mapart.module.m1_13_to_1_20.Module_1_13_to_1_20;
 import org.bukkit.Bukkit;
 import org.bukkit.Difficulty;

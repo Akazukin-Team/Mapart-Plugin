@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 import java.sql.SQLException;
 
 public class IJdbcLogger implements JdbcLogger {
-    private final Logger log = LoggerFactory.getLogger(IJdbcLogger.class);
+    private final Logger log = LoggerFactory.getLogger(JdbcLogger.class);
 
     @Override
     public void logDaoMethodEntering(final String callerClassName, final String callerMethodName, final Object... parameters) {
@@ -23,9 +23,7 @@ public class IJdbcLogger implements JdbcLogger {
 
     @Override
     public void logDaoMethodThrowing(final String callerClassName, final String callerMethodName, final RuntimeException e) {
-        //this.log.error("Throwing from dao  | Class:{}  | Method:{}", callerClassName, callerMethodName);
-        //this.log.error(e.getMessage());
-        log.error(e.getMessage(), e);
+        this.log.error("Throwing from dao  | Class:" + callerClassName + "  | Method:" + callerMethodName, e);
     }
 
     @Override
@@ -76,43 +74,31 @@ public class IJdbcLogger implements JdbcLogger {
 
     @Override
     public void logTransactionRollbackFailure(final String callerClassName, final String callerMethodName, final String transactionId, final SQLException e) {
-        //this.log.error("Failed rolling back transaction  | TransID:{}  | Class:{}  | Method:{}", transactionId, callerClassName, callerMethodName);
-        //this.log.error(e.getMessage());
-        log.error(e.getMessage(), e);
+        this.log.error("Failed rolling back transaction  | TransID:" + transactionId + "  | Class:" + callerClassName + "  | Method:" + callerMethodName, e);
     }
 
     @Override
     public void logAutoCommitEnablingFailure(final String callerClassName, final String callerMethodName, final SQLException e) {
-        //this.log.error("Failed enabling auto commit  | Class:{}  | Method:{}", callerClassName, callerMethodName);
-        //this.log.error(e.getMessage());
-        log.error(e.getMessage(), e);
+        this.log.error("Failed enabling auto commit  | Class:" + callerClassName + "  | Method:" + callerMethodName, e);
     }
 
     @Override
     public void logTransactionIsolationSettingFailure(final String callerClassName, final String callerMethodName, final int isolationLevel, final SQLException e) {
-        //this.log.error("Failed setting transaction isolation  | IsolationLv:{}  | Class:{}  | Method:{}", isolationLevel, callerClassName, callerMethodName);
-        //this.log.error(e.getMessage());
-        log.error(e.getMessage(), e);
+        this.log.error("Failed setting transaction isolation  | IsolationLv:" + isolationLevel + "  | Class:" + callerClassName + "  | Method:" + callerMethodName, e);
     }
 
     @Override
     public void logConnectionClosingFailure(final String callerClassName, final String callerMethodName, final SQLException e) {
-        //this.log.error("Failed closing connection  | Class:{}  | Method:{}", callerClassName, callerMethodName);
-        //this.log.error(e.getMessage());
-        log.error(e.getMessage(), e);
+        this.log.error("Failed closing connection  | Class:" + callerClassName + "  | Method:" + callerMethodName, e);
     }
 
     @Override
     public void logStatementClosingFailure(final String callerClassName, final String callerMethodName, final SQLException e) {
-        //this.log.error("Failed closing statement  | Class:{}  | Method:{}", callerClassName, callerMethodName);
-        //this.log.error(e.getMessage());
-        log.error(e.getMessage(), e);
+        this.log.error("Failed closing statement  | Class:" + callerClassName + "  | Method:" + callerMethodName, e);
     }
 
     @Override
     public void logResultSetClosingFailure(final String callerClassName, final String callerMethodName, final SQLException e) {
-        //this.log.error("Failed closing result set  | Class:{}  | Method:{}", callerClassName, callerMethodName);
-        //this.log.error(e.getMessage());
-        log.error(e.getMessage(), e);
+        this.log.error("Failed closing result set  | Class:" + callerClassName + "  | Method:" + callerMethodName, e);
     }
 }

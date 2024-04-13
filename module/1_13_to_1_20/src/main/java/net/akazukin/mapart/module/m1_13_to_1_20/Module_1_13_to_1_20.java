@@ -14,7 +14,5 @@ public class Module_1_13_to_1_20 {
         world.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
         world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
         world.setGameRule(GameRule.RANDOM_TICK_SPEED, 0);
-        final GameRule<Boolean> fallDmg = (GameRule<Boolean>) GameRule.getByName("FALL_DAMAGE");
-        if (fallDmg != null) world.setGameRule(fallDmg, false);
     }
 }

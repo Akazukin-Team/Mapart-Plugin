@@ -8,6 +8,7 @@ create table if not exists M_MAPART_LAND (
   , HEIGHT BIGINT not null -- 縦幅
   , WIDTH BIGINT not null -- 横幅
   , CREATED_DATE DATETIME not null -- 作成日
+  , STATUS CHAR(1) not null -- ステータス
   , VERSION_NO BIGINT not null -- バージョン
   , constraint M_MAPART_LAND_PKC primary key (LAND_ID)
 ) -- マップアート土地マスタ:Mapart土地管理用マスタ

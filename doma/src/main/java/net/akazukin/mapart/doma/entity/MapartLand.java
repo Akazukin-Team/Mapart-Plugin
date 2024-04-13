@@ -34,6 +34,9 @@ public class MapartLand {
     @Column(name = "CREATED_DATE")
     private Timestamp createdDate;
 
+    @Column(name = "STATUS")
+    private String status;
+
     @Column(name = "COLLABORATOR_UUID")
     private UUID collaboratorUuid;
 }

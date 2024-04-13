@@ -21,7 +21,7 @@ public abstract class SQLConfig implements Config {
 
     public SQLConfig(final File database) {
         dialect = new SqliteDialect();
-        dataSource = new LocalTransactionDataSource("jdbc:sqlite:" + database.getPath(), null, null);
+        dataSource = new LocalTransactionDataSource("jdbc:sqlite:" + database.getPath() + "?jdbc.explicit_readonly=true&busy_timeout=1000000", null, null);
         jdbcLogger = new IJdbcLogger();
         transactionManager = new LocalTransactionManager(dataSource.getLocalTransaction(getJdbcLogger()));
         unknownColumnHandler = new IUnknownColumnHandler();

@@ -36,7 +36,10 @@ public class MMapartLand {
     @Column(name = "CREATED_DATE")
     private Timestamp createDate;
 
+    @Column(name = "STATUS")
+    private String status;
+
     @Column(name = "VERSION_NO")
     @Version
-    private long versionNo;
+    private long versionNo = -1;
 }

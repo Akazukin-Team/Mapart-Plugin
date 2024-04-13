@@ -7,7 +7,6 @@ import net.akazukin.library.gui.screens.chest.paged.GuiPagedSinglePlayerSelector
 import net.akazukin.library.i18n.I18n;
 import net.akazukin.library.utils.ItemUtils;
 import net.akazukin.library.utils.MessageHelper;
-import net.akazukin.library.utils.TaskUtils;
 import net.akazukin.mapart.MapartPlugin;
 import net.akazukin.mapart.doma.MapartSQLConfig;
 import net.akazukin.mapart.doma.utils.RepoUtils;
@@ -26,7 +25,7 @@ public class GuiMapartCollaboPanel extends GuiPagedSinglePlayerSelector {
 
     public GuiMapartCollaboPanel(final UUID player, final GuiBase prevGui) {
         super(MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(player), I18n.of("mapart.panel.gui.collaboration")),
-                6, 6, player, Arrays.stream(TaskUtils.addSynchronizedTask(() -> MapartSQLConfig.singleton().getTransactionManager().required(() -> RepoUtils.getMapartLandsByCollaborator(player)))).map(land ->
+                6, 6, player, Arrays.stream(MapartSQLConfig.singleton().getTransactionManager().required(() -> RepoUtils.getMapartLandsByCollaborator(player))).map(land ->
                         Bukkit.getOfflinePlayer(land.getOwnerUUID())
                 ).filter(Objects::nonNull).toArray(OfflinePlayer[]::new), prevGui);
 

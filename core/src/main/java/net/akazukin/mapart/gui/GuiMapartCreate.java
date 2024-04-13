@@ -10,12 +10,11 @@ import net.akazukin.library.utils.InventoryUtils;
 import net.akazukin.library.utils.ItemUtils;
 import net.akazukin.library.utils.MessageHelper;
 import net.akazukin.library.utils.StringUtils;
-import net.akazukin.library.utils.TaskUtils;
 import net.akazukin.mapart.MapartPlugin;
 import net.akazukin.mapart.doma.MapartSQLConfig;
 import net.akazukin.mapart.doma.entity.MMapartLand;
 import net.akazukin.mapart.doma.repo.MMapartLandRepo;
-import net.akazukin.mapart.mapart.MapartManager;
+import net.akazukin.mapart.manager.MapartManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -79,15 +78,15 @@ public class GuiMapartCreate extends ChestGuiBase {
         if (prevGui != null)
             InventoryUtils.fillBackItem(inv, MessageHelper.getLocale(player));
 
-        inv.setItem(19, nameItem);
-        inv.setItem(21, heightItem);
-        inv.setItem(22, widthItem);
+        inv.setItem(10, nameItem);
+        inv.setItem(12, heightItem);
+        inv.setItem(13, widthItem);
 
         ItemUtils.setLore(borrowItem, Arrays.asList(
                 "§aName: §6" + StringUtils.getColoredString(name),
                 "§aWidth: " + widthSelector.getResult() + "  §7| §aHeight:" + heightSelector.getResult()
         ));
-        inv.setItem(24, borrowItem);
+        inv.setItem(15, borrowItem);
 
         return inv;
     }
@@ -111,8 +110,8 @@ public class GuiMapartCreate extends ChestGuiBase {
         } else if (borrowItem.equals(event.getCurrentItem())) {
             event.getWhoClicked().closeInventory();
             if (/*MapartManager.getMaxLand(player)*/100 <=
-                    TaskUtils.addSynchronizedTask(() -> MapartSQLConfig.singleton().getTransactionManager().required(() ->
-                            MMapartLandRepo.select(player))).size()) {
+                    MapartSQLConfig.singleton().getTransactionManager().required(() ->
+                            MMapartLandRepo.select(player)).size()) {
                 MapartPlugin.MESSAGE_HELPER.sendMessage(event.getWhoClicked(), I18n.of("mapart.land.limitReached"));
             } else {
                 final Player p = Bukkit.getPlayer(player);

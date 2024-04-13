@@ -7,12 +7,11 @@ import net.akazukin.library.i18n.I18n;
 import net.akazukin.library.utils.ItemUtils;
 import net.akazukin.library.utils.MessageHelper;
 import net.akazukin.library.utils.StringUtils;
-import net.akazukin.library.utils.TaskUtils;
 import net.akazukin.mapart.MapartPlugin;
 import net.akazukin.mapart.doma.MapartSQLConfig;
 import net.akazukin.mapart.doma.dto.MapartLandDto;
 import net.akazukin.mapart.doma.repo.MapartLandRepo;
-import net.akazukin.mapart.mapart.MapartManager;
+import net.akazukin.mapart.manager.MapartManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -42,7 +41,7 @@ public class GuiMapartPanel extends GuiPagedSingleSelector {
     public GuiMapartPanel(final UUID player, final UUID guiUserUuid) {
         super(
                 MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(player), I18n.of("mapart.panel.gui.list." + (player == guiUserUuid ? "own" : "others")), (player == guiUserUuid ? null : Bukkit.getOfflinePlayer(guiUserUuid).getName())),
-                6, 6, player, TaskUtils.addSynchronizedTask(() -> MapartSQLConfig.singleton().getTransactionManager().required(() ->
+                6, 6, player, MapartSQLConfig.singleton().getTransactionManager().required(() ->
                                 MapartLandRepo.selectByPlayer(guiUserUuid))
                         .stream()
                         .filter(land -> player.equals(guiUserUuid) ||
@@ -85,7 +84,7 @@ public class GuiMapartPanel extends GuiPagedSingleSelector {
                                     ));
                             ItemUtils.setLore(landItem, lore);
                             return LibraryPlugin.COMPAT.setNBT(landItem, "landId", land.getLandId());
-                        }).toArray(ItemStack[]::new)),
+                        }).toArray(ItemStack[]::new),
                 null);
 
         this.guiUserUuid = guiUserUuid;
@@ -131,10 +130,10 @@ public class GuiMapartPanel extends GuiPagedSingleSelector {
         if (event.getCurrentItem().getType() == Material.getMaterial("PAPER") &&
                 LibraryPlugin.COMPAT.containsNBT(event.getCurrentItem(), "landId")
         ) {
-            final MapartLandDto land = TaskUtils.addSynchronizedTask(() -> MapartSQLConfig.singleton().getTransactionManager().required(() -> {
+            final MapartLandDto land = MapartSQLConfig.singleton().getTransactionManager().required(() -> {
                 final Long landId = LibraryPlugin.COMPAT.getNBTLong(event.getCurrentItem(), "landId");
                 return landId != null ? MapartLandRepo.selectByLand(landId) : null;
-            }));
+            });
             if (land == null) {
                 MapartPlugin.MESSAGE_HELPER.sendMessage(player, I18n.of("mapart.land.notFound"));
             } else if (land.getOwnerUUID().equals(player)) {

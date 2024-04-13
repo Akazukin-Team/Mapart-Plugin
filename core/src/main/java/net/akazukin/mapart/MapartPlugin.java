@@ -14,10 +14,9 @@ import net.akazukin.mapart.doma.dao.DMapartLandCollaboratorDaoImpl;
 import net.akazukin.mapart.doma.dao.MMapartLandDaoImpl;
 import net.akazukin.mapart.event.Events;
 import net.akazukin.mapart.event.MapartEventManager;
-import net.akazukin.mapart.mapart.MapartManager;
+import net.akazukin.mapart.manager.MapartManager;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -74,13 +73,12 @@ public final class MapartPlugin extends JavaPlugin {
         getLogManager().info("Initializing configurations...");
         CONFIG_UTILS = new ConfigUtils(this, "mapart");
         CONFIG_UTILS.loadConfigFiles("config.yaml");
-        final YamlConfiguration config = CONFIG_UTILS.getConfig("config.yaml");
         getLogManager().info("Successfully Initialized configurations");
 
 
         getLogManager().info("Initializing i18n manager...");
         I18N_UTILS = new I18nUtils(this, "mapart");
-        I18N_UTILS.build(config.getList("locales").toArray(new String[0]));
+        I18N_UTILS.build(LibraryPlugin.CONFIG_UTILS.getConfig("config.yaml").getList("locales").toArray(new String[0]));
         MESSAGE_HELPER = new MessageHelper(LibraryPlugin.I18N_UTILS, I18N_UTILS);
         getLogManager().info("Successfully Initialized i18n manager");
 
@@ -104,9 +102,9 @@ public final class MapartPlugin extends JavaPlugin {
         COMMAND_MANAGER.registerCommands();
         for (final Command cmd : COMMAND_MANAGER.getCommands()) {
             final PluginCommand command = getCommand(cmd.getName());
-            if (command == null) continue;
-
-            command.setExecutor(COMMAND_MANAGER);
+            if (command != null) command.setExecutor(COMMAND_MANAGER);
+            final PluginCommand command2 = getCommand(getPlugin().getName().toLowerCase() + ":" + cmd.getName());
+            if (command2 != null) command2.setExecutor(COMMAND_MANAGER);
         }
         getLogManager().info("Successfully Initialized command manager");
 

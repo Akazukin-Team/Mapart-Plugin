@@ -10,12 +10,9 @@ import org.bukkit.entity.Player;
 @CommandInfo(name = "manage", description = "management user's data")
 public class ManageSubCommand extends SubCommand {
     @Override
-    public boolean run(final CommandSender sender, final String... args) {
+    public void run(final CommandSender sender, final String... args) {
         if (!(sender instanceof Player)) {
             MapartPlugin.MESSAGE_HELPER.consoleMessage(I18n.of("library.command.execute.mustBeByPlayer"));
-            return true;
         }
-
-        return true;
     }
 }

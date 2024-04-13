@@ -11,15 +11,14 @@ import java.util.UUID;
 
 @Entity
 @Data
-@Table(name = "D_MAPART_LAND_COLLABORATOR")
-public class DMapartLandCollaborator {
-    @Column(name = "LAND_ID")
+@Table(name = "M_MAPART_LAND")
+public class MUserMapart {
+    @Column(name = "PLAYER_UUID")
     @Id
-    private long landId;
+    private UUID playerUuid;
 
-    @Column(name = "COLLABORATOR_UUID")
-    @Id
-    private UUID collaboratorUuid;
+    @Column(name = "MAX_LAND")
+    private int maxLand;
 
     @Column(name = "VERSION_NO")
     @Version

@@ -1,7 +1,7 @@
 package net.akazukin.mapart.event;
 
 import net.akazukin.library.event.EventManager;
-import net.akazukin.mapart.mapart.MapartManager;
+import net.akazukin.mapart.manager.MapartManager;
 
 public final class MapartEventManager extends EventManager {
     @Override

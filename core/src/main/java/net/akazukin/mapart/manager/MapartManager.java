@@ -1,4 +1,4 @@
-package net.akazukin.mapart.mapart;
+package net.akazukin.mapart.manager;
 
 import ac.grim.grimac.api.events.FlagEvent;
 import com.palmergames.bukkit.towny.event.TownPreClaimEvent;
@@ -13,7 +13,6 @@ import net.akazukin.library.event.EventTarget;
 import net.akazukin.library.event.Listenable;
 import net.akazukin.library.i18n.I18n;
 import net.akazukin.library.utils.FileUtils;
-import net.akazukin.library.utils.TaskUtils;
 import net.akazukin.mapart.MapartPlugin;
 import net.akazukin.mapart.doma.MapartSQLConfig;
 import net.akazukin.mapart.doma.dao.DMapartLandCollaboratorDaoImpl;
@@ -29,9 +28,17 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockFromToEvent;
+import org.bukkit.event.block.BlockIgniteEvent;
+import org.bukkit.event.block.BlockMultiPlaceEvent;
+import org.bukkit.event.block.BlockPhysicsEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.block.EntityBlockFormEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityPlaceEvent;
+import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.seasar.doma.jdbc.tx.TransactionManager;
 
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -88,8 +95,7 @@ public class MapartManager implements Listenable {
     }
 
     public static MMapartLand lent(final UUID player, final String name, final int height, final int width) {
-        final TransactionManager tm = MapartSQLConfig.singleton().getTransactionManager();
-        return TaskUtils.addSynchronizedTask(() -> tm.required(() -> {
+        return MapartSQLConfig.singleton().getTransactionManager().required(() -> {
             final List<Integer> landIds = MMapartLandRepo.selectAll().stream().map(MMapartLand::getLandId).collect(Collectors.toList());
             for (int i = 0; i < Integer.MAX_VALUE; i++) {
                 if (landIds.contains(i)) continue;
@@ -104,6 +110,7 @@ public class MapartManager implements Listenable {
                 landData.setHeight(height);
                 landData.setWidth(width);
                 landData.setCreateDate(Timestamp.from(Instant.now()));
+                landData.setStatus("A");
 
                 MMapartLandRepo.save(landData);
 
@@ -144,7 +151,7 @@ public class MapartManager implements Listenable {
                 return landData;
             }
             return null;
-        }));
+        });
     }
 
     public static int[] getLocation(final int landId) {
@@ -175,31 +182,26 @@ public class MapartManager implements Listenable {
 
         WorldGuardCompat.addFlag(getWorld(), name, Flags.INTERACT, StateFlag.State.DENY);
         WorldGuardCompat.addFlag(getWorld(), name, Flags.USE, StateFlag.State.DENY);
-        WorldGuardCompat.addFlag(getWorld(), name, Flags.SNOW_FALL, StateFlag.State.DENY);
-        WorldGuardCompat.addFlag(getWorld(), name, Flags.SNOW_MELT, StateFlag.State.DENY);
-        WorldGuardCompat.addFlag(getWorld(), name, Flags.HEALTH_REGEN, StateFlag.State.DENY);
+        //WorldGuardCompat.addFlag(getWorld(), name, Flags.SNOW_FALL, StateFlag.State.DENY);
+        //WorldGuardCompat.addFlag(getWorld(), name, Flags.SNOW_MELT, StateFlag.State.DENY);
+        //WorldGuardCompat.addFlag(getWorld(), name, Flags.HEALTH_REGEN, StateFlag.State.DENY);
         WorldGuardCompat.addFlag(getWorld(), name, Flags.USE_ANVIL, StateFlag.State.DENY);
-        WorldGuardCompat.addFlag(getWorld(), name, Flags.PISTONS, StateFlag.State.DENY);
-        WorldGuardCompat.addFlag(getWorld(), name, Flags.WATER_FLOW, StateFlag.State.DENY);
-        WorldGuardCompat.addFlag(getWorld(), name, Flags.LAVA_FLOW, StateFlag.State.DENY);
-        WorldGuardCompat.addFlag(getWorld(), name, Flags.LIGHTNING, StateFlag.State.DENY);
-        WorldGuardCompat.addFlag(getWorld(), name, Flags.FROSTED_ICE_FORM, StateFlag.State.DENY);
-        WorldGuardCompat.addFlag(getWorld(), name, Flags.ICE_MELT, StateFlag.State.DENY);
-        WorldGuardCompat.addFlag(getWorld(), name, Flags.POTION_SPLASH, StateFlag.State.DENY);
+        //WorldGuardCompat.addFlag(getWorld(), name, Flags.PISTONS, StateFlag.State.DENY);
+        //WorldGuardCompat.addFlag(getWorld(), name, Flags.WATER_FLOW, StateFlag.State.DENY);
+        //WorldGuardCompat.addFlag(getWorld(), name, Flags.LAVA_FLOW, StateFlag.State.DENY);
+        //WorldGuardCompat.addFlag(getWorld(), name, Flags.LIGHTNING, StateFlag.State.DENY);
+        //WorldGuardCompat.addFlag(getWorld(), name, Flags.FROSTED_ICE_FORM, StateFlag.State.DENY);
+        //WorldGuardCompat.addFlag(getWorld(), name, Flags.ICE_MELT, StateFlag.State.DENY);
+        //WorldGuardCompat.addFlag(getWorld(), name, Flags.POTION_SPLASH, StateFlag.State.DENY);
         WorldGuardCompat.addFlag(getWorld(), name, Flags.ITEM_FRAME_ROTATE, StateFlag.State.DENY);
-        WorldGuardCompat.addFlag(getWorld(), name, Flags.FIRE_SPREAD, StateFlag.State.DENY);
+        //WorldGuardCompat.addFlag(getWorld(), name, Flags.FIRE_SPREAD, StateFlag.State.DENY);
         WorldGuardCompat.addFlag(getWorld(), name, Flags.ENTRY, StateFlag.State.DENY);
     }
 
     public static void deleteLand(final int landId, final Runnable doLast) {
-        Bukkit.getScheduler().runTaskAsynchronously(MapartPlugin.getPlugin(), () -> {
-            WorldGuardCompat.removeAllMembers(MapartManager.getWorld(), "mapart-" + landId);
-            resetLand(landId);
+        WorldGuardCompat.removeAllMembers(MapartManager.getWorld(), "mapart-" + landId);
 
-            doLast.run();
-        });
-
-        TaskUtils.addSynchronizedTask(() -> MapartSQLConfig.singleton().getTransactionManager().required(() -> {
+        MapartSQLConfig.singleton().getTransactionManager().required(() -> {
             final MMapartLand land = MMapartLandRepo.select(landId);
             if (land != null) MMapartLandRepo.delete(land);
 
@@ -207,12 +209,21 @@ public class MapartManager implements Listenable {
             for (final DMapartLandCollaborator collabo : collabos) {
                 DMapartLandCollaboratorRepo.delete(collabo);
             }
-        }));
+        });
 
         final ProtectedRegion rg = WorldGuardCompat.getRegion(MapartManager.getWorld(), "mapart-" + landId);
         rg.getMembers().getUniqueIds().stream().map(Bukkit::getPlayer).filter(player -> player != null && rg.contains(player.getLocation().getBlockX(), player.getLocation().getBlockY(), player.getLocation().getBlockZ())).forEach(player -> player.teleport(Bukkit.getWorld("world").getSpawnLocation()));
 
         WorldGuardCompat.removeRegion(MapartManager.getWorld(), "mapart-" + landId + "-area");
+
+        cleanLand(landId, doLast);
+    }
+
+    public static void cleanLand(final int landId, final Runnable doLast) {
+        Bukkit.getScheduler().runTaskAsynchronously(MapartPlugin.getPlugin(), () -> {
+            resetLand(landId);
+            doLast.run();
+        });
     }
 
     public static void resetLand(final int landId) {
@@ -308,6 +319,254 @@ public class MapartManager implements Listenable {
 
         if (event.getBlock().getY() == LibraryPlugin.COMPAT.getMinHeight(getWorld())) {
             event.setCancelled(true);
+        }
+    }
+
+    @EventTarget(bktPriority = EventPriority.HIGH)
+    public void onEntityRegainHealth(final EntityRegainHealthEvent event) {
+        if (event.getEntity().getWorld().getUID() != getWorld().getUID()) return;
+
+        event.setCancelled(true);
+    }
+
+    @EventTarget(bktPriority = EventPriority.HIGH)
+    public void onEntityDamage(final EntityDamageEvent event) {
+        if (event.getEntity().getWorld().getUID() != getWorld().getUID()) return;
+
+        event.setCancelled(true);
+    }
+
+    /*@EventTarget(bktPriority = EventPriority.HIGH)
+    public void onBlockRedstone(final BlockRedstoneEvent event) {
+        if (event.getBlock().getWorld().getUID() != getWorld().getUID()) return;
+
+        event.setNewCurrent(event.getOldCurrent());
+    }
+
+    @EventTarget(bktPriority = EventPriority.HIGH)
+    public void onBlockPiston(final BlockPistonEvent event) {
+        if (event.getBlock().getWorld().getUID() != getWorld().getUID()) return;
+
+        event.setCancelled(true);
+    }*/
+
+    @EventTarget(bktPriority = EventPriority.HIGH)
+    public void onBlockPhysics(final BlockPhysicsEvent event) {
+        if (event.getBlock().getWorld().getUID() != getWorld().getUID()) return;
+
+        event.setCancelled(true);
+    }
+
+    @EventTarget(bktPriority = EventPriority.HIGH)
+    public void onBlockIgnite(final BlockIgniteEvent event) {
+        if (event.getBlock().getWorld().getUID() != getWorld().getUID()) return;
+
+        event.setCancelled(true);
+    }
+
+    @EventTarget(bktPriority = EventPriority.HIGH)
+    public void onBlockFromTo(final BlockFromToEvent event) {
+        if (event.getBlock().getWorld().getUID() != getWorld().getUID()) return;
+
+        event.setCancelled(true);
+    }
+
+    @EventTarget(bktPriority = EventPriority.HIGH)
+    public void onEntityPlace(final EntityPlaceEvent event) {
+        if (event.getBlock().getWorld().getUID() != getWorld().getUID()) return;
+
+        event.setCancelled(true);
+    }
+
+    @EventTarget(bktPriority = EventPriority.HIGH)
+    public void onEntityBlockForm(final EntityBlockFormEvent event) {
+        if (event.getBlock().getWorld().getUID() != getWorld().getUID()) return;
+
+        event.setCancelled(true);
+    }
+
+    @EventTarget(bktPriority = EventPriority.HIGH)
+    public void onBlockMultiPlace(final BlockMultiPlaceEvent event) {
+        if (event.getBlock().getWorld().getUID() != getWorld().getUID()) return;
+        if (event.isCancelled()) return;
+
+        Class<?> data;
+        try {
+            data = event.getBlock().getBlockData().getMaterial().getData();
+        } catch (final IllegalArgumentException ignore) {
+            data = event.getBlock().getBlockData().getMaterial().data;
+        }
+
+        switch (data.getName()) {
+            case "org.bukkit.material.Door":
+            case "org.bukkit.block.data.type.Door":
+
+            case "org.bukkit.material.Bed":
+            case "org.bukkit.block.data.type.Bed": {
+                event.setCancelled(true);
+            }
+        }
+    }
+
+    @EventTarget(bktPriority = EventPriority.HIGH)
+    public void onBlockPlace(final BlockPlaceEvent event) {
+        if (event.getBlock().getWorld().getUID() != getWorld().getUID()) return;
+        if (event.isCancelled()) return;
+
+        Class<?> data;
+        try {
+            data = event.getBlock().getBlockData().getMaterial().getData();
+        } catch (final IllegalArgumentException ignore) {
+            data = event.getBlock().getBlockData().getMaterial().data;
+        }
+
+        if (data != null)
+            switch (data.getName()) {
+                case "org.bukkit.material.Sign":
+                case "org.bukkit.block.data.type.Sign":
+                case "org.bukkit.block.data.type.WallSign":
+                case "org.bukkit.block.data.type.WallHangingSign":
+                case "org.bukkit.block.data.type.HangingSign":
+
+                case "org.bukkit.material.Banner":
+                case "org.bukkit.block.Banner":
+
+                case "org.bukkit.material.Crops":
+                case "org.bukkit.block.data.type.Bamboo":
+                case "org.bukkit.block.data.Ageable":
+                case "org.bukkit.material.Vine":
+                case "org.bukkit.block.data.type.CaveVinesPlant":
+                case "org.bukkit.block.data.type.CaveVines":
+                case "org.bukkit.material.NetherWarts":
+
+                case "org.bukkit.material.Sapling":
+                case "org.bukkit.block.data.type.Sapling":
+
+                case "org.bukkit.block.data.type.Stairs":
+                case "org.bukkit.block.data.type.Slab":
+
+                case "org.bukkit.material.Furnace":
+                case "org.bukkit.block.data.type.Furnace":
+                case "org.bukkit.block.data.type.Campfire":
+                case "org.bukkit.block.data.type.Fire":
+
+                case "org.bukkit.block.data.type.BrewingStand":
+                case "org.bukkit.block.data.type.Candle":
+                case "org.bukkit.block.data.Lightable":
+
+                case "org.bukkit.material.RedstoneWire":
+                case "org.bukkit.block.data.type.RedstoneWire":
+
+                case "org.bukkit.material.Hopper":
+                case "org.bukkit.block.data.type.Hopper":
+
+                case "org.bukkit.block.data.type.Observer":
+                case "org.bukkit.material.Observer":
+
+                case "org.bukkit.block.data.type.TrapDoor":
+                case "org.bukkit.block.data.type.Gate":
+                case "org.bukkit.block.data.type.Fence":
+
+                case "org.bukkit.block.data.type.GlassPane":
+
+                case "org.bukkit.block.data.type.Comparator":
+                case "org.bukkit.block.data.type.Piston":
+                case "org.bukkit.block.data.type.Repeater":
+                case "org.bukkit.block.data.type.Dispenser":
+                case "org.bukkit.block.data.type.Switch":
+                case "org.bukkit.block.data.type.DaylightDetector":
+                case "org.bukkit.block.data.type.LightningRod":
+                case "org.bukkit.block.data.type.NoteBlock":
+                case "org.bukkit.block.data.Powerable":
+                case "org.bukkit.block.data.AnaloguePowerable":
+                case "org.bukkit.material.Leaves":
+                case "org.bukkit.material.Dispenser":
+                case "org.bukkit.material.PoweredRail":
+                case "org.bukkit.material.DetectorRail":
+                case "org.bukkit.material.PistonBaseMaterial":
+                case "org.bukkit.material.PistonExtensionMaterial":
+                case "org.bukkit.material.TripwireHook":
+                case "org.bukkit.material.Tripwire":
+                case "org.bukkit.material.Comparator":
+                case "org.bukkit.material.PressurePlate":
+                case "org.bukkit.material.RedstoneTorch":
+                case "org.bukkit.material.Button":
+                case "org.bukkit.block.data.type.RedstoneRail":
+                case "org.bukkit.block.data.Rail":
+                case "org.bukkit.material.TrapDoor":
+                case "org.bukkit.material.Gate":
+
+                case "org.bukkit.block.data.type.AmethystCluster":
+
+                case "org.bukkit.material.LongGrass":
+                case "org.bukkit.material.Torch":
+                case "org.bukkit.material.Stairs":
+                case "org.bukkit.material.Ladder":
+
+                case "org.bukkit.block.data.type.Barrel":
+                case "org.bukkit.material.Chest":
+                case "org.bukkit.block.data.type.Chest":
+                case "org.bukkit.block.data.type.EnderChest":
+                case "org.bukkit.material.EnderChest": {
+                    event.setCancelled(true);
+                    return;
+                }
+            }
+
+        switch (event.getBlock().getBlockData().getMaterial().name()) {
+            case "BEACON":
+            case "LAVA":
+            case "WATER":
+
+            case "BLACK_BANNER":
+            case "BLACK_WALL_BANNER":
+            case "BLUE_BANNER":
+            case "BLUE_WALL_BANNER":
+            case "CYAN_BANNER":
+            case "CYAN_WALL_BANNER":
+            case "GRAY_BANNER":
+            case "GRAY_WALL_BANNER":
+            case "GREEN_BANNER":
+            case "GREEN_WALL_BANNER":
+            case "LIGHT_BLUE_BANNER":
+            case "LIGHT_BLUE_WALL_BANNER":
+            case "LIGHT_GRAY_BANNER":
+            case "LIGHT_GRAY_WALL_BANNER":
+            case "LIME_BANNER":
+            case "LIME_WALL_BANNER":
+            case "MAGENTA_BANNER":
+            case "MAGENTA_WALL_BANNER":
+            case "PINK_BANNER":
+            case "PINK_WALL_BANNER":
+            case "YELLOW_BANNER":
+            case "YELLOW_WALL_BANNER":
+            case "WHITE_BANNER":
+            case "WHITE_WALL_BANNER":
+            case "PURPLE_BANNER":
+            case "PURPLE_WALL_BANNER":
+            case "ORANGE_BANNER":
+            case "ORANGE_WALL_BANNER":
+            case "BARREL":
+
+            /*case "ACACIA_SIGN":
+            case "ACACIA_WALL_SIGN":
+            case "OAK_SIGN":
+            case "OAK_WALL_SIGN":
+            case "SPRUCE_SIGN":
+            case "SPRUCE_WALL_SIGN":
+            case "BIRCH_SIGN":
+            case "BIRCH_WALL_SIGN":
+            case "CRIMSON_SIGN":
+            case "CRIMSON_WALL_SIGN":
+            case "DARK_OAK_SIGN":
+            case "DARK_OAK_WALL_SIGN":
+            case "JUNGLE_SIGN":
+            case "JUNGLE_WALL_SIGN":
+            case "WARPED_SIGN":
+            case "WARPED_WALL_SIGN":*/
+            {
+                event.setCancelled(true);
+            }
         }
     }
 

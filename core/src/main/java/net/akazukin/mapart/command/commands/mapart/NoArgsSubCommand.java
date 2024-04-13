@@ -12,13 +12,14 @@ import org.bukkit.entity.Player;
 @CommandInfo(name = "", description = "Open mapart gui")
 public class NoArgsSubCommand extends SubCommand {
     @Override
-    public boolean run(final CommandSender sender, final String... args) {
+    public void run(final CommandSender sender, final String... args) {
         if (!(sender instanceof Player)) {
             MapartPlugin.MESSAGE_HELPER.consoleMessage(I18n.of("library.command.execute.mustBeByPlayer"));
-            return true;
+            return;
+        } else if (!sender.hasPermission("mapart.command.mapart.copyright")) {
+            MapartPlugin.MESSAGE_HELPER.sendMessage(sender, I18n.of("library.message.requirePerm"));
         }
 
         GuiManager.singleton().setScreen(((Player) sender).getUniqueId(), new GuiMapartPanel(((Player) sender).getUniqueId()));
-        return true;
     }
 }
