@@ -8,17 +8,20 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockCanBuildEvent;
 import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.block.BlockIgniteEvent;
-import org.bukkit.event.block.BlockMultiPlaceEvent;
 import org.bukkit.event.block.BlockPhysicsEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.EntityBlockFormEvent;
+import org.bukkit.event.enchantment.PrepareItemEnchantEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityPlaceEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
-import org.bukkit.event.inventory.CraftItemEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.PrepareAnvilEvent;
+import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 
 public class Events implements Listener {
@@ -47,16 +50,6 @@ public class Events implements Listener {
         callEvent(event, EventPriority.HIGH);
     }
 
-    /*@EventHandler(priority = EventPriority.HIGH)
-    public void onBlockPiston(final BlockPistonEvent event) {
-        callEvent(event, EventPriority.HIGH);
-    }
-
-    @EventHandler(priority = EventPriority.HIGH)
-    public void onBlockRedstone(final BlockRedstoneEvent event) {
-        callEvent(event, EventPriority.HIGH);
-    }*/
-
     @EventHandler
     public void onPlayerJoin(final PlayerJoinEvent event) {
         callEvent(event, EventPriority.NORMAL);
@@ -65,11 +58,6 @@ public class Events implements Listener {
     @EventHandler
     public void onPlayerWorldChanged(final PlayerChangedWorldEvent event) {
         callEvent(event, EventPriority.NORMAL);
-    }
-
-    @EventHandler(priority = EventPriority.HIGH)
-    public void onBlockMultiPlace(final BlockMultiPlaceEvent event) {
-        callEvent(event, EventPriority.HIGH);
     }
 
     @EventHandler(priority = EventPriority.HIGH)
@@ -98,12 +86,32 @@ public class Events implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGH)
-    public void onBlockPlace(final BlockPlaceEvent event) {
+    public void onPrepareAnvil(final PrepareAnvilEvent event) {
         callEvent(event, EventPriority.HIGH);
     }
 
     @EventHandler(priority = EventPriority.HIGH)
-    public void onBlockPlace(final CraftItemEvent event) {
+    public void onPrepareItemCraft(final PrepareItemCraftEvent event) {
+        callEvent(event, EventPriority.HIGH);
+    }
+
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onInventoryClick(final InventoryClickEvent event) {
+        callEvent(event, EventPriority.HIGH);
+    }
+
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onBlockCanBuild(final BlockCanBuildEvent event) {
+        callEvent(event, EventPriority.HIGH);
+    }
+
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onPlayerInteract(final PlayerInteractEvent event) {
+        callEvent(event, EventPriority.HIGH);
+    }
+
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onPrepareItemEnchant(final PrepareItemEnchantEvent event) {
         callEvent(event, EventPriority.HIGH);
     }
 

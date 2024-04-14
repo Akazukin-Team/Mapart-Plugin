@@ -27,17 +27,18 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockCanBuildEvent;
 import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.block.BlockIgniteEvent;
-import org.bukkit.event.block.BlockMultiPlaceEvent;
 import org.bukkit.event.block.BlockPhysicsEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.EntityBlockFormEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityPlaceEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 
 import java.sql.Timestamp;
@@ -55,7 +56,7 @@ public class MapartManager implements Listenable {
     }
 
     public static String getWorldName() {
-        return "mapart";
+        return MapartPlugin.CONFIG_UTILS.getConfig("config.yaml").getString("world");
     }
 
     public static boolean removeWorld() {
@@ -133,10 +134,7 @@ public class MapartManager implements Listenable {
                     minLoc2.setY(maxY);
                     maxLoc2.setY(maxY);
 
-                    //addProtectedRegion("mapart-" + j + "-ground", minLoc, maxLoc);
                     addProtectedRegion("mapart-" + j, minLoc.add(0, 1, 0), maxLoc2.add(0, 20, 0));
-                    //addProtectedRegion("mapart-" + j + "-sky", minLoc2.add(0, 1, 0), maxLoc2.add(0, 1, 0));
-                    //WorldGuardCompat.getRegion(getWorld(), "mapart-" + j + "-ground").setPriority(10);
                     WorldGuardCompat.getRegion(getWorld(), "mapart-" + j).setPriority(10);
                 }
                 WorldGuardCompat.addMember(getWorld(), "mapart-" + i, player);
@@ -146,8 +144,8 @@ public class MapartManager implements Listenable {
                 maxLoc.setY(maxY + 20);
                 WorldGuardCompat.createRegion("mapart-" + i + "-area", maxLoc, minLoc);
                 WorldGuardCompat.addFlag(getWorld(), "mapart-" + i + "-area", Flags.EXIT, StateFlag.State.DENY);
-                //WorldGuardCompat.addFlag(getWorld(), "mapart-" + i + "-area", Flags.BUILD, StateFlag.State.ALLOW);
                 WorldGuardCompat.getRegion(getWorld(), "mapart-" + i + "-area").setPriority(9);
+
                 return landData;
             }
             return null;
@@ -182,19 +180,7 @@ public class MapartManager implements Listenable {
 
         WorldGuardCompat.addFlag(getWorld(), name, Flags.INTERACT, StateFlag.State.DENY);
         WorldGuardCompat.addFlag(getWorld(), name, Flags.USE, StateFlag.State.DENY);
-        //WorldGuardCompat.addFlag(getWorld(), name, Flags.SNOW_FALL, StateFlag.State.DENY);
-        //WorldGuardCompat.addFlag(getWorld(), name, Flags.SNOW_MELT, StateFlag.State.DENY);
-        //WorldGuardCompat.addFlag(getWorld(), name, Flags.HEALTH_REGEN, StateFlag.State.DENY);
-        WorldGuardCompat.addFlag(getWorld(), name, Flags.USE_ANVIL, StateFlag.State.DENY);
-        //WorldGuardCompat.addFlag(getWorld(), name, Flags.PISTONS, StateFlag.State.DENY);
-        //WorldGuardCompat.addFlag(getWorld(), name, Flags.WATER_FLOW, StateFlag.State.DENY);
-        //WorldGuardCompat.addFlag(getWorld(), name, Flags.LAVA_FLOW, StateFlag.State.DENY);
-        //WorldGuardCompat.addFlag(getWorld(), name, Flags.LIGHTNING, StateFlag.State.DENY);
-        //WorldGuardCompat.addFlag(getWorld(), name, Flags.FROSTED_ICE_FORM, StateFlag.State.DENY);
-        //WorldGuardCompat.addFlag(getWorld(), name, Flags.ICE_MELT, StateFlag.State.DENY);
-        //WorldGuardCompat.addFlag(getWorld(), name, Flags.POTION_SPLASH, StateFlag.State.DENY);
         WorldGuardCompat.addFlag(getWorld(), name, Flags.ITEM_FRAME_ROTATE, StateFlag.State.DENY);
-        //WorldGuardCompat.addFlag(getWorld(), name, Flags.FIRE_SPREAD, StateFlag.State.DENY);
         WorldGuardCompat.addFlag(getWorld(), name, Flags.ENTRY, StateFlag.State.DENY);
     }
 
@@ -386,9 +372,41 @@ public class MapartManager implements Listenable {
     }
 
     @EventTarget(bktPriority = EventPriority.HIGH)
-    public void onBlockMultiPlace(final BlockMultiPlaceEvent event) {
+    public void onPlayerInteract(final PlayerInteractEvent event) {
+        if (event.getClickedBlock() == null ||
+                event.getClickedBlock().getWorld().getUID() != getWorld().getUID() ||
+                event.getAction() != Action.RIGHT_CLICK_BLOCK
+        )
+            return;
+        if (!event.isCancelled()) return;
+
+        Class<?> data;
+        try {
+            data = event.getClickedBlock().getBlockData().getMaterial().getData();
+        } catch (final IllegalArgumentException ignore) {
+            data = event.getClickedBlock().getBlockData().getMaterial().data;
+        }
+
+        switch (data.getName()) {
+            case "": {
+                event.setCancelled(true);
+                return;
+            }
+        }
+
+        switch (event.getClickedBlock().getBlockData().getMaterial().name()) {
+            case "ANVIL":
+            case "CHIPPED_ANVIL":
+            case "DAMAGED_ANVIL": {
+                event.setCancelled(true);
+            }
+        }
+    }
+
+    /*@EventTarget(bktPriority = EventPriority.HIGH)
+    public void onBlockCanBuild(final BlockCanBuildEvent event) {
         if (event.getBlock().getWorld().getUID() != getWorld().getUID()) return;
-        if (event.isCancelled()) return;
+        if (!event.isBuildable()) return;
 
         Class<?> data;
         try {
@@ -406,18 +424,18 @@ public class MapartManager implements Listenable {
                 event.setCancelled(true);
             }
         }
-    }
+    }*/
 
     @EventTarget(bktPriority = EventPriority.HIGH)
-    public void onBlockPlace(final BlockPlaceEvent event) {
+    public void onBlockCanBuild(final BlockCanBuildEvent event) {
         if (event.getBlock().getWorld().getUID() != getWorld().getUID()) return;
-        if (event.isCancelled()) return;
+        if (!event.isBuildable()) return;
 
         Class<?> data;
         try {
-            data = event.getBlock().getBlockData().getMaterial().getData();
+            data = event.getMaterial().getData();
         } catch (final IllegalArgumentException ignore) {
-            data = event.getBlock().getBlockData().getMaterial().data;
+            data = event.getMaterial().data;
         }
 
         if (data != null)
@@ -507,13 +525,19 @@ public class MapartManager implements Listenable {
                 case "org.bukkit.material.Chest":
                 case "org.bukkit.block.data.type.Chest":
                 case "org.bukkit.block.data.type.EnderChest":
-                case "org.bukkit.material.EnderChest": {
-                    event.setCancelled(true);
+                case "org.bukkit.material.EnderChest":
+
+                case "org.bukkit.material.Door":
+                case "org.bukkit.block.data.type.Door":
+
+                case "org.bukkit.material.Bed":
+                case "org.bukkit.block.data.type.Bed": {
+                    event.setBuildable(false);
                     return;
                 }
             }
 
-        switch (event.getBlock().getBlockData().getMaterial().name()) {
+        switch (event.getMaterial().name()) {
             case "BEACON":
             case "LAVA":
             case "WATER":
@@ -565,7 +589,7 @@ public class MapartManager implements Listenable {
             case "WARPED_SIGN":
             case "WARPED_WALL_SIGN":*/
             {
-                event.setCancelled(true);
+                event.setBuildable(false);
             }
         }
     }

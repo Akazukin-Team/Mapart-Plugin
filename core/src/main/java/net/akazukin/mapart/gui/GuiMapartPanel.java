@@ -90,16 +90,16 @@ public class GuiMapartPanel extends GuiPagedSingleSelector {
         this.guiUserUuid = guiUserUuid;
 
         final ItemStack createItem = new ItemStack(Material.getMaterial("LIME_WOOL"));
-        ItemUtils.setDisplayName(createItem, "§a§lBorrow Land");
+        ItemUtils.setDisplayName(createItem, MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(player), I18n.of("mapart.panel.gui.land.item.borrow")));
         this.createItem = ItemUtils.setGuiItem(createItem);
 
         final OfflinePlayer guiUser = Bukkit.getOfflinePlayer(guiUserUuid);
         final ItemStack myMapartsItem = ItemUtils.getSkullItem(guiUser);
-        ItemUtils.setDisplayName(myMapartsItem, "§aYour Maparts");
+        ItemUtils.setDisplayName(myMapartsItem, MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(player), I18n.of("mapart.panel.gui.land.item.your")));
         this.myMapartsItem = ItemUtils.setGuiItem(myMapartsItem);
 
         final ItemStack collaboMapartsItem = new ItemStack(Material.getMaterial("CREEPER_HEAD"));
-        ItemUtils.setDisplayName(collaboMapartsItem, "§aCollaborated Maparts");
+        ItemUtils.setDisplayName(collaboMapartsItem, MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(player), I18n.of("mapart.panel.gui.land.item.others")));
         this.collaboMapartsItem = ItemUtils.setGuiItem(collaboMapartsItem);
 
         final OfflinePlayer owner = Bukkit.getOfflinePlayer(guiUserUuid);

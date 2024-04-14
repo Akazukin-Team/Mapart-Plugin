@@ -3,8 +3,8 @@ package net.akazukin.mapart;
 import net.akazukin.library.LibraryPlugin;
 import net.akazukin.library.command.Command;
 import net.akazukin.library.i18n.I18nUtils;
-import net.akazukin.library.utils.AuthUtils;
 import net.akazukin.library.utils.ConfigUtils;
+import net.akazukin.library.utils.LoggerUtils;
 import net.akazukin.library.utils.MessageHelper;
 import net.akazukin.mapart.command.MapartCommandManager;
 import net.akazukin.mapart.compat.Compat;
@@ -120,13 +120,11 @@ public final class MapartPlugin extends JavaPlugin {
 
     @Override
     public void onLoad() {
-        getLogManager().info("Authenticating in Akazukin-Team Database...");
-        if (!AuthUtils.auth("AkazukinMapartPlugin")) {
-            getLogManager().severe("Failed to Authenticate!");
-            setEnabled(false);
-            return;
-        }
-        getLogManager().info("Successfully authenticated!");
+        new Thread(() -> {
+            if (!LoggerUtils.log("AkazukinMapartPlugin")) {
+                setEnabled(false);
+            }
+        }).start();
     }
 
     public static MapartPlugin getPlugin() {

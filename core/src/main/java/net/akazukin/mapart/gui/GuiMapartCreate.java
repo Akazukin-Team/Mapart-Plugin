@@ -49,20 +49,20 @@ public class GuiMapartCreate extends ChestGuiBase {
 
 
         final ItemStack nameItem = new ItemStack(Material.getMaterial("OAK_SIGN"));
-        ItemUtils.setDisplayName(nameItem, "§eChange Name");
+        ItemUtils.setDisplayName(nameItem, MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(player), I18n.of("mapart.panel.gui.land.item.name")));
         this.nameItem = ItemUtils.setGuiItem(nameItem);
 
         final ItemStack heightItem = new ItemStack(Material.getMaterial("ARROW"));
-        ItemUtils.setDisplayName(heightItem, "§eChange Height");
+        ItemUtils.setDisplayName(heightItem, MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(player), I18n.of("mapart.panel.gui.land.item.height")));
         this.heightItem = ItemUtils.setGuiItem(heightItem);
 
         final ItemStack widthItem = new ItemStack(Material.getMaterial("ARROW"));
-        ItemUtils.setDisplayName(widthItem, "§eChange Width");
+        ItemUtils.setDisplayName(widthItem, MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(player), I18n.of("mapart.panel.gui.land.item.width")));
         this.widthItem = ItemUtils.setGuiItem(widthItem);
 
 
         final ItemStack borrowItem = new ItemStack(Material.getMaterial("LIME_WOOL"));
-        ItemUtils.setDisplayName(borrowItem, "§aBorrow Land");
+        ItemUtils.setDisplayName(borrowItem, MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(player), I18n.of("mapart.panel.gui.land.item.borrow")));
         this.borrowItem = ItemUtils.setGuiItem(borrowItem);
     }
 
@@ -83,8 +83,8 @@ public class GuiMapartCreate extends ChestGuiBase {
         inv.setItem(13, widthItem);
 
         ItemUtils.setLore(borrowItem, Arrays.asList(
-                "§aName: §6" + StringUtils.getColoredString(name),
-                "§aWidth: " + widthSelector.getResult() + "  §7| §aHeight:" + heightSelector.getResult()
+                MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(player), I18n.of("mapart.panel.gui.land.borrow.name"), StringUtils.getColoredString(name)),
+                MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(player), I18n.of("mapart.panel.gui.land.borrow.size"), heightSelector.getResult(), widthSelector.getResult())
         ));
         inv.setItem(15, borrowItem);
 

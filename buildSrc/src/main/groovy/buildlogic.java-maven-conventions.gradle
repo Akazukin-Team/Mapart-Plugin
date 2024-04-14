@@ -7,19 +7,12 @@ plugins {
 configurations {
     include
     implementation.extendsFrom(include)
+    compileOnly.canBeResolved = true
 }
 
 repositories {
-    maven {
-        name "Jitpack"
-        url "https://jitpack.io/"
-    }
     mavenCentral()
 }
-
-
-java.toolchain.languageVersion = JavaLanguageVersion.of(17)
-compileJava.sourceCompatibility = compileJava.targetCompatibility = 17
 
 tasks.register("sourcesJar", Jar) {
     archiveClassifier.set("sources")
@@ -37,6 +30,7 @@ tasks.register("shadowJar", Jar) {
     archiveClassifier.set("")
     duplicatesStrategy DuplicatesStrategy.EXCLUDE
     archiveBaseName = project.plugin_name
+    //mustRunAfter(obfuscate)
 
     from {
         configurations.include.collect { it.isDirectory() ? it : zipTree(it) }
@@ -47,13 +41,14 @@ java {
     withSourcesJar()
 }
 
+publish.dependsOn obfuscation
+
 publishing {
     publications {
         maven(MavenPublication) {
             groupId = project.group
             artifactId = project.artifact
             version = project.version
-            //from components.java
 
             artifact(tasks.named("sourcesJar")) {
                 classifier "sources"

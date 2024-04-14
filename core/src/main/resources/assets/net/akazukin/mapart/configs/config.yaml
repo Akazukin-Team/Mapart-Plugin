@@ -2,3 +2,7 @@ workers:
   thread: 50
 
 world: mapart
+
+limit:
+  collaborator: 10
+  land: 5
