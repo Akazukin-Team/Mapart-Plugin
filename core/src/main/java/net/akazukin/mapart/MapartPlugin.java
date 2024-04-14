@@ -4,7 +4,6 @@ import net.akazukin.library.LibraryPlugin;
 import net.akazukin.library.command.Command;
 import net.akazukin.library.i18n.I18nUtils;
 import net.akazukin.library.utils.ConfigUtils;
-import net.akazukin.library.utils.LoggerUtils;
 import net.akazukin.library.utils.MessageHelper;
 import net.akazukin.mapart.command.MapartCommandManager;
 import net.akazukin.mapart.compat.Compat;
@@ -110,21 +109,6 @@ public final class MapartPlugin extends JavaPlugin {
 
 
         Bukkit.broadcastMessage("Successfully enabled");
-    }
-
-    @Override
-    public void onDisable() {
-        //if (MAPART_MANAGER.getWorld() == null)
-        //    MAPART_MANAGER.getWorld().save();
-    }
-
-    @Override
-    public void onLoad() {
-        new Thread(() -> {
-            if (!LoggerUtils.log("AkazukinMapartPlugin")) {
-                setEnabled(false);
-            }
-        }).start();
     }
 
     public static MapartPlugin getPlugin() {
