@@ -122,7 +122,7 @@ public class MapartLandGui extends ChestGuiBase {
 
         if (land == null || !land.getOwnerUUID().equals(player)) {
             Bukkit.getScheduler().scheduleSyncDelayedTask(MapartPlugin.getPlugin(), () ->
-                    GuiManager.singleton().setScreen(player, new GuiMapartPanel(player)));
+                    GuiManager.singleton().setScreen(player, prevGui));
             return super.getInventory();
         }
 
@@ -201,7 +201,7 @@ public class MapartLandGui extends ChestGuiBase {
             MapartManager.deleteLand(landId, () ->
                     MapartPlugin.MESSAGE_HELPER.sendMessage(player, I18n.of("mapart.land.removed")));
             Bukkit.getScheduler().scheduleSyncDelayedTask(MapartPlugin.getPlugin(), () ->
-                    GuiManager.singleton().setScreen(player, new GuiMapartPanel(player)));
+                    GuiManager.singleton().setScreen(player, prevGui));
             return super.getInventory();
         }
         if (cleanLandGui.getResult() != null && cleanLandGui.getResult()) {
@@ -212,7 +212,7 @@ public class MapartLandGui extends ChestGuiBase {
             MapartManager.cleanLand(landId, () ->
                     MapartPlugin.MESSAGE_HELPER.sendMessage(player, I18n.of("mapart.land.cleaned")));
             Bukkit.getScheduler().scheduleSyncDelayedTask(MapartPlugin.getPlugin(), () ->
-                    GuiManager.singleton().setScreen(player, new GuiMapartPanel(player)));
+                    GuiManager.singleton().setScreen(player, prevGui));
             return super.getInventory();
         }
 

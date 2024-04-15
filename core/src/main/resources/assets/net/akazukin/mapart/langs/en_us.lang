@@ -56,12 +56,11 @@ mapart.command.copyright.mustBeOwner=§cThe command must have executed by owner 
 mapart.command.copyright.failedRemoving=§aFailed removed copyright from the item
 mapart.command.copyright.added=§aAdded copyright from the item
 mapart.copyright.lore=§aOwner: §e<args[0]>
-mapart.panel.manage.users.gui=§6§lMapart §r§7| §6§lManage User's Data
-mapart.panel.manage.user.gui=§6§lMapart §r§7| §6§lManage <args[0]>'s Data
-mapart.panel.manage.maparts.gui=§6§lMapart §r§7| §6§lManage <args[0]>'s Maparts
-mapart.panel.manage.maxLand.gui=§6§lMapart §r§7| §6§lSetting MaxLand for <args[0]>
+mapart.panel.manage.users.gui=§6§lMapart §r§7| §6§lUser's Data
+mapart.panel.manage.user.gui=§6§lMapart §r§7| §6§l<args[0]>'s Data
+mapart.panel.manage.maparts.gui=§6§lMapart §r§7| §6§l<args[0]>'s Maparts
+mapart.panel.manage.maxLand.gui=§6§lMapart §r§7| §6§l<args[0]>'s limit of lands
 mapart.panel.manage.maxLand.item=§aSetting MaxLand
 mapart.panel.manage.maparts.item=§aManage maparts
-
 mapart.panel.manage.user.head.lore.maxLand=§eMaxLand: §a<args[0]>
 mapart.panel.manage.user.head.lore.countLand=§eLand: §a<args[0]>

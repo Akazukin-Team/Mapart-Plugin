@@ -2,6 +2,7 @@ package net.akazukin.mapart.gui;
 
 import net.akazukin.library.LibraryPlugin;
 import net.akazukin.library.gui.GuiManager;
+import net.akazukin.library.gui.screens.chest.GuiBase;
 import net.akazukin.library.gui.screens.chest.paged.GuiPagedSingleSelector;
 import net.akazukin.library.i18n.I18n;
 import net.akazukin.library.utils.ItemUtils;
@@ -27,7 +28,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-public class GuiMapartPanel extends GuiPagedSingleSelector {
+public class GuiMapartPanelBase extends GuiPagedSingleSelector {
     private final UUID guiUserUuid;
     private final ItemStack createItem;
     private final ItemStack myMapartsItem;
@@ -36,11 +37,11 @@ public class GuiMapartPanel extends GuiPagedSingleSelector {
 
     private final boolean isAdmin;
 
-    public GuiMapartPanel(final UUID player) {
-        this(player, player, true);
+    public GuiMapartPanelBase(final UUID player, final GuiBase prevGui) {
+        this(player, player, true, prevGui);
     }
 
-    public GuiMapartPanel(final UUID player, final UUID guiUserUuid, final boolean isAdmin) {
+    public GuiMapartPanelBase(final UUID player, final UUID guiUserUuid, final boolean isAdmin, final GuiBase prevGui) {
         super(
                 MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(player), I18n.of("mapart.panel.gui.list." + (player == guiUserUuid ? "own" : "others")), (player == guiUserUuid ? null : Bukkit.getOfflinePlayer(guiUserUuid).getName())),
                 6, 6, player, MapartSQLConfig.singleton().getTransactionManager().required(() ->
@@ -87,7 +88,7 @@ public class GuiMapartPanel extends GuiPagedSingleSelector {
                             ItemUtils.setLore(landItem, lore);
                             return LibraryPlugin.COMPAT.setNBT(landItem, "landId", land.getLandId());
                         }).toArray(ItemStack[]::new),
-                null);
+                prevGui);
 
         this.isAdmin = isAdmin;
 
@@ -120,9 +121,12 @@ public class GuiMapartPanel extends GuiPagedSingleSelector {
         final Inventory inv = super.getInventory();
 
         inv.setItem(4, headItem);
-        inv.setItem(48, createItem);
-        if (!player.equals(guiUserUuid)) inv.setItem(51, myMapartsItem);
-        inv.setItem(52, collaboMapartsItem);
+
+        if (player == guiUserUuid) {
+            inv.setItem(48, createItem);
+            if (!player.equals(guiUserUuid)) inv.setItem(51, myMapartsItem);
+            inv.setItem(52, collaboMapartsItem);
+        }
 
         return inv;
     }
@@ -140,7 +144,7 @@ public class GuiMapartPanel extends GuiPagedSingleSelector {
             });
             if (land == null) {
                 MapartPlugin.MESSAGE_HELPER.sendMessage(player, I18n.of("mapart.land.notFound"));
-            } else if (land.getOwnerUUID().equals(player)) {
+            } else if (land.getOwnerUUID().equals(player) || isAdmin) {
                 GuiManager.singleton().setScreen(player, new MapartLandGui(player, land.getLandId(), this));
             } else if (Arrays.asList(land.getCollaboratorsUUID()).contains(player)) {
                 if (MapartManager.getWorld() == null) {

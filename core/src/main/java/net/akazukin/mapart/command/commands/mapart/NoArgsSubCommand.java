@@ -5,7 +5,7 @@ import net.akazukin.library.command.SubCommand;
 import net.akazukin.library.gui.GuiManager;
 import net.akazukin.library.i18n.I18n;
 import net.akazukin.mapart.MapartPlugin;
-import net.akazukin.mapart.gui.GuiMapartPanel;
+import net.akazukin.mapart.gui.GuiMapartPanelBase;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -20,6 +20,6 @@ public class NoArgsSubCommand extends SubCommand {
             MapartPlugin.MESSAGE_HELPER.sendMessage(sender, I18n.of("library.message.requirePerm"));
         }
 
-        GuiManager.singleton().setScreen(((Player) sender).getUniqueId(), new GuiMapartPanel(((Player) sender).getUniqueId()));
+        GuiManager.singleton().setScreen(((Player) sender).getUniqueId(), new GuiMapartPanelBase(((Player) sender).getUniqueId(), null));
     }
 }

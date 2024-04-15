@@ -17,4 +17,4 @@ left outer join
     on
         M_MAPART_LAND.LAND_ID = D_MAPART_LAND_COLLABORATOR.LAND_ID
 where
-    LAND_ID = /* landId */0
+    M_MAPART_LAND.LAND_ID = /* landId */0
