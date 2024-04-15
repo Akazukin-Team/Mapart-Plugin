@@ -1,7 +1,7 @@
 -- マップアート土地権限データ
 create table if not exists D_MAPART_LAND_COLLABORATOR (
-  LAND_ID BIGINT not null -- 土地ID
-  , COLLABORATOR_UUID CHAR(36) not null -- プレイヤーUUID
-  , VERSION_NO BIGINT not null -- バージョン
-  , constraint D_MAPART_LAND_PERM_PKC primary key (LAND_ID, COLLABORATOR_UUID)
+    LAND_ID BIGINT not null -- 土地ID
+    , COLLABORATOR_UUID CHAR(36) not null -- プレイヤーUUID
+    , VERSION_NO BIGINT not null -- バージョン
+    , constraint D_MAPART_LAND_PERM_PKC primary key (LAND_ID, COLLABORATOR_UUID)
 ) -- マップアート土地権限データ

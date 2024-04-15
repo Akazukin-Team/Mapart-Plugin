@@ -1,15 +1,15 @@
 -- マップアート土地マスタ
 create table if not exists M_MAPART_LAND (
-  LAND_ID BIGINT not null -- 土地ID
-  , OWNER_UUID CHAR(36) not null -- プレイヤーUUID
-  , NAME CHAR(50) not null -- 土地名称
-  , X BIGINT not null -- チャンクX
-  , Z BIGINT not null -- チャンクZ
-  , HEIGHT BIGINT not null -- 縦幅
-  , WIDTH BIGINT not null -- 横幅
-  , CREATED_DATE DATETIME not null -- 作成日
-  , STATUS CHAR(1) not null -- ステータス
-  , VERSION_NO BIGINT not null -- バージョン
-  , constraint M_MAPART_LAND_PKC primary key (LAND_ID)
+    LAND_ID BIGINT not null -- 土地ID
+    , OWNER_UUID CHAR(36) not null -- プレイヤーUUID
+    , NAME CHAR(50) not null -- 土地名称
+    , X BIGINT not null -- チャンクX
+    , Z BIGINT not null -- チャンクZ
+    , HEIGHT BIGINT not null -- 縦幅
+    , WIDTH BIGINT not null -- 横幅
+    , CREATED_DATE DATETIME not null -- 作成日
+    , STATUS CHAR(1) not null -- ステータス
+    , VERSION_NO BIGINT not null -- バージョン
+    , constraint M_MAPART_LAND_PKC primary key (LAND_ID)
 ) -- マップアート土地マスタ:Mapart土地管理用マスタ
 ;
