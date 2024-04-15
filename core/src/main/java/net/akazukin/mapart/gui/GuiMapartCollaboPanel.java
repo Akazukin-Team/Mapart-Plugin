@@ -17,7 +17,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Arrays;
-import java.util.Objects;
 import java.util.UUID;
 
 public class GuiMapartCollaboPanel extends GuiPagedSinglePlayerSelector {
@@ -25,10 +24,12 @@ public class GuiMapartCollaboPanel extends GuiPagedSinglePlayerSelector {
 
     public GuiMapartCollaboPanel(final UUID player, final GuiBase prevGui) {
         super(MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(player), I18n.of("mapart.panel.gui.collaboration")),
-                6, 6, player, Arrays.stream(MapartSQLConfig.singleton().getTransactionManager().required(() -> RepoUtils.getMapartLandsByCollaborator(player))).map(land ->
-                        Bukkit.getOfflinePlayer(land.getOwnerUUID())
-                ).filter(Objects::nonNull).toArray(OfflinePlayer[]::new), prevGui);
-
+                6, 6, player,
+                Arrays.stream(MapartSQLConfig.singleton().getTransactionManager().required(() ->
+                                RepoUtils.getMapartLandsByCollaborator(player)
+                        ))
+                        .map(land -> Bukkit.getOfflinePlayer(land.getOwnerUUID()))
+                        .toArray(OfflinePlayer[]::new), prevGui);
 
         final ItemStack myMapartsItem = ItemUtils.getSkullItem(Bukkit.getOfflinePlayer(player));
         ItemUtils.setDisplayName(myMapartsItem, "§aYour Maparts");
@@ -52,7 +53,7 @@ public class GuiMapartCollaboPanel extends GuiPagedSinglePlayerSelector {
             GuiManager.singleton().setScreen(player, prevGui);
             return true;
         } else if (result && selectedPlayer != null) {
-            GuiManager.singleton().setScreen(player, new GuiMapartPanel(player, UUID.fromString(LibraryPlugin.COMPAT.getNBTString(event.getCurrentItem(), "HEAD_UUID"))));
+            GuiManager.singleton().setScreen(player, new GuiMapartPanel(player, UUID.fromString(LibraryPlugin.COMPAT.getNBTString(event.getCurrentItem(), "HEAD_UUID")), false));
             return true;
         }
         return false;

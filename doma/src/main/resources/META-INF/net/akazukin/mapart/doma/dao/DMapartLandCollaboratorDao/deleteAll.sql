@@ -1,1 +1,0 @@
-delete from D_MAPART_LAND_COLLABORATOR

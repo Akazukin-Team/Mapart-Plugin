@@ -9,7 +9,6 @@ import net.akazukin.library.utils.MessageHelper;
 import net.akazukin.library.utils.StringUtils;
 import net.akazukin.mapart.MapartPlugin;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.event.enchantment.PrepareItemEnchantEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.PrepareAnvilEvent;
@@ -66,13 +65,6 @@ public class CopyrightManager implements Listenable {
                 }
             }
         } catch (final ClassNotFoundException ignored) {
-        }
-
-        for (int i = 0; i < event.getClickedInventory().getSize(); i++) {
-            if (event.getClickedInventory().getItem(i) == null ||
-                    event.getClickedInventory().getItem(i).getType() == Material.AIR) continue;
-
-            event.getWhoClicked().sendMessage(i + " " + event.getClickedInventory().getItem(i).getType().name());
         }
     }
 

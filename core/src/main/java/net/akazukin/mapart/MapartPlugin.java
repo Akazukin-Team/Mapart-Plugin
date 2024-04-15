@@ -11,6 +11,7 @@ import net.akazukin.mapart.compat.CompatManager;
 import net.akazukin.mapart.doma.MapartSQLConfig;
 import net.akazukin.mapart.doma.dao.DMapartLandCollaboratorDaoImpl;
 import net.akazukin.mapart.doma.dao.MMapartLandDaoImpl;
+import net.akazukin.mapart.doma.dao.MMapartUserDaoImpl;
 import net.akazukin.mapart.event.Events;
 import net.akazukin.mapart.event.MapartEventManager;
 import net.akazukin.mapart.manager.MapartManager;
@@ -60,6 +61,7 @@ public final class MapartPlugin extends JavaPlugin {
         sqlCfg.getTransactionManager().required(() -> {
             new DMapartLandCollaboratorDaoImpl(sqlCfg).create();
             new MMapartLandDaoImpl(sqlCfg).create();
+            new MMapartUserDaoImpl(sqlCfg).create();
         });
         getLogManager().info("Successfully Initialized database");
 

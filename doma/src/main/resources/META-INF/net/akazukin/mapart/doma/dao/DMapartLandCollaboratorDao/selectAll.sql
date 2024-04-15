@@ -1,2 +1,2 @@
-SELECT /*%expand*/*
-    FROM D_MAPART_LAND_COLLABORATOR
+select /*%expand*/*
+    from D_MAPART_LAND_COLLABORATOR

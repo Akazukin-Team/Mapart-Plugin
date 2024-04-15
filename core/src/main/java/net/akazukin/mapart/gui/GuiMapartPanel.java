@@ -34,17 +34,19 @@ public class GuiMapartPanel extends GuiPagedSingleSelector {
     private final ItemStack collaboMapartsItem;
     private final ItemStack headItem;
 
+    private final boolean isAdmin;
+
     public GuiMapartPanel(final UUID player) {
-        this(player, player);
+        this(player, player, true);
     }
 
-    public GuiMapartPanel(final UUID player, final UUID guiUserUuid) {
+    public GuiMapartPanel(final UUID player, final UUID guiUserUuid, final boolean isAdmin) {
         super(
                 MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(player), I18n.of("mapart.panel.gui.list." + (player == guiUserUuid ? "own" : "others")), (player == guiUserUuid ? null : Bukkit.getOfflinePlayer(guiUserUuid).getName())),
                 6, 6, player, MapartSQLConfig.singleton().getTransactionManager().required(() ->
                                 MapartLandRepo.selectByPlayer(guiUserUuid))
                         .stream()
-                        .filter(land -> player.equals(guiUserUuid) ||
+                        .filter(land -> isAdmin || player.equals(guiUserUuid) ||
                                 Arrays.stream(land.getCollaboratorsUUID())
                                         .noneMatch(collabo -> collabo.equals(player)))
                         .map(land -> {
@@ -86,6 +88,8 @@ public class GuiMapartPanel extends GuiPagedSingleSelector {
                             return LibraryPlugin.COMPAT.setNBT(landItem, "landId", land.getLandId());
                         }).toArray(ItemStack[]::new),
                 null);
+
+        this.isAdmin = isAdmin;
 
         this.guiUserUuid = guiUserUuid;
 

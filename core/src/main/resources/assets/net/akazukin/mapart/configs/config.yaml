@@ -5,4 +5,6 @@ world: mapart
 
 limit:
   collaborator: 10
-  land: 5
+  land:
+    default: 5
+    max: 50

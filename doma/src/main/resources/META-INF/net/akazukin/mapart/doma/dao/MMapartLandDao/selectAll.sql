@@ -1,2 +1,2 @@
-SELECT /*%expand*/*
-    FROM M_MAPART_LAND
+select /*%expand*/*
+    from M_MAPART_LAND
