@@ -17,6 +17,19 @@ import org.bukkit.command.CommandSender;
 public final class MapartCommand extends Command {
 
     @Override
+    public void run(final CommandSender sender, final String... args) {
+        final SubCommand subCmd = getSubCommand(StringUtils.getIndex(args, 0));
+        if (subCmd == null) {
+            MapartPlugin.MESSAGE_HELPER.sendMessage(sender, I18n.of("mapart.command.notFound"));
+            return;
+        } else if (!sender.hasPermission("akazukin.mapart.command.mapart")) {
+            MapartPlugin.MESSAGE_HELPER.sendMessage(sender, I18n.of("library.message.requirePerm"));
+            return;
+        }
+        subCmd.run(sender, args);
+    }
+
+    @Override
     public SubCommand[] getSubCommands() {
         return new SubCommand[]{
                 new CopyrightSubCommand(),
@@ -25,17 +38,5 @@ public final class MapartCommand extends Command {
                 new ManageSubCommand(),
                 new HelpSubCommand()
         };
-    }
-
-    @Override
-    public void run(final CommandSender sender, final String... args) {
-        final SubCommand subCmd = getSubCommand(StringUtils.getIndex(args, 0));
-        if (subCmd == null) {
-            MapartPlugin.MESSAGE_HELPER.sendMessage(sender, I18n.of("mapart.command.notFound"));
-            return;
-        } else if (!sender.hasPermission("mapart.command.mapart")) {
-            MapartPlugin.MESSAGE_HELPER.sendMessage(sender, I18n.of("library.message.requirePerm"));
-        }
-        subCmd.run(sender, args);
     }
 }

@@ -31,6 +31,7 @@ public class MapartLandRepo {
             dto.setZ(entities.get(0).getZ());
             dto.setCreatedDate(entities.get(0).getCreatedDate());
             dto.setCollaboratorsUUID(collaborators.toArray(new UUID[0]));
+            dto.setStatus(entities.get(0).getStatus());
             return dto;
         }).collect(Collectors.toList());
     }
@@ -55,6 +56,7 @@ public class MapartLandRepo {
         dto.setZ(entities.get(0).getZ());
         dto.setCreatedDate(entities.get(0).getCreatedDate());
         dto.setCollaboratorsUUID(collaborators.toArray(new UUID[0]));
+        dto.setStatus(entities.get(0).getStatus());
         return dto;
     }
 
@@ -79,6 +81,7 @@ public class MapartLandRepo {
             dto.setZ(entities.get(0).getZ());
             dto.setCreatedDate(entities.get(0).getCreatedDate());
             dto.setCollaboratorsUUID(collaborators.toArray(new UUID[0]));
+            dto.setStatus(entities.get(0).getStatus());
             return dto;
         }).collect(Collectors.toList());
     }

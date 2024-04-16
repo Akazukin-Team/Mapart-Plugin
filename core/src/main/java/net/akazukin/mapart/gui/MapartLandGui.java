@@ -48,19 +48,16 @@ public class MapartLandGui extends ChestGuiBase {
     private final ItemStack teleportLandItem;
     private final ItemStack removeLandItem;
     private final ItemStack cleanLandItem;
-    private GuiPagedMultiPlayerSelector addCollaboGui = null;
-    private GuiPagedMultiPlayerSelector removeCollaboGui = null;
     private final YesOrNoGui cleanLandGui;
     private final YesOrNoGui removeLandGui;
-    private boolean isWaiting;
-
     private final ItemStack nameSelectorItem;
     private final ItemStack addCollaboGuiItem;
     private final ItemStack removeCollaboGuiItem;
-
-
     private final ItemStack heightItem;
     private final ItemStack widthItem;
+    private GuiPagedMultiPlayerSelector addCollaboGui = null;
+    private GuiPagedMultiPlayerSelector removeCollaboGui = null;
+    private boolean isWaiting;
 
     public MapartLandGui(final UUID player, final int landId, final GuiBase prevGui) {
         super(MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(player), I18n.of("mapart.panel.gui.manage.main")),
@@ -177,7 +174,7 @@ public class MapartLandGui extends ChestGuiBase {
             heightSelector.reset();
 
             final ProtectedRegion rg = WorldGuardCompat.getRegion(MapartManager.getWorld(), "mapart-" + landId);
-            rg.getMembers().getUniqueIds().stream().map(Bukkit::getPlayer).filter(player -> player != null && rg.contains(player.getLocation().getBlockX(), player.getLocation().getBlockY(), player.getLocation().getBlockZ())).forEach(player -> MapartManager.teleportLand(landId, player.getUniqueId()));
+            rg.getMembers().getUniqueIds().stream().map(Bukkit::getPlayer).filter(player -> player != null && rg.contains(player.getLocation().getBlockX(), player.getLocation().getBlockY(), player.getLocation().getBlockZ())).forEach(player -> MapartManager.teleportLand(landId, player.getUniqueId(), false));
         }
         if (widthSelector.isDone() && widthSelector.getResult() != land.getWidth()) {
             MapartPlugin.MESSAGE_HELPER.sendMessage(player, I18n.of("mapart.land.width.set"), widthSelector.getResult());
@@ -191,7 +188,7 @@ public class MapartLandGui extends ChestGuiBase {
             widthSelector.reset();
 
             final ProtectedRegion rg = WorldGuardCompat.getRegion(MapartManager.getWorld(), "mapart-" + landId);
-            rg.getMembers().getUniqueIds().stream().map(Bukkit::getPlayer).filter(player -> player != null && rg.contains(player.getLocation().getBlockX(), player.getLocation().getBlockY(), player.getLocation().getBlockZ())).forEach(player -> MapartManager.teleportLand(landId, player.getUniqueId()));
+            rg.getMembers().getUniqueIds().stream().map(Bukkit::getPlayer).filter(player -> player != null && rg.contains(player.getLocation().getBlockX(), player.getLocation().getBlockY(), player.getLocation().getBlockZ())).forEach(player -> MapartManager.teleportLand(landId, player.getUniqueId(), false));
         }
         if (removeLandGui.getResult() != null && removeLandGui.getResult()) {
             removeLandGui.reset();
@@ -273,15 +270,6 @@ public class MapartLandGui extends ChestGuiBase {
     }
 
     @Override
-    protected void onGuiOpen(final InventoryOpenEvent event) {
-        if (isWaiting &&
-                (StringUtils.getLength(StringUtils.getIndex(nameSelector.getResult(), 0)) <= 0 || StringUtils.getIndex(nameSelector.getResult(), 0).equalsIgnoreCase("cancel rename!"))) {
-            MapartPlugin.MESSAGE_HELPER.sendMessage(event.getPlayer(), I18n.of("mapart.panel.name.cancel"));
-        }
-        isWaiting = false;
-    }
-
-    @Override
     public boolean onGuiClick(final InventoryClickEvent event) {
         if (event.getCurrentItem() == null) return false;
         if (nameSelectorItem.equals(event.getCurrentItem())) {
@@ -314,8 +302,17 @@ public class MapartLandGui extends ChestGuiBase {
             final Player p = Bukkit.getPlayer(player);
             p.closeInventory();
 
-            MapartManager.teleportLand(landId, player);
+            MapartManager.teleportLand(landId, player, false);
         }
         return false;
+    }
+
+    @Override
+    protected void onGuiOpen(final InventoryOpenEvent event) {
+        if (isWaiting &&
+                (StringUtils.getLength(StringUtils.getIndex(nameSelector.getResult(), 0)) <= 0 || StringUtils.getIndex(nameSelector.getResult(), 0).equalsIgnoreCase("cancel rename!"))) {
+            MapartPlugin.MESSAGE_HELPER.sendMessage(event.getPlayer(), I18n.of("mapart.panel.name.cancel"));
+        }
+        isWaiting = false;
     }
 }

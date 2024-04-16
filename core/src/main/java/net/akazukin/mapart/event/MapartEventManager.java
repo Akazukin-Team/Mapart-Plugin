@@ -8,7 +8,7 @@ public final class MapartEventManager extends EventManager {
     @Override
     public void registerListeners() {
         registerListeners(
-                new MapartManager(),
+                MapartManager.SINGLETON,
                 new CopyrightManager()
         );
     }

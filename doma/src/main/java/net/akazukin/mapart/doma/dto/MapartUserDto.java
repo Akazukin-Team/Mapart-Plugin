@@ -1,14 +1,10 @@
 package net.akazukin.mapart.doma.dto;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Data;
 
 import java.util.UUID;
 
-@NoArgsConstructor
-@Getter
-@Setter
+@Data
 public class MapartUserDto {
     private UUID playerUuid;
     private Integer maxLand;

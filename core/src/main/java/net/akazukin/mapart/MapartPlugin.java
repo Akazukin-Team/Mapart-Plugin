@@ -16,12 +16,16 @@ import net.akazukin.mapart.event.Events;
 import net.akazukin.mapart.event.MapartEventManager;
 import net.akazukin.mapart.manager.MapartManager;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.command.PluginCommand;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.Map;
+import java.util.UUID;
 import java.util.logging.Logger;
 
 public final class MapartPlugin extends JavaPlugin {
@@ -35,6 +39,24 @@ public final class MapartPlugin extends JavaPlugin {
 
     public static void main(final String[] args) {
         System.out.println("Main is running!");
+    }
+
+    public static MapartPlugin getPlugin() {
+        return getPlugin(MapartPlugin.class);
+    }
+
+    public static Logger getLogManager() {
+        return getPlugin().getLogger();
+    }
+
+    @Override
+    public void onDisable() {
+        for (final Map.Entry<UUID, Location> entry : MapartManager.SINGLETON.getLastPos().entrySet()) {
+            final Player p = Bukkit.getOfflinePlayer(entry.getKey()).getPlayer();
+            if (p != null && p.getWorld().getUID() == MapartManager.getWorld().getUID())
+                p.teleport(entry.getValue());
+            MapartManager.SINGLETON.getLastPos().remove(entry.getKey());
+        }
     }
 
     @Override
@@ -111,13 +133,5 @@ public final class MapartPlugin extends JavaPlugin {
 
 
         Bukkit.broadcastMessage("Successfully enabled");
-    }
-
-    public static MapartPlugin getPlugin() {
-        return getPlugin(MapartPlugin.class);
-    }
-
-    public static Logger getLogManager() {
-        return getPlugin().getLogger();
     }
 }

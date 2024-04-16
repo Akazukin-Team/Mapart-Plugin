@@ -1,15 +1,11 @@
 package net.akazukin.mapart.doma.dto;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Data;
 
 import java.sql.Timestamp;
 import java.util.UUID;
 
-@NoArgsConstructor
-@Getter
-@Setter
+@Data
 public class MapartLandDto {
     private int landId;
     private String name;
@@ -24,4 +20,6 @@ public class MapartLandDto {
     private long width;
 
     private Timestamp createdDate;
+
+    private String status;
 }

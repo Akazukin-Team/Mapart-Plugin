@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-public class GuiMapartPanelBase extends GuiPagedSingleSelector {
+public class GuiMapartPanel extends GuiPagedSingleSelector {
     private final UUID guiUserUuid;
     private final ItemStack createItem;
     private final ItemStack myMapartsItem;
@@ -37,19 +37,18 @@ public class GuiMapartPanelBase extends GuiPagedSingleSelector {
 
     private final boolean isAdmin;
 
-    public GuiMapartPanelBase(final UUID player, final GuiBase prevGui) {
+    public GuiMapartPanel(final UUID player, final GuiBase prevGui) {
         this(player, player, true, prevGui);
     }
 
-    public GuiMapartPanelBase(final UUID player, final UUID guiUserUuid, final boolean isAdmin, final GuiBase prevGui) {
+    public GuiMapartPanel(final UUID player, final UUID guiUserUuid, final boolean isAdmin, final GuiBase prevGui) {
         super(
                 MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(player), I18n.of("mapart.panel.gui.list." + (player == guiUserUuid ? "own" : "others")), (player == guiUserUuid ? null : Bukkit.getOfflinePlayer(guiUserUuid).getName())),
                 6, 6, player, MapartSQLConfig.singleton().getTransactionManager().required(() ->
                                 MapartLandRepo.selectByPlayer(guiUserUuid))
                         .stream()
                         .filter(land -> isAdmin || player.equals(guiUserUuid) ||
-                                Arrays.stream(land.getCollaboratorsUUID())
-                                        .noneMatch(collabo -> collabo.equals(player)))
+                                Arrays.asList(land.getCollaboratorsUUID()).contains(player))
                         .map(land -> {
                             final OfflinePlayer owner = Bukkit.getOfflinePlayer(land.getOwnerUUID());
 
@@ -144,14 +143,14 @@ public class GuiMapartPanelBase extends GuiPagedSingleSelector {
             });
             if (land == null) {
                 MapartPlugin.MESSAGE_HELPER.sendMessage(player, I18n.of("mapart.land.notFound"));
-            } else if (land.getOwnerUUID().equals(player) || isAdmin) {
+            } else if ((land.getOwnerUUID().equals(player) && land.getStatus().equals("A")) || isAdmin) {
                 GuiManager.singleton().setScreen(player, new MapartLandGui(player, land.getLandId(), this));
             } else if (Arrays.asList(land.getCollaboratorsUUID()).contains(player)) {
                 if (MapartManager.getWorld() == null) {
                     MapartPlugin.MESSAGE_HELPER.sendMessage(player, I18n.of("library.message.world.notFound"));
                 } else {
                     MapartPlugin.MESSAGE_HELPER.sendMessage(player, I18n.of("library.message.teleporting"));
-                    MapartManager.teleportLand(land.getLandId(), player);
+                    MapartManager.teleportLand(land.getLandId(), player, false);
                 }
             } else {
                 MapartPlugin.MESSAGE_HELPER.sendMessage(player, I18n.of("library.message.requirePerm"));

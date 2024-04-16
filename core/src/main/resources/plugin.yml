@@ -21,9 +21,10 @@ api-version: 1.19
 commands:
   mapart:
     description: Mapart command
-    permission: akazukin.mapart.use
+    permission: akazukin.mapart.command.mapart
     permission-message: You do not have permission!
     usage: /<command> help
+
 permissions:
   akazukin.mapart.command.mapart:
     description: Allows to use mapart command
@@ -33,11 +34,19 @@ permissions:
     default: true
     children:
       akazukin.mapart.command.mapart: true
+
+  akazukin.mapart.command.mapart.copyright:
+    description: Allows to use copyright command child of mapart
+    default: true
+    children:
+      akazukin.mapart.command.mapart: true
+
   akazukin.mapart.command.mapart.management:
     description: Allows to use manage command child of mapart
     default: op
     children:
       akazukin.mapart.command.mapart: true
+
   akazukin.mapart.*:
     description: Wildcard permission
     default: op

@@ -23,6 +23,8 @@ import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 
 public class Events implements Listener {
     @EventHandler(priority = EventPriority.HIGH)
@@ -113,6 +115,21 @@ public class Events implements Listener {
     @EventHandler(priority = EventPriority.HIGH)
     public void onPrepareItemEnchant(final PrepareItemEnchantEvent event) {
         callEvent(event, EventPriority.HIGH);
+    }
+
+    @EventHandler
+    public void onPlayerJoinNormal(final PlayerJoinEvent event) {
+        callEvent(event, EventPriority.NORMAL);
+    }
+
+    @EventHandler
+    public void onPlayerQuit(final PlayerQuitEvent event) {
+        callEvent(event, EventPriority.NORMAL);
+    }
+
+    @EventHandler
+    public void onPlayerTeleport(final PlayerTeleportEvent event) {
+        callEvent(event, EventPriority.NORMAL);
     }
 
     private void callEvent(final Event event, final EventPriority priority) {

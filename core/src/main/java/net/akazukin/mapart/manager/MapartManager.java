@@ -5,6 +5,7 @@ import com.palmergames.bukkit.towny.event.TownPreClaimEvent;
 import com.sk89q.worldguard.protection.flags.Flags;
 import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import lombok.Getter;
 import net.akazukin.library.LibraryPlugin;
 import net.akazukin.library.compat.worldedit.ChancePattern;
 import net.akazukin.library.compat.worldedit.WorldEditCompat;
@@ -12,6 +13,7 @@ import net.akazukin.library.compat.worldguard.WorldGuardCompat;
 import net.akazukin.library.event.EventTarget;
 import net.akazukin.library.event.Listenable;
 import net.akazukin.library.i18n.I18n;
+import net.akazukin.library.manager.PlayerManager;
 import net.akazukin.library.utils.FileUtils;
 import net.akazukin.mapart.MapartPlugin;
 import net.akazukin.mapart.doma.MapartSQLConfig;
@@ -26,6 +28,7 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -40,10 +43,16 @@ import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -51,6 +60,13 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class MapartManager implements Listenable {
+    public final static MapartManager SINGLETON = new MapartManager();
+
+    private static final Logger log = LoggerFactory.getLogger(MapartManager.class);
+
+    @Getter
+    private final Map<UUID, Location> lastPos = new HashMap<>();
+
     public static World getWorld() {
         return Bukkit.getWorld(getWorldName());
     }
@@ -245,7 +261,24 @@ public class MapartManager implements Listenable {
         }
     }
 
-    public static void teleportLand(final int landId, final UUID player) {
+    public static void teleportLand(final int landId, final UUID player, final boolean isForce) {
+        final Player p = Bukkit.getPlayer(player);
+        if (p == null) return;
+
+        if (!isForce) {
+            final long lastDmg = PlayerManager.SINGLETON.getLastDamageTick(player);
+            final long lastMoved = PlayerManager.SINGLETON.getLastMovedTick(player);
+            final long lastRot = PlayerManager.SINGLETON.getLastRotatedTick(player);
+            if (lastDmg != -1 && lastDmg <= 10 * 20) {
+                MapartPlugin.MESSAGE_HELPER.sendMessage(player, I18n.of("library.message.teleport.combating"));
+                return;
+            } else if ((lastMoved != -1 && lastMoved <= 10 * 20) ||
+                    lastRot != -1 && lastRot <= 10 * 20) {
+                MapartPlugin.MESSAGE_HELPER.sendMessage(player, I18n.of("library.message.teleport.dontMove"));
+                return;
+            }
+        }
+
         final int[] loc = getLocation(landId);
 
         MapartPlugin.MESSAGE_HELPER.sendMessage(player, I18n.of("library.message.teleporting"));
@@ -284,6 +317,15 @@ public class MapartManager implements Listenable {
     public void onPlayerJoin(final PlayerJoinEvent event) {
         if (event.getPlayer().getWorld().getUID() == getWorld().getUID()) {
             event.getPlayer().setAllowFlight(true);
+        }
+    }
+
+    @EventTarget
+    public void onPlayerTeleport(final PlayerTeleportEvent event) {
+        if (event.getPlayer().getWorld().getUID() == getWorld().getUID()) {
+            lastPos.remove(event.getPlayer().getUniqueId());
+        } else if (event.getFrom().getWorld().getUID() != getWorld().getUID()) {
+            lastPos.put(event.getPlayer().getUniqueId(), event.getFrom());
         }
     }
 
@@ -591,6 +633,16 @@ public class MapartManager implements Listenable {
             {
                 event.setBuildable(false);
             }
+        }
+    }
+
+    @EventTarget
+    public void onPlayerQuit(final PlayerQuitEvent event) {
+        if (event.getPlayer().getWorld().getUID() != getWorld().getUID()) return;
+
+        if (lastPos.containsKey(event.getPlayer().getUniqueId())) {
+            event.getPlayer().teleport(lastPos.get(event.getPlayer().getUniqueId()));
+            lastPos.remove(event.getPlayer().getUniqueId());
         }
     }
 

@@ -34,9 +34,8 @@ public class GuiMapartCreate extends ChestGuiBase {
     private final ItemStack heightItem;
     private final ItemStack widthItem;
     private final ItemStack borrowItem;
-
-    private String name;
     private final SignStringSelectorGui nameSelector = new SignStringSelectorGui(player, this);
+    private String name;
 
     public GuiMapartCreate(final UUID player, final GuiBase prevGui) {
         super(MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(player), I18n.of("mapart.panel.gui.create.main")),
@@ -92,10 +91,6 @@ public class GuiMapartCreate extends ChestGuiBase {
     }
 
     @Override
-    protected void onGuiOpen(final InventoryOpenEvent event) {
-    }
-
-    @Override
     public boolean onGuiClick(final InventoryClickEvent event) {
         if (nameItem.equals(event.getCurrentItem())) {
             MapartPlugin.MESSAGE_HELPER.sendMessage(player, I18n.of("mapart.panel.name.message"));
@@ -129,11 +124,15 @@ public class GuiMapartCreate extends ChestGuiBase {
 
                     final MMapartLand landData = MapartManager.lent(player, name, heightSelector.getResult(), widthSelector.getResult());
                     MapartPlugin.MESSAGE_HELPER.sendMessage(p, I18n.of("mapart.land.borrowed"), landData.getLandId());
-                    MapartManager.teleportLand(landData.getLandId(), player);
+                    MapartManager.teleportLand(landData.getLandId(), player, false);
                 });
             }
             return true;
         }
         return false;
+    }
+
+    @Override
+    protected void onGuiOpen(final InventoryOpenEvent event) {
     }
 }

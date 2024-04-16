@@ -91,7 +91,7 @@ public class GuiMapartManageUser extends ChestGuiBase {
 
         ItemUtils.setLore(headItem, Arrays.asList(
                 MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(player), I18n.of("mapart.panel.manage.user.head.lore.maxLand"), maxLandSelector.getResult()),
-                MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(player), I18n.of("mapart.panel.manage.user.head.lore.countLand"), landsEntity)
+                MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(player), I18n.of("mapart.panel.manage.user.head.lore.countLand"), landsEntity.size())
         ));
         inv.setItem(4, headItem);
         inv.setItem(10, maxLandItem);
@@ -105,7 +105,7 @@ public class GuiMapartManageUser extends ChestGuiBase {
             GuiManager.singleton().setScreen(player, maxLandSelector);
             return true;
         } else if (manageMapartsItem.equals(event.getCurrentItem())) {
-            GuiManager.singleton().setScreen(player, new GuiMapartPanelBase(player, member, true, this));
+            GuiManager.singleton().setScreen(player, new GuiMapartPanel(player, member, true, this));
             return true;
         }
         return false;

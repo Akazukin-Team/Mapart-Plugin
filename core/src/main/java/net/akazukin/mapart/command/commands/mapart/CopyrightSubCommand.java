@@ -18,7 +18,7 @@ public class CopyrightSubCommand extends SubCommand {
         if (!(sender instanceof Player)) {
             MapartPlugin.MESSAGE_HELPER.consoleMessage(I18n.of("library.command.execute.mustBeByPlayer"));
             return;
-        } else if (!sender.hasPermission("mapart.command.mapart.copyright")) {
+        } else if (!sender.hasPermission("akazukin.mapart.command.copyright")) {
             MapartPlugin.MESSAGE_HELPER.sendMessage(sender, I18n.of("library.message.requirePerm"));
         }
 
