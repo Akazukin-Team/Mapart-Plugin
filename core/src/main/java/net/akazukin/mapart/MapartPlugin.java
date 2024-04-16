@@ -52,7 +52,7 @@ public final class MapartPlugin extends JavaPlugin {
     @Override
     public void onDisable() {
         for (final Map.Entry<UUID, Location> entry : MapartManager.SINGLETON.getLastPos().entrySet()) {
-            final Player p = Bukkit.getOfflinePlayer(entry.getKey()).getPlayer();
+            final Player p = Bukkit.getPlayer(entry.getKey());
             if (p != null && p.getWorld().getUID() == MapartManager.getWorld().getUID())
                 p.teleport(entry.getValue());
             MapartManager.SINGLETON.getLastPos().remove(entry.getKey());

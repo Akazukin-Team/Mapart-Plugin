@@ -41,7 +41,7 @@ permissions:
     children:
       akazukin.mapart.command.mapart: true
 
-  akazukin.mapart.command.mapart.management:
+  akazukin.mapart.command.mapart.manage:
     description: Allows to use manage command child of mapart
     default: op
     children:

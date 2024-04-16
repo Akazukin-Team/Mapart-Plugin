@@ -16,6 +16,9 @@ public class ManageSubCommand extends SubCommand {
         if (!(sender instanceof Player)) {
             MapartPlugin.MESSAGE_HELPER.consoleMessage(I18n.of("library.command.execute.mustBeByPlayer"));
             return;
+        } else if (!sender.hasPermission("akazukin.mapart.command.mapart.manage")) {
+            MapartPlugin.MESSAGE_HELPER.sendMessage(sender, I18n.of("library.message.requirePerm"));
+            return;
         }
 
         GuiManager.singleton().setScreen(((Player) sender).getUniqueId(), new GuiManageMapartUsers(((Player) sender).getUniqueId(), null));
