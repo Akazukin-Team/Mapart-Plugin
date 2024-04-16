@@ -269,11 +269,13 @@ public class MapartManager implements Listenable {
             final long lastDmg = PlayerManager.SINGLETON.getLastDamageTick(player);
             final long lastMoved = PlayerManager.SINGLETON.getLastMovedTick(player);
             final long lastRot = PlayerManager.SINGLETON.getLastRotatedTick(player);
+            final long lastInteract = PlayerManager.SINGLETON.getLastInteractTick(player);
             if (lastDmg != -1 && lastDmg <= 10 * 20) {
                 MapartPlugin.MESSAGE_HELPER.sendMessage(player, I18n.of("library.message.teleport.combating"));
                 return;
             } else if ((lastMoved != -1 && lastMoved <= 10 * 20) ||
-                    lastRot != -1 && lastRot <= 10 * 20) {
+                    lastRot != -1 && lastRot <= 10 * 20 ||
+                    lastInteract != -1 && lastInteract <= 10 * 20) {
                 MapartPlugin.MESSAGE_HELPER.sendMessage(player, I18n.of("library.message.teleport.dontMove"));
                 return;
             }
