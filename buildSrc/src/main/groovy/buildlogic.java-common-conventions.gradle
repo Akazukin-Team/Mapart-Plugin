@@ -11,6 +11,18 @@ configurations {
 
 
 repositories {
+    mavenLocal()
+    maven {
+        content {
+            includeGroup "net.akazukin"
+        }
+        name = "GPR(Base-Plugin)"
+        url = uri("https://maven.pkg.github.com/Akazukin-Team/Base-Plugin")
+        credentials {
+            username = project.findProperty("gpr.user") ?: System.getenv("GPR_USERNAME")
+            password = project.findProperty("gpr.key") ?: System.getenv("GPR_TOKEN")
+        }
+    }
     mavenCentral()
     maven {
         name "spigot-repo"
@@ -50,7 +62,6 @@ repositories {
             includeGroup "maven.modrinth"
         }
     }
-    mavenLocal()
 }
 
 minecraft_version = properties.get("minecraft_version")
