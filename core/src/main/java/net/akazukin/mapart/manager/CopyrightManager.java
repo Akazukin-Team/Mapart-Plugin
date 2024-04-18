@@ -57,6 +57,7 @@ public class CopyrightManager implements Listenable {
 
     @EventTarget
     public void onInventoryClick(final InventoryClickEvent event) {
+        if (event.getClickedInventory() == null || event.isCancelled()) return;
         try {
             if (Class.forName("org.bukkit.inventory.CartographyInventory").isAssignableFrom(event.getClickedInventory().getClass())) {
                 final ItemStack result = event.getClickedInventory().getItem(2);
@@ -84,6 +85,7 @@ public class CopyrightManager implements Listenable {
 
     @EventTarget
     public void onPrepareAnvil(final PrepareItemEnchantEvent event) {
+        if (event.isCancelled()) return;
         if (hasCopyright(event.getItem()) && isOwner(event.getItem(), event.getView().getPlayer().getUniqueId())) {
             event.setCancelled(true);
         }
