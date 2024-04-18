@@ -1,33 +1,9 @@
 plugins {
     id 'buildlogic.java-compat-conventions'
 }
-/*subprojects {
-    apply plugin: "java"
 
-    sourceSets {
-        main {
-            resources {
-                srcDirs = ['src/main/resources']
-            }
-            java {
-                srcDirs = ['src/main/java']
-            }
-        }
-    }
-}*/
 dependencies {
-    implementation(project(":core"))
-    implementation(project(":doma"))
-    runtimeOnly(project(":doma"))
-    implementation(project(":module:1_17_to_1_20"))
+    include(project(":core"))
+    include(project(":doma"))
+    include(project(":module:1_17_to_1_20"))
 }
-/*jar {
-    from(file("C:\\Users\\abcqq_b\\Desktop\\Mapart-Plugin\\doma\\build\\resources\\main"))
-}*/
-/*
-project(":doma").apply plugin: "java-library"
-println project(":doma").sourceSets
-jar {
-    from(project(":doma").sourceSets.container.resources.output)
-}
-*/
