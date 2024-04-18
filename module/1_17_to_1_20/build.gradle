@@ -3,6 +3,6 @@ plugins {
 }
 
 dependencies {
-    include(project(":core"))
-    include(project(":module:1_13_to_1_20"))
+    implementation(project(":core"))
+    implementation(project(":module:1_13_to_1_20"))
 }

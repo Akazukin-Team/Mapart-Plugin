@@ -13,4 +13,10 @@ dependencies {
     compileOnly("org.slf4j:slf4j-api:1.7.36")
 }
 
+/*
+sourceSets {
+    resources {
+    }
+}*/
+
 compileJava.options.compilerArgs = ['-Adoma.domain.converters=net.akazukin.mapart.doma.domain.DomainConvertersProvider']

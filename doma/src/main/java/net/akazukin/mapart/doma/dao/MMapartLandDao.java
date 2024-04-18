@@ -33,7 +33,4 @@ public interface MMapartLandDao {
 
     @Delete
     int delete(MMapartLand entity);
-
-    @Delete(sqlFile = true)
-    int deleteAll();
 }

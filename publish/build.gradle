@@ -3,8 +3,8 @@ plugins {
 }
 
 dependencies {
-    include(project(":core"))
-    include(project(":doma"))
+    implementation(project(":core"))
+    implementation(project(":doma"))
     parent.subprojects.forEach {
         if (it.path.startsWith(":compat:") || it.path.startsWith(":module:"))
             include(it)

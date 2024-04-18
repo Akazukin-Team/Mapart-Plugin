@@ -17,8 +17,6 @@ import net.akazukin.library.manager.PlayerManager;
 import net.akazukin.library.utils.FileUtils;
 import net.akazukin.mapart.MapartPlugin;
 import net.akazukin.mapart.doma.MapartSQLConfig;
-import net.akazukin.mapart.doma.dao.DMapartLandCollaboratorDaoImpl;
-import net.akazukin.mapart.doma.dao.MMapartLandDaoImpl;
 import net.akazukin.mapart.doma.entity.DMapartLandCollaborator;
 import net.akazukin.mapart.doma.entity.MMapartLand;
 import net.akazukin.mapart.doma.repo.DMapartLandCollaboratorRepo;
@@ -83,8 +81,8 @@ public class MapartManager implements Listenable {
             FileUtils.delete(world.getWorldFolder());
             WorldGuardCompat.removeRegion(world);
             MapartSQLConfig.singleton().getTransactionManager().required(() -> {
-                new MMapartLandDaoImpl(MapartSQLConfig.singleton()).deleteAll();
-                new DMapartLandCollaboratorDaoImpl(MapartSQLConfig.singleton()).deleteAll();
+                MMapartLandRepo.selectAll().forEach(MMapartLandRepo::delete);
+                DMapartLandCollaboratorRepo.selectAll().forEach(DMapartLandCollaboratorRepo::delete);
             });
             MapartPlugin.MESSAGE_HELPER.broadcast(I18n.of("library.message.world.removed"));
             return true;
@@ -325,9 +323,9 @@ public class MapartManager implements Listenable {
     @EventTarget
     public void onPlayerTeleport(final PlayerTeleportEvent event) {
         if (event.getPlayer().getWorld().getUID() == getWorld().getUID()) {
-            lastPos.remove(event.getPlayer().getUniqueId());
+            this.lastPos.remove(event.getPlayer().getUniqueId());
         } else if (event.getFrom().getWorld().getUID() != getWorld().getUID()) {
-            lastPos.put(event.getPlayer().getUniqueId(), event.getFrom());
+            this.lastPos.put(event.getPlayer().getUniqueId(), event.getFrom());
         }
     }
 
@@ -642,9 +640,9 @@ public class MapartManager implements Listenable {
     public void onPlayerQuit(final PlayerQuitEvent event) {
         if (event.getPlayer().getWorld().getUID() != getWorld().getUID()) return;
 
-        if (lastPos.containsKey(event.getPlayer().getUniqueId())) {
-            event.getPlayer().teleport(lastPos.get(event.getPlayer().getUniqueId()));
-            lastPos.remove(event.getPlayer().getUniqueId());
+        if (this.lastPos.containsKey(event.getPlayer().getUniqueId())) {
+            event.getPlayer().teleport(this.lastPos.get(event.getPlayer().getUniqueId()));
+            this.lastPos.remove(event.getPlayer().getUniqueId());
         }
     }
 

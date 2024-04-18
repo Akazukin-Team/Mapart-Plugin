@@ -38,4 +38,8 @@ public class DMapartLandCollaboratorRepo {
     public static void createTable() {
         D_MAPART_LAND_COLLABORATOR_DAO.create();
     }
+
+    public static List<DMapartLandCollaborator> selectAll() {
+        return D_MAPART_LAND_COLLABORATOR_DAO.selectAll();
+    }
 }

@@ -3,5 +3,5 @@ plugins {
 }
 
 dependencies {
-    include(project(":doma"))
+    implementation(project(":doma"))
 }

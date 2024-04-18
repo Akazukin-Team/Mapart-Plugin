@@ -36,7 +36,4 @@ public interface DMapartLandCollaboratorDao {
 
     @Delete
     int delete(DMapartLandCollaborator entity);
-
-    @Delete(sqlFile = true)
-    int deleteAll();
 }

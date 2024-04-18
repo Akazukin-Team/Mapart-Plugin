@@ -16,10 +16,10 @@ plugins {
     }
 }*/
 dependencies {
-    include(project(":core"))
-    include(project(":doma"))
+    implementation(project(":core"))
+    implementation(project(":doma"))
     runtimeOnly(project(":doma"))
-    include(project(":module:1_17_to_1_20"))
+    implementation(project(":module:1_17_to_1_20"))
 }
 /*jar {
     from(file("C:\\Users\\abcqq_b\\Desktop\\Mapart-Plugin\\doma\\build\\resources\\main"))
