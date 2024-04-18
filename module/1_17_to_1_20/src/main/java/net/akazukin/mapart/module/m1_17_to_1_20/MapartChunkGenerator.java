@@ -10,11 +10,6 @@ import java.util.Random;
 
 public class MapartChunkGenerator extends ChunkGenerator {
     @Override
-    public boolean shouldGenerateBedrock() {
-        return true;
-    }
-
-    @Override
     public void generateBedrock(final WorldInfo worldInfo, final Random random, final int chunkX, final int chunkZ, final ChunkData chunkData) {
         if (chunkData.getMinHeight() == worldInfo.getMinHeight()) {
             for (int x = 0; x < 16; x++) {
@@ -38,5 +33,10 @@ public class MapartChunkGenerator extends ChunkGenerator {
     @Override
     public final Location getFixedSpawnLocation(final World world, final Random random) {
         return new Location(world, 0.0D, world.getMinHeight() + 1, 0.0D);
+    }
+
+    @Override
+    public boolean shouldGenerateBedrock() {
+        return true;
     }
 }

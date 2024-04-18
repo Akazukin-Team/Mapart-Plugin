@@ -1,4 +1,3 @@
 select
     /*%expand*/*
-from
-    M_MAPART_USER
+from M_MAPART_USER

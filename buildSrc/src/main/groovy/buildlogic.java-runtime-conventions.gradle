@@ -41,7 +41,7 @@ runServer {
     beforeEvaluate {
         Files.createDirectories(Paths.get(parent.parent.projectDir.path, "run/${project.minecraft_version}"))
     }
-    
+
     minecraftVersion(project.minecraft_version)
     runDirectory.set(file(Paths.get(parent.parent.projectDir.path, "run/${project.minecraft_version}")))
     downloadPlugins {

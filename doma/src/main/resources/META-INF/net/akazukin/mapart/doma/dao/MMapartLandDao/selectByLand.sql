@@ -1,6 +1,4 @@
 select
     /*%expand*/*
-from
-    M_MAPART_LAND
-where
-    LAND_ID = /* land */0
+from M_MAPART_LAND
+where LAND_ID = /* land */0
