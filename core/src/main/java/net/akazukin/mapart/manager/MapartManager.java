@@ -43,6 +43,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.vehicle.VehicleEnterEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,6 +56,7 @@ import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 public class MapartManager implements Listenable {
@@ -255,7 +257,7 @@ public class MapartManager implements Listenable {
         try {
             pool.awaitTermination(30L, TimeUnit.MINUTES);
         } catch (final InterruptedException e) {
-            e.printStackTrace();
+            MapartPlugin.getLogManager().log(Level.SEVERE, "Failed to reset land", e);
         }
     }
 
@@ -320,10 +322,22 @@ public class MapartManager implements Listenable {
         }
     }
 
+    @EventTarget(bktPriority = EventPriority.HIGH)
+    public void onVehicleEnter(final VehicleEnterEvent event) {
+        if (event.getEntered().getWorld().getUID() != getWorld().getUID()) return;
+        event.setCancelled(true);
+    }
+
     @EventTarget
     public void onPlayerTeleport(final PlayerTeleportEvent event) {
         if (event.getPlayer().getWorld().getUID() == getWorld().getUID()) {
-            this.lastPos.remove(event.getPlayer().getUniqueId());
+            if (event.getCause() == PlayerTeleportEvent.TeleportCause.CHORUS_FRUIT ||
+                    event.getCause() == PlayerTeleportEvent.TeleportCause.ENDER_PEARL
+            ) {
+                event.setCancelled(true);
+            } else {
+                this.lastPos.remove(event.getPlayer().getUniqueId());
+            }
         } else if (event.getFrom().getWorld().getUID() != getWorld().getUID()) {
             this.lastPos.put(event.getPlayer().getUniqueId(), event.getFrom());
         }
@@ -415,58 +429,35 @@ public class MapartManager implements Listenable {
 
     @EventTarget(bktPriority = EventPriority.HIGH)
     public void onPlayerInteract(final PlayerInteractEvent event) {
-        if (event.getClickedBlock() == null ||
-                event.getClickedBlock().getWorld().getUID() != getWorld().getUID() ||
-                event.getAction() != Action.RIGHT_CLICK_BLOCK
-        )
-            return;
         if (!event.isCancelled()) return;
 
-        Class<?> data;
-        try {
-            data = event.getClickedBlock().getBlockData().getMaterial().getData();
-        } catch (final IllegalArgumentException ignore) {
-            data = event.getClickedBlock().getBlockData().getMaterial().data;
-        }
-
-        switch (data.getName()) {
-            case "": {
-                event.setCancelled(true);
-                return;
+        if (event.getClickedBlock() != null &&
+                event.getClickedBlock().getWorld().getUID() != getWorld().getUID() &&
+                event.getAction() == Action.RIGHT_CLICK_BLOCK
+        ) {
+            Class<?> data = null;
+            try {
+                data = event.getClickedBlock().getBlockData().getMaterial().getData();
+            } catch (final IllegalArgumentException ignore) {
+                data = event.getClickedBlock().getBlockData().getMaterial().data;
             }
-        }
 
-        switch (event.getClickedBlock().getBlockData().getMaterial().name()) {
-            case "ANVIL":
-            case "CHIPPED_ANVIL":
-            case "DAMAGED_ANVIL": {
-                event.setCancelled(true);
+            switch (data.getName()) {
+                case "": {
+                    event.setCancelled(true);
+                    return;
+                }
+            }
+
+            switch (event.getClickedBlock().getBlockData().getMaterial().name()) {
+                case "ANVIL":
+                case "CHIPPED_ANVIL":
+                case "DAMAGED_ANVIL": {
+                    event.setCancelled(true);
+                }
             }
         }
     }
-
-    /*@EventTarget(bktPriority = EventPriority.HIGH)
-    public void onBlockCanBuild(final BlockCanBuildEvent event) {
-        if (event.getBlock().getWorld().getUID() != getWorld().getUID()) return;
-        if (!event.isBuildable()) return;
-
-        Class<?> data;
-        try {
-            data = event.getBlock().getBlockData().getMaterial().getData();
-        } catch (final IllegalArgumentException ignore) {
-            data = event.getBlock().getBlockData().getMaterial().data;
-        }
-
-        switch (data.getName()) {
-            case "org.bukkit.material.Door":
-            case "org.bukkit.block.data.type.Door":
-
-            case "org.bukkit.material.Bed":
-            case "org.bukkit.block.data.type.Bed": {
-                event.setCancelled(true);
-            }
-        }
-    }*/
 
     @EventTarget(bktPriority = EventPriority.HIGH)
     public void onBlockCanBuild(final BlockCanBuildEvent event) {

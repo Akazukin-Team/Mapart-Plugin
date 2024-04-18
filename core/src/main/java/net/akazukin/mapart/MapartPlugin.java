@@ -21,11 +21,17 @@ import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
 public final class MapartPlugin extends JavaPlugin {
@@ -50,6 +56,38 @@ public final class MapartPlugin extends JavaPlugin {
     }
 
     @Override
+    public void onLoad() {
+        getPlugin().getLogger().addHandler(new Handler() {
+            private final File file = new File(getPlugin().getDataFolder(), "error.log");
+
+            @Override
+            public void publish(final LogRecord record) {
+                if (record.getLevel() == Level.SEVERE || record.getThrown() != null) {
+                    try (final FileWriter file = new FileWriter(this.file, true)) {
+                        try (final PrintWriter pw = new PrintWriter(new BufferedWriter(file))) {
+                            pw.println("[" + record.getLevel() + "] " + record.getMessage());
+                            //pw.println(pw);
+                            if (record.getThrown() != null) {
+                                record.getThrown().printStackTrace(pw);
+                            }
+                        }
+                    } catch (final IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            @Override
+            public void flush() {
+            }
+
+            @Override
+            public void close() throws SecurityException {
+            }
+        });
+    }
+
+    @Override
     public void onDisable() {
         for (final Map.Entry<UUID, Location> entry : MapartManager.SINGLETON.getLastPos().entrySet()) {
             final Player p = Bukkit.getPlayer(entry.getKey());
@@ -64,21 +102,21 @@ public final class MapartPlugin extends JavaPlugin {
         final LibraryPlugin library = getPlugin(LibraryPlugin.class);
         if (!library.isEnabled()) {
             getLogManager().severe(library.getName() + " is required to enabled!");
-            setEnabled(false);
+            this.setEnabled(false);
             return;
         }
 
-        MapartPlugin.PLUGIN_NAME = getName();
+        MapartPlugin.PLUGIN_NAME = this.getName();
 
         try {
-            Files.createDirectories(getDataFolder().toPath());
+            Files.createDirectories(this.getDataFolder().toPath());
         } catch (final IOException e) {
             throw new RuntimeException(e);
         }
 
 
         getLogManager().info("Initializing database...");
-        MapartSQLConfig.setFile(new File(getDataFolder(), "mapart.db"));
+        MapartSQLConfig.setFile(new File(this.getDataFolder(), "mapart.db"));
         final MapartSQLConfig sqlCfg = MapartSQLConfig.singleton();
         sqlCfg.getTransactionManager().required(() -> {
             new DMapartLandCollaboratorDaoImpl(sqlCfg).create();
@@ -124,9 +162,9 @@ public final class MapartPlugin extends JavaPlugin {
         COMMAND_MANAGER = new MapartCommandManager();
         COMMAND_MANAGER.registerCommands();
         for (final Command cmd : COMMAND_MANAGER.getCommands()) {
-            final PluginCommand command = getCommand(cmd.getName());
+            final PluginCommand command = this.getCommand(cmd.getName());
             if (command != null) command.setExecutor(COMMAND_MANAGER);
-            final PluginCommand command2 = getCommand(getPlugin().getName().toLowerCase() + ":" + cmd.getName());
+            final PluginCommand command2 = this.getCommand(getPlugin().getName().toLowerCase() + ":" + cmd.getName());
             if (command2 != null) command2.setExecutor(COMMAND_MANAGER);
         }
         getLogManager().info("Successfully Initialized command manager");

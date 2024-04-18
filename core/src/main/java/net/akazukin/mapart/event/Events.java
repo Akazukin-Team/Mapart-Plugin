@@ -25,111 +25,117 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.vehicle.VehicleEnterEvent;
 
 public class Events implements Listener {
     @EventHandler(priority = EventPriority.HIGH)
     public void onGrimACFlagged(final FlagEvent event) {
-        callEvent(event, EventPriority.HIGH);
+        this.callEvent(event, EventPriority.HIGH);
     }
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onBlockBreak(final BlockBreakEvent event) {
-        callEvent(event, EventPriority.HIGH);
+        this.callEvent(event, EventPriority.HIGH);
     }
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onTownClaim(final TownPreClaimEvent event) {
-        callEvent(event, EventPriority.HIGH);
+        this.callEvent(event, EventPriority.HIGH);
     }
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onEntityDamage(final EntityDamageEvent event) {
-        callEvent(event, EventPriority.HIGH);
+        this.callEvent(event, EventPriority.HIGH);
     }
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onEntityRegainHealth(final EntityRegainHealthEvent event) {
-        callEvent(event, EventPriority.HIGH);
+        this.callEvent(event, EventPriority.HIGH);
     }
 
     @EventHandler
     public void onPlayerJoin(final PlayerJoinEvent event) {
-        callEvent(event, EventPriority.NORMAL);
+        this.callEvent(event, EventPriority.NORMAL);
     }
 
     @EventHandler
     public void onPlayerWorldChanged(final PlayerChangedWorldEvent event) {
-        callEvent(event, EventPriority.NORMAL);
+        this.callEvent(event, EventPriority.NORMAL);
     }
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onEntityBlockForm(final EntityBlockFormEvent event) {
-        callEvent(event, EventPriority.HIGH);
+        this.callEvent(event, EventPriority.HIGH);
     }
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onEntityPlace(final EntityPlaceEvent event) {
-        callEvent(event, EventPriority.HIGH);
+        this.callEvent(event, EventPriority.HIGH);
     }
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onBlockFromTo(final BlockFromToEvent event) {
-        callEvent(event, EventPriority.HIGH);
+        this.callEvent(event, EventPriority.HIGH);
     }
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onBlockPhysics(final BlockPhysicsEvent event) {
-        callEvent(event, EventPriority.HIGH);
+        this.callEvent(event, EventPriority.HIGH);
     }
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onBlockIgnite(final BlockIgniteEvent event) {
-        callEvent(event, EventPriority.HIGH);
+        this.callEvent(event, EventPriority.HIGH);
     }
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onPrepareAnvil(final PrepareAnvilEvent event) {
-        callEvent(event, EventPriority.HIGH);
+        this.callEvent(event, EventPriority.HIGH);
     }
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onPrepareItemCraft(final PrepareItemCraftEvent event) {
-        callEvent(event, EventPriority.HIGH);
+        this.callEvent(event, EventPriority.HIGH);
     }
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onInventoryClick(final InventoryClickEvent event) {
-        callEvent(event, EventPriority.HIGH);
+        this.callEvent(event, EventPriority.HIGH);
     }
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onBlockCanBuild(final BlockCanBuildEvent event) {
-        callEvent(event, EventPriority.HIGH);
+        this.callEvent(event, EventPriority.HIGH);
     }
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onPlayerInteract(final PlayerInteractEvent event) {
-        callEvent(event, EventPriority.HIGH);
+        this.callEvent(event, EventPriority.HIGH);
     }
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onPrepareItemEnchant(final PrepareItemEnchantEvent event) {
-        callEvent(event, EventPriority.HIGH);
+        this.callEvent(event, EventPriority.HIGH);
     }
 
     @EventHandler
     public void onPlayerJoinNormal(final PlayerJoinEvent event) {
-        callEvent(event, EventPriority.NORMAL);
+        this.callEvent(event, EventPriority.NORMAL);
     }
 
     @EventHandler
     public void onPlayerQuit(final PlayerQuitEvent event) {
-        callEvent(event, EventPriority.NORMAL);
+        this.callEvent(event, EventPriority.NORMAL);
+    }
+
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onVehicleEnter(final VehicleEnterEvent event) {
+        this.callEvent(event, EventPriority.HIGH);
     }
 
     @EventHandler
     public void onPlayerTeleport(final PlayerTeleportEvent event) {
-        callEvent(event, EventPriority.NORMAL);
+        this.callEvent(event, EventPriority.NORMAL);
     }
 
     private void callEvent(final Event event, final EventPriority priority) {

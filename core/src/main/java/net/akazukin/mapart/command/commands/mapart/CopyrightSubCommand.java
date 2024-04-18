@@ -1,5 +1,6 @@
 package net.akazukin.mapart.command.commands.mapart;
 
+import net.akazukin.library.command.CommandExcutor;
 import net.akazukin.library.command.CommandInfo;
 import net.akazukin.library.command.SubCommand;
 import net.akazukin.library.i18n.I18n;
@@ -11,17 +12,10 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-@CommandInfo(name = "copyright", description = "Toggle flight at mapart world")
+@CommandInfo(name = "copyright", description = "Toggle flight at mapart world", permission = "akazukin.mapart.command.mapart.copyright", executor = CommandExcutor.PLAYER)
 public class CopyrightSubCommand extends SubCommand {
     @Override
     public void run(final CommandSender sender, final String... args) {
-        if (!(sender instanceof Player)) {
-            MapartPlugin.MESSAGE_HELPER.consoleMessage(I18n.of("library.command.execute.mustBeByPlayer"));
-            return;
-        } else if (!sender.hasPermission("akazukin.mapart.command.copyright")) {
-            MapartPlugin.MESSAGE_HELPER.sendMessage(sender, I18n.of("library.message.requirePerm"));
-        }
-
         final ItemStack handItem = ((Player) sender).getInventory().getItemInMainHand();
         if (handItem.getType() == Material.AIR) {
             MapartPlugin.MESSAGE_HELPER.sendMessage(sender, I18n.of("mapart.command.copyright.mustHaveInHand"));
