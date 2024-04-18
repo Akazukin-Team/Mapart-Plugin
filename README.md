@@ -1,6 +1,6 @@
-# Akazukin Plugin Library
+# Akazukin Mapart Plugin
 
-Akazukin-Teamが作成するPluginに使用される前提プラグイン
+マップアート用プラグイン
 
 ## ライセンス
 
