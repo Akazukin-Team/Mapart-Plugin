@@ -65,9 +65,6 @@ repositories {
     }
 }
 
-minecraft_version = properties.get("minecraft_version")
-craftbukkit_version = properties.get("craftbukkit_version")
-
 dependencies {
     compileOnly 'org.projectlombok:lombok:1.18.30'
     annotationProcessor 'org.projectlombok:lombok:1.18.30'
@@ -91,7 +88,7 @@ tasks.named('test') {
 
 jar.enabled = true
 
-compileJava.dependsOn(processResources)
+jar.dependsOn(processResources)
 
 processResources {
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
@@ -108,23 +105,3 @@ tasks.withType(Zip).configureEach {
 tasks.withType(Jar).configureEach {
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
-
-sourceSets {
-    main {
-        java {
-            srcDirs = ["src/main/java", "src/main/resources"]
-        }
-        resources {
-            srcDirs = ["src/main/resources"]
-        }
-    }
-}
-
-
-/*jar {
-    from {
-        configurations.implementation.filter {
-            parent.subprojects.buildDir.path.any { it2 -> it.path.startsWith(it2) }
-        }.collect { it.isDirectory() ? it : zipTree(it) }
-    }
-}*/

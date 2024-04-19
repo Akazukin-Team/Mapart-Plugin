@@ -52,17 +52,9 @@ runServer {
     }
     jvmArgs = [
             "-server",
-            //"-d64",
-            //"-XX:+UseConcMarkSweepGC",
-            //"-XX:+UseParNewGC",
-            //"-XX:+CMSParallelRemarkEnabled",
-            //"-XX:+CMSClassUnloadingEnabled",
-            //"-XX:CMSInitiatingOccupancyFraction=70",
             "-XX:+UseCompressedOops",
             "-XX:+OptimizeStringConcat",
             "-XX:-UseGCOverheadLimit",
-            //"-XX:MaxPermSize=384m",
-            //"-XX:PermSize=384m",
             "-XX:NewRatio=2",
             "-XX:MaxTenuringThreshold=16",
             "-XX:TargetSurvivorRatio=90",

@@ -30,7 +30,6 @@ tasks.register("shadowJar", Jar) {
     archiveClassifier.set("")
     duplicatesStrategy DuplicatesStrategy.EXCLUDE
     archiveBaseName = project.plugin_name
-    //mustRunAfter(obfuscate)
 
     from {
         configurations.include.collect { it.isDirectory() ? it : zipTree(it) }
