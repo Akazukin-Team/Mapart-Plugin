@@ -38,6 +38,7 @@ import org.bukkit.event.block.EntityBlockFormEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityPlaceEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
+import org.bukkit.event.entity.ExplosionPrimeEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -362,6 +363,13 @@ public class MapartManager implements Listenable {
         if (event.getBlock().getY() == LibraryPlugin.COMPAT.getMinHeight(getWorld())) {
             event.setCancelled(true);
         }
+    }
+
+    @EventTarget(bktPriority = EventPriority.HIGH)
+    public void onBlockExplode(final ExplosionPrimeEvent event) {
+        if (event.getEntity().getWorld().getUID() != getWorld().getUID()) return;
+
+        event.setCancelled(true);
     }
 
     @EventTarget(bktPriority = EventPriority.HIGH)

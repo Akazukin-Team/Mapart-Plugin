@@ -5,6 +5,5 @@ plugins {
 dependencies {
     implementation(project(":core"))
     implementation(project(":doma"))
-    runtimeOnly(project(":doma"))
     implementation(project(":module:1_17_to_1_20"))
 }

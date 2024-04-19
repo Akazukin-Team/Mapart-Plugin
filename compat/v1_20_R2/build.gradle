@@ -3,7 +3,7 @@ plugins {
 }
 
 dependencies {
-    include(project(":core"))
-    include(project(":doma"))
-    include(project(":module:1_17_to_1_20"))
+    implementation(project(":core"))
+    implementation(project(":doma"))
+    implementation(project(":module:1_17_to_1_20"))
 }

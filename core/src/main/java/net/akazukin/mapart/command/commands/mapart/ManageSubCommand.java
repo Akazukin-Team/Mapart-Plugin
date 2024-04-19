@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 public class ManageSubCommand extends SubCommand {
     @Override
     public void run(final CommandSender sender, final String... args) {
+        //MapartPlugin.COMPAT.test();
         GuiManager.singleton().setScreen(((Player) sender).getUniqueId(), new GuiManageMapartUsers(((Player) sender).getUniqueId(), null));
     }
 }

@@ -17,6 +17,7 @@ import org.bukkit.event.enchantment.PrepareItemEnchantEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityPlaceEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
+import org.bukkit.event.entity.ExplosionPrimeEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.PrepareAnvilEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
@@ -130,6 +131,11 @@ public class Events implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onVehicleEnter(final VehicleEnterEvent event) {
+        this.callEvent(event, EventPriority.HIGH);
+    }
+
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onExplosionPrime(final ExplosionPrimeEvent event) {
         this.callEvent(event, EventPriority.HIGH);
     }
 
