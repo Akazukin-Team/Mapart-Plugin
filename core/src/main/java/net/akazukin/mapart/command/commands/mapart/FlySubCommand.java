@@ -1,6 +1,6 @@
 package net.akazukin.mapart.command.commands.mapart;
 
-import net.akazukin.library.command.CommandExcutor;
+import net.akazukin.library.command.CommandExecutor;
 import net.akazukin.library.command.CommandInfo;
 import net.akazukin.library.command.SubCommand;
 import net.akazukin.library.i18n.I18n;
@@ -9,7 +9,7 @@ import net.akazukin.mapart.manager.MapartManager;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-@CommandInfo(name = "fly", description = "Toggle flight at mapart world", executor = CommandExcutor.PLAYER)
+@CommandInfo(name = "fly", description = "Toggle flight at mapart world", executor = CommandExecutor.PLAYER)
 public class FlySubCommand extends SubCommand {
     @Override
     public void run(final CommandSender sender, final String... args) {

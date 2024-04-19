@@ -1,6 +1,6 @@
 package net.akazukin.mapart.command.commands.mapart;
 
-import net.akazukin.library.command.CommandExcutor;
+import net.akazukin.library.command.CommandExecutor;
 import net.akazukin.library.command.CommandInfo;
 import net.akazukin.library.command.SubCommand;
 import net.akazukin.library.i18n.I18n;
@@ -12,7 +12,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-@CommandInfo(name = "copyright", description = "Toggle flight at mapart world", permission = "akazukin.mapart.command.mapart.copyright", executor = CommandExcutor.PLAYER)
+@CommandInfo(name = "copyright", description = "Toggle flight at mapart world", permission = "akazukin.mapart.command.mapart.copyright", executor = CommandExecutor.PLAYER)
 public class CopyrightSubCommand extends SubCommand {
     @Override
     public void run(final CommandSender sender, final String... args) {
