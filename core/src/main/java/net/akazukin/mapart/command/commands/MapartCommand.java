@@ -9,9 +9,9 @@ import net.akazukin.library.utils.StringUtils;
 import net.akazukin.mapart.MapartPlugin;
 import net.akazukin.mapart.command.commands.mapart.CopyrightSubCommand;
 import net.akazukin.mapart.command.commands.mapart.FlySubCommand;
+import net.akazukin.mapart.command.commands.mapart.GuiSubCommand;
 import net.akazukin.mapart.command.commands.mapart.HelpSubCommand;
 import net.akazukin.mapart.command.commands.mapart.ManageSubCommand;
-import net.akazukin.mapart.command.commands.mapart.NoArgsSubCommand;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -36,7 +36,7 @@ public final class MapartCommand extends Command {
     public SubCommand[] getSubCommands() {
         return new SubCommand[]{
                 new CopyrightSubCommand(),
-                new NoArgsSubCommand(),
+                new GuiSubCommand(),
                 new FlySubCommand(),
                 new ManageSubCommand(),
                 new HelpSubCommand()
