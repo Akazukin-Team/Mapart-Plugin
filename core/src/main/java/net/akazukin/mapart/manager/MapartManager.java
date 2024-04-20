@@ -31,7 +31,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockCanBuildEvent;
-import org.bukkit.event.block.BlockFromToEvent;
+import org.bukkit.event.block.BlockFormEvent;
 import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.block.EntityBlockFormEvent;
@@ -415,7 +415,7 @@ public class MapartManager implements Listenable {
     }
 
     @EventTarget(bktPriority = EventPriority.HIGH)
-    public void onBlockFromTo(final BlockFromToEvent event) {
+    public void onBlockFrom(final BlockFormEvent event) {
         if (event.getBlock().getWorld().getUID() != getWorld().getUID()) return;
 
         event.setCancelled(true);

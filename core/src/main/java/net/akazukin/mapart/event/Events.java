@@ -9,7 +9,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockCanBuildEvent;
-import org.bukkit.event.block.BlockFromToEvent;
+import org.bukkit.event.block.BlockFormEvent;
 import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.block.EntityBlockFormEvent;
@@ -75,7 +75,7 @@ public class Events implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGH)
-    public void onBlockFromTo(final BlockFromToEvent event) {
+    public void onBlockFrom(final BlockFormEvent event) {
         this.callEvent(event, EventPriority.HIGH);
     }
 
