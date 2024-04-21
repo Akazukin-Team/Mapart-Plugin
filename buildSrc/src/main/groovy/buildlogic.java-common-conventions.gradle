@@ -69,7 +69,7 @@ dependencies {
     compileOnly 'org.projectlombok:lombok:1.18.30'
     annotationProcessor 'org.projectlombok:lombok:1.18.30'
 
-    compileOnly "net.akazukin:plugin-library:1.0.1"
+    compileOnly "net.akazukin:plugin-library:1.0.2"
     //compileOnly 'org.seasar.doma:doma-core:2.56.0'
 
 
