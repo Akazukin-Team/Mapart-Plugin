@@ -104,7 +104,7 @@ public class GuiMapartCreate extends ChestGuiBase {
             return true;
         } else if (borrowItem.equals(event.getCurrentItem())) {
             event.getWhoClicked().closeInventory();
-            if (/*MapartManager.getMaxLand(player)*/100 <=
+            if (MapartManager.getMaxLand(player) <=
                     MapartSQLConfig.singleton().getTransactionManager().required(() ->
                             MMapartLandRepo.select(player)).size()) {
                 MapartPlugin.MESSAGE_HELPER.sendMessage(event.getWhoClicked(), I18n.of("mapart.land.limitReached"));
