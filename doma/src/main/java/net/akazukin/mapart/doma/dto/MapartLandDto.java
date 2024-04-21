@@ -1,9 +1,8 @@
 package net.akazukin.mapart.doma.dto;
 
-import lombok.Data;
-
 import java.sql.Timestamp;
 import java.util.UUID;
+import lombok.Data;
 
 @Data
 public class MapartLandDto {

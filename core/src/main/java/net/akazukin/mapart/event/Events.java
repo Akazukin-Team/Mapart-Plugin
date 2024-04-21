@@ -34,6 +34,10 @@ public class Events implements Listener {
         this.callEvent(event, EventPriority.HIGH);
     }
 
+    private void callEvent(final Event event, final EventPriority priority) {
+        MapartPlugin.EVENT_MANAGER.callEvent(event, priority);
+    }
+
     @EventHandler(priority = EventPriority.HIGH)
     public void onBlockBreak(final BlockBreakEvent event) {
         this.callEvent(event, EventPriority.HIGH);
@@ -142,9 +146,5 @@ public class Events implements Listener {
     @EventHandler
     public void onPlayerTeleport(final PlayerTeleportEvent event) {
         this.callEvent(event, EventPriority.NORMAL);
-    }
-
-    private void callEvent(final Event event, final EventPriority priority) {
-        MapartPlugin.EVENT_MANAGER.callEvent(event, priority);
     }
 }

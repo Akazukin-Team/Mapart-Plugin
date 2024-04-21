@@ -1,5 +1,9 @@
 package net.akazukin.mapart.manager;
 
+import java.util.List;
+import java.util.UUID;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import net.akazukin.library.LibraryPlugin;
 import net.akazukin.library.event.EventTarget;
 import net.akazukin.library.event.Listenable;
@@ -15,20 +19,7 @@ import org.bukkit.event.inventory.PrepareAnvilEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.inventory.ItemStack;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.List;
-import java.util.UUID;
-
 public class CopyrightManager implements Listenable {
-    public static boolean hasCopyright(final ItemStack itemStack) {
-        return LibraryPlugin.COMPAT.containsNBT(itemStack, "AKZ_MAPART_COPYRIGHT_OWNER") && LibraryPlugin.COMPAT.containsNBT(itemStack, "AKZ_MAPART_COPYRIGHT_LORE");
-    }
-
-    public static boolean isOwner(final ItemStack itemStack, @Nonnull final UUID player) {
-        return player.equals(StringUtils.toUuid(LibraryPlugin.COMPAT.getNBTString(itemStack, "AKZ_MAPART_COPYRIGHT_OWNER")));
-    }
-
     public static ItemStack setCopyright(final ItemStack itemStack, final UUID player) {
         final String lore = MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(player), I18n.of("mapart.copyright.lore"), Bukkit.getOfflinePlayer(player).getName());
         ItemStack item = LibraryPlugin.COMPAT.setNBT(itemStack, "AKZ_MAPART_COPYRIGHT_OWNER", String.valueOf(player));
@@ -67,6 +58,14 @@ public class CopyrightManager implements Listenable {
             }
         } catch (final ClassNotFoundException ignored) {
         }
+    }
+
+    public static boolean hasCopyright(final ItemStack itemStack) {
+        return LibraryPlugin.COMPAT.containsNBT(itemStack, "AKZ_MAPART_COPYRIGHT_OWNER") && LibraryPlugin.COMPAT.containsNBT(itemStack, "AKZ_MAPART_COPYRIGHT_LORE");
+    }
+
+    public static boolean isOwner(final ItemStack itemStack, @Nonnull final UUID player) {
+        return player.equals(StringUtils.toUuid(LibraryPlugin.COMPAT.getNBTString(itemStack, "AKZ_MAPART_COPYRIGHT_OWNER")));
     }
 
     @EventTarget

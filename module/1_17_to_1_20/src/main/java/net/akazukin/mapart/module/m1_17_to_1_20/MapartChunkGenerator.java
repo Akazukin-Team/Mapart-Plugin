@@ -1,12 +1,11 @@
 package net.akazukin.mapart.module.m1_17_to_1_20;
 
+import java.util.Random;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.generator.WorldInfo;
-
-import java.util.Random;
 
 public class MapartChunkGenerator extends ChunkGenerator {
     @Override

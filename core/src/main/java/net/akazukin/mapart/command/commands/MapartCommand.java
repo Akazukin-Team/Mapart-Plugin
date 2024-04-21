@@ -12,6 +12,7 @@ import net.akazukin.mapart.command.commands.mapart.FlySubCommand;
 import net.akazukin.mapart.command.commands.mapart.GuiSubCommand;
 import net.akazukin.mapart.command.commands.mapart.HelpSubCommand;
 import net.akazukin.mapart.command.commands.mapart.ManageSubCommand;
+import net.akazukin.mapart.command.commands.mapart.NoArgsSubCommand;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -35,6 +36,7 @@ public final class MapartCommand extends Command {
     @Override
     public SubCommand[] getSubCommands() {
         return new SubCommand[]{
+                new NoArgsSubCommand(),
                 new CopyrightSubCommand(),
                 new GuiSubCommand(),
                 new FlySubCommand(),

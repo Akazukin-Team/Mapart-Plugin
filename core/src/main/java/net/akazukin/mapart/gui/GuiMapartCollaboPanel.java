@@ -1,5 +1,7 @@
 package net.akazukin.mapart.gui;
 
+import java.util.Arrays;
+import java.util.UUID;
 import net.akazukin.library.LibraryPlugin;
 import net.akazukin.library.gui.GuiManager;
 import net.akazukin.library.gui.screens.chest.GuiBase;
@@ -15,9 +17,6 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-
-import java.util.Arrays;
-import java.util.UUID;
 
 public class GuiMapartCollaboPanel extends GuiPagedSinglePlayerSelector {
     private final ItemStack myMapartsItem;
@@ -39,7 +38,7 @@ public class GuiMapartCollaboPanel extends GuiPagedSinglePlayerSelector {
     @Override
     protected Inventory getInventory() {
         final Inventory inv = super.getInventory();
-        inv.setItem(51, myMapartsItem);
+        inv.setItem(51, this.myMapartsItem);
         return inv;
     }
 
@@ -49,11 +48,11 @@ public class GuiMapartCollaboPanel extends GuiPagedSinglePlayerSelector {
 
         if (event.getCurrentItem() == null) return false;
 
-        if (!result && myMapartsItem.equals(event.getCurrentItem())) {
-            GuiManager.singleton().setScreen(player, prevGui);
+        if (!result && this.myMapartsItem.equals(event.getCurrentItem())) {
+            GuiManager.singleton().setScreen(this.player, this.prevGui);
             return true;
-        } else if (result && selectedPlayer != null) {
-            GuiManager.singleton().setScreen(player, new GuiMapartPanel(player, UUID.fromString(LibraryPlugin.COMPAT.getNBTString(event.getCurrentItem(), "HEAD_UUID")), false, this));
+        } else if (result && this.selectedPlayer != null) {
+            GuiManager.singleton().setScreen(this.player, new GuiMapartPanel(this.player, UUID.fromString(LibraryPlugin.COMPAT.getNBTString(event.getCurrentItem(), "HEAD_UUID")), false, this));
             return true;
         }
         return false;

@@ -1,5 +1,6 @@
 package net.akazukin.mapart.module.m1_8_to_1_16;
 
+import java.util.Random;
 import net.akazukin.library.utils.ServerUtils;
 import net.akazukin.mapart.module.m1_15_to_1_16.Module_1_15_to_1_16;
 import net.akazukin.mapart.module.m1_8_to_1_14.Module_1_8_to_1_14;
@@ -8,8 +9,6 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Biome;
 import org.bukkit.generator.ChunkGenerator;
-
-import java.util.Random;
 
 public class MapartChunkGenerator extends ChunkGenerator {
     @Override

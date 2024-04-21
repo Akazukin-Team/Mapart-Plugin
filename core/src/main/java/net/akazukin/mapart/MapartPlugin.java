@@ -1,5 +1,17 @@
 package net.akazukin.mapart;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.util.Map;
+import java.util.UUID;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 import net.akazukin.library.LibraryPlugin;
 import net.akazukin.library.command.Command;
 import net.akazukin.library.i18n.I18nUtils;
@@ -21,19 +33,6 @@ import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.nio.file.Files;
-import java.util.Map;
-import java.util.UUID;
-import java.util.logging.Handler;
-import java.util.logging.Level;
-import java.util.logging.LogRecord;
-import java.util.logging.Logger;
-
 public final class MapartPlugin extends JavaPlugin {
     public static String PLUGIN_NAME;
     public static MapartCommandManager COMMAND_MANAGER;
@@ -45,14 +44,6 @@ public final class MapartPlugin extends JavaPlugin {
 
     public static void main(final String[] args) {
         System.out.println("Main is running!");
-    }
-
-    public static MapartPlugin getPlugin() {
-        return getPlugin(MapartPlugin.class);
-    }
-
-    public static Logger getLogManager() {
-        return getPlugin().getLogger();
     }
 
     @Override
@@ -85,6 +76,10 @@ public final class MapartPlugin extends JavaPlugin {
             public void close() throws SecurityException {
             }
         });
+    }
+
+    public static MapartPlugin getPlugin() {
+        return getPlugin(MapartPlugin.class);
     }
 
     @Override
@@ -171,5 +166,9 @@ public final class MapartPlugin extends JavaPlugin {
 
 
         Bukkit.broadcastMessage("Successfully enabled");
+    }
+
+    public static Logger getLogManager() {
+        return getPlugin().getLogger();
     }
 }

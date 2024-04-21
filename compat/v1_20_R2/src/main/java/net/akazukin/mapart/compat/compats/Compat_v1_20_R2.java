@@ -1,5 +1,8 @@
 package net.akazukin.mapart.compat.compats;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 import net.akazukin.mapart.compat.Compat;
 import net.akazukin.mapart.module.m1_17_to_1_20.Module_1_17_to_1_20;
 import net.minecraft.nbt.NBTCompressedStreamTools;
@@ -7,10 +10,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
 
 public class Compat_v1_20_R2 implements Compat {
     @Override

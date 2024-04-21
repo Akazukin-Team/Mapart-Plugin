@@ -1,10 +1,9 @@
 package net.akazukin.mapart.module.m1_17_to_1_20;
 
+import java.util.List;
 import org.bukkit.block.Biome;
 import org.bukkit.generator.BiomeProvider;
 import org.bukkit.generator.WorldInfo;
-
-import java.util.List;
 
 public class MapartBiomeProvidor extends BiomeProvider {
     @Override

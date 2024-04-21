@@ -1,5 +1,8 @@
 package net.akazukin.mapart.gui;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
 import net.akazukin.library.gui.GuiManager;
 import net.akazukin.library.gui.screens.chest.ChestGuiBase;
 import net.akazukin.library.gui.screens.chest.GuiBase;
@@ -23,10 +26,6 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
-
 public class GuiMapartManageUser extends ChestGuiBase {
     private final GuiSizeSelector maxLandSelector;
     private final ItemStack headItem;
@@ -43,7 +42,7 @@ public class GuiMapartManageUser extends ChestGuiBase {
 
         final OfflinePlayer membeR = Bukkit.getOfflinePlayer(member);
 
-        maxLandSelector = new GuiSizeSelector(MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(player), I18n.of("mapart.panel.manage.maxLand.gui"), Bukkit.getOfflinePlayer(player).getName()),
+        this.maxLandSelector = new GuiSizeSelector(MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(player), I18n.of("mapart.panel.manage.maxLand.gui"), Bukkit.getOfflinePlayer(player).getName()),
                 player, 1, 2, 1, this);
 
         final ItemStack headItem = ItemUtils.getSkullItem(membeR);
@@ -60,52 +59,52 @@ public class GuiMapartManageUser extends ChestGuiBase {
 
         final MapartUserDto entity = MapartSQLConfig.singleton().getTransactionManager().required(() ->
                 MapartUserRepo.selectByPlayer(member));
-        maxLandSelector.setDefaultSize(entity.getMaxLand() == null ? MapartPlugin.CONFIG_UTILS.getConfig("config.yaml").getInt("limit.land.default") : entity.getMaxLand());
+        this.maxLandSelector.setDefaultSize(entity.getMaxLand() == null ? MapartPlugin.CONFIG_UTILS.getConfig("config.yaml").getInt("limit.land.default") : entity.getMaxLand());
     }
 
     @Override
     protected Inventory getInventory() {
-        if (maxLandSelector.isDone()) {
-            maxLandSelector.setDefaultSize(maxLandSelector.getResult());
+        if (this.maxLandSelector.isDone()) {
+            this.maxLandSelector.setDefaultSize(this.maxLandSelector.getResult());
             MapartSQLConfig.singleton().getTransactionManager().required(() -> {
-                MMapartUser entity = MMapartUserRepo.selectByPlayer(player);
+                MMapartUser entity = MMapartUserRepo.selectByPlayer(this.player);
                 if (entity == null) {
                     entity = new MMapartUser();
-                    entity.setPlayerUuid(player);
+                    entity.setPlayerUuid(this.player);
                 }
-                entity.setMaxLand(maxLandSelector.getResult());
+                entity.setMaxLand(this.maxLandSelector.getResult());
             });
-            Bukkit.getPlayer(player).sendMessage(maxLandSelector.getResult() + "");
-            maxLandSelector.reset();
+            Bukkit.getPlayer(this.player).sendMessage(this.maxLandSelector.getResult() + "");
+            this.maxLandSelector.reset();
         }
 
 
         final List<MMapartLand> landsEntity = MapartSQLConfig.singleton().getTransactionManager().required(() ->
-                MMapartLandRepo.select(member));
+                MMapartLandRepo.select(this.member));
 
         final Inventory inv = super.getInventory();
-        InventoryUtils.fillBlankItems(inv, MessageHelper.getLocale(player));
-        InventoryUtils.fillCloseItem(inv, MessageHelper.getLocale(player));
-        if (prevGui != null)
-            InventoryUtils.fillBackItem(inv, MessageHelper.getLocale(player));
+        InventoryUtils.fillBlankItems(inv, MessageHelper.getLocale(this.player));
+        InventoryUtils.fillCloseItem(inv, MessageHelper.getLocale(this.player));
+        if (this.prevGui != null)
+            InventoryUtils.fillBackItem(inv, MessageHelper.getLocale(this.player));
 
-        ItemUtils.setLore(headItem, Arrays.asList(
-                MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(player), I18n.of("mapart.panel.manage.user.head.lore.maxLand"), maxLandSelector.getResult()),
-                MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(player), I18n.of("mapart.panel.manage.user.head.lore.countLand"), landsEntity.size())
+        ItemUtils.setLore(this.headItem, Arrays.asList(
+                MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(this.player), I18n.of("mapart.panel.manage.user.head.lore.maxLand"), this.maxLandSelector.getResult()),
+                MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(this.player), I18n.of("mapart.panel.manage.user.head.lore.countLand"), landsEntity.size())
         ));
-        inv.setItem(4, headItem);
-        inv.setItem(10, maxLandItem);
-        inv.setItem(12, manageMapartsItem);
+        inv.setItem(4, this.headItem);
+        inv.setItem(10, this.maxLandItem);
+        inv.setItem(12, this.manageMapartsItem);
         return inv;
     }
 
     @Override
     public boolean onGuiClick(final InventoryClickEvent event) {
-        if (maxLandItem.equals(event.getCurrentItem())) {
-            GuiManager.singleton().setScreen(player, maxLandSelector);
+        if (this.maxLandItem.equals(event.getCurrentItem())) {
+            GuiManager.singleton().setScreen(this.player, this.maxLandSelector);
             return true;
-        } else if (manageMapartsItem.equals(event.getCurrentItem())) {
-            GuiManager.singleton().setScreen(player, new GuiMapartPanel(player, member, true, this));
+        } else if (this.manageMapartsItem.equals(event.getCurrentItem())) {
+            GuiManager.singleton().setScreen(this.player, new GuiMapartPanel(this.player, this.member, true, this));
             return true;
         }
         return false;

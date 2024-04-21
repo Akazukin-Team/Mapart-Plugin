@@ -1,8 +1,7 @@
 package net.akazukin.mapart.doma;
 
-import lombok.Getter;
-
 import java.io.File;
+import lombok.Getter;
 
 @Getter
 public class MapartSQLConfig extends SQLConfig {

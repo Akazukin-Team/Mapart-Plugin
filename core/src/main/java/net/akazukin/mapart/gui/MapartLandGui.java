@@ -1,6 +1,12 @@
 package net.akazukin.mapart.gui;
 
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 import net.akazukin.library.compat.worldguard.WorldGuardCompat;
 import net.akazukin.library.gui.GuiManager;
 import net.akazukin.library.gui.screens.chest.ChestGuiBase;
@@ -32,17 +38,10 @@ import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
 public class MapartLandGui extends ChestGuiBase {
     private final int landId;
 
-    private final SignStringSelectorGui nameSelector = new SignStringSelectorGui(player, this);
+    private final SignStringSelectorGui nameSelector = new SignStringSelectorGui(this.player, this);
     private final GuiSizeSelector heightSelector;
     private final GuiSizeSelector widthSelector;
     private final ItemStack teleportLandItem;
@@ -68,15 +67,15 @@ public class MapartLandGui extends ChestGuiBase {
         if (land == null) {
             throw new IllegalStateException();
         }
-        isWaiting = false;
+        this.isWaiting = false;
 
-        heightSelector = new GuiSizeSelector(MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(player), I18n.of("mapart.panel.gui.select.height")),
+        this.heightSelector = new GuiSizeSelector(MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(player), I18n.of("mapart.panel.gui.select.height")),
                 player, 1, 2, 1, this);
-        widthSelector = new GuiSizeSelector(MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(player), I18n.of("mapart.panel.gui.select.width")),
+        this.widthSelector = new GuiSizeSelector(MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(player), I18n.of("mapart.panel.gui.select.width")),
                 player, 1, 2, 1, this);
 
-        removeLandGui = new YesOrNoGui(MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(player), I18n.of("mapart.panel.gui.land.delete")), player, this);
-        cleanLandGui = new YesOrNoGui(MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(player), I18n.of("mapart.panel.gui.land.clean")), player, this);
+        this.removeLandGui = new YesOrNoGui(MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(player), I18n.of("mapart.panel.gui.land.delete")), player, this);
+        this.cleanLandGui = new YesOrNoGui(MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(player), I18n.of("mapart.panel.gui.land.clean")), player, this);
 
 
         final ItemStack nameItem = new ItemStack(Material.getMaterial("OAK_SIGN"));
@@ -115,135 +114,135 @@ public class MapartLandGui extends ChestGuiBase {
     @Override
     protected Inventory getInventory() {
         final MapartLandDto land = MapartSQLConfig.singleton().getTransactionManager().required(() ->
-                MapartLandRepo.selectByLand(landId));
+                MapartLandRepo.selectByLand(this.landId));
 
-        if (land == null || !land.getOwnerUUID().equals(player)) {
+        if (land == null || !land.getOwnerUUID().equals(this.player)) {
             Bukkit.getScheduler().scheduleSyncDelayedTask(MapartPlugin.getPlugin(), () ->
-                    GuiManager.singleton().setScreen(player, prevGui));
+                    GuiManager.singleton().setScreen(this.player, this.prevGui));
             return super.getInventory();
         }
 
-        final String lines = StringUtils.join("", nameSelector.getResult());
+        final String lines = StringUtils.join("", this.nameSelector.getResult());
         if (0 < StringUtils.getLength(lines) && StringUtils.getLength(lines) < 30) {
             MapartSQLConfig.singleton().getTransactionManager().required(() -> {
-                final MMapartLand land_ = MMapartLandRepo.select(landId);
+                final MMapartLand land_ = MMapartLandRepo.select(this.landId);
 
                 land_.setName(lines);
                 MMapartLandRepo.save(land_);
             });
         }
 
-        if (addCollaboGui != null && addCollaboGui.isDone() && addCollaboGui.getSelectedPlayers().length != 0) {
-            MapartPlugin.MESSAGE_HELPER.sendMessage(player, I18n.of("mapart.land.collaborators.added"), StringUtils.join(", ", Arrays.stream(addCollaboGui.getSelectedPlayers()).map(OfflinePlayer::getName).collect(Collectors.toList())));
+        if (this.addCollaboGui != null && this.addCollaboGui.isDone() && this.addCollaboGui.getSelectedPlayers().length != 0) {
+            MapartPlugin.MESSAGE_HELPER.sendMessage(this.player, I18n.of("mapart.land.collaborators.added"), StringUtils.join(", ", Arrays.stream(this.addCollaboGui.getSelectedPlayers()).map(OfflinePlayer::getName).collect(Collectors.toList())));
             MapartSQLConfig.singleton().getTransactionManager().required(() -> {
-                for (final OfflinePlayer selectedPlayer : addCollaboGui.getSelectedPlayers()) {
+                for (final OfflinePlayer selectedPlayer : this.addCollaboGui.getSelectedPlayers()) {
                     final DMapartLandCollaborator entity = new DMapartLandCollaborator();
-                    entity.setLandId(landId);
+                    entity.setLandId(this.landId);
                     entity.setCollaboratorUuid(selectedPlayer.getUniqueId());
                     DMapartLandCollaboratorRepo.save(entity);
                 }
             });
-            for (final OfflinePlayer selectedPlayer : addCollaboGui.getSelectedPlayers()) {
-                WorldGuardCompat.addMember(MapartManager.getWorld(), "mapart-" + landId, selectedPlayer.getUniqueId());
+            for (final OfflinePlayer selectedPlayer : this.addCollaboGui.getSelectedPlayers()) {
+                WorldGuardCompat.addMember(MapartManager.getWorld(), "mapart-" + this.landId, selectedPlayer.getUniqueId());
             }
-            addCollaboGui = null;
+            this.addCollaboGui = null;
         }
-        if (removeCollaboGui != null && removeCollaboGui.isDone() && removeCollaboGui.getSelectedPlayers().length != 0) {
-            MapartPlugin.MESSAGE_HELPER.sendMessage(player, I18n.of("mapart.land.collaborators.removed"), StringUtils.join(", ", Arrays.stream(removeCollaboGui.getSelectedPlayers()).map(OfflinePlayer::getName).collect(Collectors.toList())));
+        if (this.removeCollaboGui != null && this.removeCollaboGui.isDone() && this.removeCollaboGui.getSelectedPlayers().length != 0) {
+            MapartPlugin.MESSAGE_HELPER.sendMessage(this.player, I18n.of("mapart.land.collaborators.removed"), StringUtils.join(", ", Arrays.stream(this.removeCollaboGui.getSelectedPlayers()).map(OfflinePlayer::getName).collect(Collectors.toList())));
             MapartSQLConfig.singleton().getTransactionManager().required(() -> {
-                for (final OfflinePlayer selectedPlayer : removeCollaboGui.getSelectedPlayers()) {
-                    final DMapartLandCollaborator entity = DMapartLandCollaboratorRepo.selectByLandAndCollaborator(landId, selectedPlayer.getUniqueId());
+                for (final OfflinePlayer selectedPlayer : this.removeCollaboGui.getSelectedPlayers()) {
+                    final DMapartLandCollaborator entity = DMapartLandCollaboratorRepo.selectByLandAndCollaborator(this.landId, selectedPlayer.getUniqueId());
                     if (entity != null) DMapartLandCollaboratorRepo.delete(entity);
                 }
             });
-            for (final OfflinePlayer selectedPlayer : removeCollaboGui.getSelectedPlayers()) {
-                WorldGuardCompat.removeMember(MapartManager.getWorld(), "mapart-" + landId, selectedPlayer.getUniqueId());
+            for (final OfflinePlayer selectedPlayer : this.removeCollaboGui.getSelectedPlayers()) {
+                WorldGuardCompat.removeMember(MapartManager.getWorld(), "mapart-" + this.landId, selectedPlayer.getUniqueId());
             }
-            removeCollaboGui = null;
+            this.removeCollaboGui = null;
         }
-        if (heightSelector.isDone() && heightSelector.getResult() != land.getHeight()) {
-            MapartPlugin.MESSAGE_HELPER.sendMessage(player, I18n.of("mapart.land.height.set"), heightSelector.getResult());
-            Bukkit.getPlayer(player).sendMessage("Selected Height: " + heightSelector.getResult());
+        if (this.heightSelector.isDone() && this.heightSelector.getResult() != land.getHeight()) {
+            MapartPlugin.MESSAGE_HELPER.sendMessage(this.player, I18n.of("mapart.land.height.set"), this.heightSelector.getResult());
+            Bukkit.getPlayer(this.player).sendMessage("Selected Height: " + this.heightSelector.getResult());
             MapartSQLConfig.singleton().getTransactionManager().required(() -> {
-                final MMapartLand entity = MMapartLandRepo.select(landId);
+                final MMapartLand entity = MMapartLandRepo.select(this.landId);
 
-                entity.setHeight(heightSelector.getResult());
+                entity.setHeight(this.heightSelector.getResult());
                 MMapartLandRepo.save(entity);
             });
-            heightSelector.setDefaultSize(heightSelector.getResult());
-            heightSelector.reset();
+            this.heightSelector.setDefaultSize(this.heightSelector.getResult());
+            this.heightSelector.reset();
 
-            final ProtectedRegion rg = WorldGuardCompat.getRegion(MapartManager.getWorld(), "mapart-" + landId);
-            rg.getMembers().getUniqueIds().stream().map(Bukkit::getPlayer).filter(player -> player != null && rg.contains(player.getLocation().getBlockX(), player.getLocation().getBlockY(), player.getLocation().getBlockZ())).forEach(player -> MapartManager.teleportLand(landId, player.getUniqueId(), false));
+            final ProtectedRegion rg = WorldGuardCompat.getRegion(MapartManager.getWorld(), "mapart-" + this.landId);
+            rg.getMembers().getUniqueIds().stream().map(Bukkit::getPlayer).filter(player -> player != null && rg.contains(player.getLocation().getBlockX(), player.getLocation().getBlockY(), player.getLocation().getBlockZ())).forEach(player -> MapartManager.teleportLand(this.landId, player.getUniqueId(), false));
         }
-        if (widthSelector.isDone() && widthSelector.getResult() != land.getWidth()) {
-            MapartPlugin.MESSAGE_HELPER.sendMessage(player, I18n.of("mapart.land.width.set"), widthSelector.getResult());
+        if (this.widthSelector.isDone() && this.widthSelector.getResult() != land.getWidth()) {
+            MapartPlugin.MESSAGE_HELPER.sendMessage(this.player, I18n.of("mapart.land.width.set"), this.widthSelector.getResult());
             MapartSQLConfig.singleton().getTransactionManager().required(() -> {
-                final MMapartLand entity = MMapartLandRepo.select(landId);
+                final MMapartLand entity = MMapartLandRepo.select(this.landId);
 
-                entity.setWidth(widthSelector.getResult());
+                entity.setWidth(this.widthSelector.getResult());
                 MMapartLandRepo.save(entity);
             });
-            widthSelector.setDefaultSize(widthSelector.getResult());
-            widthSelector.reset();
+            this.widthSelector.setDefaultSize(this.widthSelector.getResult());
+            this.widthSelector.reset();
 
-            final ProtectedRegion rg = WorldGuardCompat.getRegion(MapartManager.getWorld(), "mapart-" + landId);
-            rg.getMembers().getUniqueIds().stream().map(Bukkit::getPlayer).filter(player -> player != null && rg.contains(player.getLocation().getBlockX(), player.getLocation().getBlockY(), player.getLocation().getBlockZ())).forEach(player -> MapartManager.teleportLand(landId, player.getUniqueId(), false));
+            final ProtectedRegion rg = WorldGuardCompat.getRegion(MapartManager.getWorld(), "mapart-" + this.landId);
+            rg.getMembers().getUniqueIds().stream().map(Bukkit::getPlayer).filter(player -> player != null && rg.contains(player.getLocation().getBlockX(), player.getLocation().getBlockY(), player.getLocation().getBlockZ())).forEach(player -> MapartManager.teleportLand(this.landId, player.getUniqueId(), false));
         }
-        if (removeLandGui.getResult() != null && removeLandGui.getResult()) {
-            removeLandGui.reset();
+        if (this.removeLandGui.getResult() != null && this.removeLandGui.getResult()) {
+            this.removeLandGui.reset();
 
-            MapartPlugin.MESSAGE_HELPER.sendMessage(player, I18n.of("mapart.land.removing"));
+            MapartPlugin.MESSAGE_HELPER.sendMessage(this.player, I18n.of("mapart.land.removing"));
 
-            MapartManager.deleteLand(landId, () ->
-                    MapartPlugin.MESSAGE_HELPER.sendMessage(player, I18n.of("mapart.land.removed")));
+            MapartManager.deleteLand(this.landId, () ->
+                    MapartPlugin.MESSAGE_HELPER.sendMessage(this.player, I18n.of("mapart.land.removed")));
             Bukkit.getScheduler().scheduleSyncDelayedTask(MapartPlugin.getPlugin(), () ->
-                    GuiManager.singleton().setScreen(player, prevGui));
+                    GuiManager.singleton().setScreen(this.player, this.prevGui));
             return super.getInventory();
         }
-        if (cleanLandGui.getResult() != null && cleanLandGui.getResult()) {
-            cleanLandGui.reset();
+        if (this.cleanLandGui.getResult() != null && this.cleanLandGui.getResult()) {
+            this.cleanLandGui.reset();
 
-            MapartPlugin.MESSAGE_HELPER.sendMessage(player, I18n.of("mapart.land.cleaning"));
+            MapartPlugin.MESSAGE_HELPER.sendMessage(this.player, I18n.of("mapart.land.cleaning"));
 
-            MapartManager.cleanLand(landId, () ->
-                    MapartPlugin.MESSAGE_HELPER.sendMessage(player, I18n.of("mapart.land.cleaned")));
+            MapartManager.cleanLand(this.landId, () ->
+                    MapartPlugin.MESSAGE_HELPER.sendMessage(this.player, I18n.of("mapart.land.cleaned")));
             Bukkit.getScheduler().scheduleSyncDelayedTask(MapartPlugin.getPlugin(), () ->
-                    GuiManager.singleton().setScreen(player, prevGui));
+                    GuiManager.singleton().setScreen(this.player, this.prevGui));
             return super.getInventory();
         }
 
         final Inventory inv = super.getInventory();
-        InventoryUtils.fillBlankItems(inv, MessageHelper.getLocale(player));
-        InventoryUtils.fillCloseItem(inv, MessageHelper.getLocale(player));
-        InventoryUtils.fillBackItem(inv, MessageHelper.getLocale(player));
+        InventoryUtils.fillBlankItems(inv, MessageHelper.getLocale(this.player));
+        InventoryUtils.fillCloseItem(inv, MessageHelper.getLocale(this.player));
+        InventoryUtils.fillBackItem(inv, MessageHelper.getLocale(this.player));
 
 
-        inv.setItem(10, teleportLandItem);
-        inv.setItem(12, nameSelectorItem);
-        inv.setItem(14, addCollaboGuiItem);
-        inv.setItem(15, removeCollaboGuiItem);
+        inv.setItem(10, this.teleportLandItem);
+        inv.setItem(12, this.nameSelectorItem);
+        inv.setItem(14, this.addCollaboGuiItem);
+        inv.setItem(15, this.removeCollaboGuiItem);
 
-        inv.setItem(21, heightItem);
-        inv.setItem(22, widthItem);
-        inv.setItem(24, cleanLandItem);
-        inv.setItem(25, removeLandItem);
+        inv.setItem(21, this.heightItem);
+        inv.setItem(22, this.widthItem);
+        inv.setItem(24, this.cleanLandItem);
+        inv.setItem(25, this.removeLandItem);
 
         final OfflinePlayer owner = Bukkit.getOfflinePlayer(land.getOwnerUUID());
 
         final ItemStack landItem = new ItemStack(Material.getMaterial("PAPER"));
-        ItemUtils.setDisplayName(landItem, StringUtils.getColoredString(MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(player), I18n.of("mapart.panel.lands.info.name"), land.getName())));
+        ItemUtils.setDisplayName(landItem, StringUtils.getColoredString(MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(this.player), I18n.of("mapart.panel.lands.info.name"), land.getName())));
         final List<String> lore = new ArrayList<>(Arrays.asList(
-                MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(player), I18n.of("mapart.panel.lands.info.owner"), owner.getName()),
-                MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(player), I18n.of("mapart.panel.lands.info.landId"), land.getLandId())
+                MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(this.player), I18n.of("mapart.panel.lands.info.owner"), owner.getName()),
+                MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(this.player), I18n.of("mapart.panel.lands.info.landId"), land.getLandId())
         ));
 
         if (land.getCollaboratorsUUID().length != 0)
             lore.add("");
-        lore.add(MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(player), I18n.of("mapart.panel.lands.info.collaborators"), land.getCollaboratorsUUID().length));
+        lore.add(MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(this.player), I18n.of("mapart.panel.lands.info.collaborators"), land.getCollaboratorsUUID().length));
         lore.addAll(Arrays.stream(land.getCollaboratorsUUID()).map(uuid -> {
             final OfflinePlayer collabo = Bukkit.getOfflinePlayer(uuid);
-            return MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(player), I18n.of("mapart.panel.lands.info.collaborator"), collabo.getName());
+            return MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(this.player), I18n.of("mapart.panel.lands.info.collaborator"), collabo.getName());
         }).collect(Collectors.toList()));
         if (land.getCollaboratorsUUID().length != 0)
             lore.add("");
@@ -252,7 +251,7 @@ public class MapartLandGui extends ChestGuiBase {
         final int milliSec = date.getNano() / 1000000;
         lore.add(
                 MapartPlugin.MESSAGE_HELPER.get(
-                        MessageHelper.getLocale(player),
+                        MessageHelper.getLocale(this.player),
                         I18n.of("mapart.panel.lands.info.createdAt"),
                         date.getYear(),
                         (date.getMonthValue() >= 10 ? "" : "0") + date.getMonthValue(),
@@ -272,47 +271,47 @@ public class MapartLandGui extends ChestGuiBase {
     @Override
     public boolean onGuiClick(final InventoryClickEvent event) {
         if (event.getCurrentItem() == null) return false;
-        if (nameSelectorItem.equals(event.getCurrentItem())) {
-            MapartPlugin.MESSAGE_HELPER.sendMessage(player, I18n.of("mapart.panel.name.message"));
-            isWaiting = true;
-            GuiManager.singleton().setScreen(player, nameSelector);
+        if (this.nameSelectorItem.equals(event.getCurrentItem())) {
+            MapartPlugin.MESSAGE_HELPER.sendMessage(this.player, I18n.of("mapart.panel.name.message"));
+            this.isWaiting = true;
+            GuiManager.singleton().setScreen(this.player, this.nameSelector);
             return true;
-        } else if (addCollaboGuiItem.equals(event.getCurrentItem())) {
+        } else if (this.addCollaboGuiItem.equals(event.getCurrentItem())) {
             final MapartLandDto land = MapartSQLConfig.singleton().getTransactionManager().required(() ->
-                    MapartLandRepo.selectByLand(landId));
-            addCollaboGui = new GuiPagedMultiPlayerSelector(MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(player), I18n.of("mapart.panel.gui.manage.collaborators.add")),
-                    6, 6, player, Arrays.stream(Bukkit.getOfflinePlayers()).filter(online -> !land.getOwnerUUID().equals(online.getUniqueId()) && !Arrays.asList(land.getCollaboratorsUUID()).contains(online.getUniqueId())).toArray(OfflinePlayer[]::new), this);
-            GuiManager.singleton().setScreen(player, addCollaboGui);
+                    MapartLandRepo.selectByLand(this.landId));
+            this.addCollaboGui = new GuiPagedMultiPlayerSelector(MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(this.player), I18n.of("mapart.panel.gui.manage.collaborators.add")),
+                    6, 6, this.player, Arrays.stream(Bukkit.getOfflinePlayers()).filter(online -> !land.getOwnerUUID().equals(online.getUniqueId()) && !Arrays.asList(land.getCollaboratorsUUID()).contains(online.getUniqueId())).toArray(OfflinePlayer[]::new), this);
+            GuiManager.singleton().setScreen(this.player, this.addCollaboGui);
             return true;
-        } else if (removeCollaboGuiItem.equals(event.getCurrentItem())) {
+        } else if (this.removeCollaboGuiItem.equals(event.getCurrentItem())) {
             final MapartLandDto land = MapartSQLConfig.singleton().getTransactionManager().required(() ->
-                    MapartLandRepo.selectByLand(landId));
-            removeCollaboGui = new GuiPagedMultiPlayerSelector(MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(player), I18n.of("mapart.panel.gui.manage.collaborators.remove")),
-                    6, 6, player, Arrays.stream(land.getCollaboratorsUUID()).filter(collabo -> !land.getOwnerUUID().equals(collabo) && Arrays.asList(land.getCollaboratorsUUID()).contains(collabo)).map(Bukkit::getOfflinePlayer).toArray(OfflinePlayer[]::new), this);
-            GuiManager.singleton().setScreen(player, removeCollaboGui);
+                    MapartLandRepo.selectByLand(this.landId));
+            this.removeCollaboGui = new GuiPagedMultiPlayerSelector(MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(this.player), I18n.of("mapart.panel.gui.manage.collaborators.remove")),
+                    6, 6, this.player, Arrays.stream(land.getCollaboratorsUUID()).filter(collabo -> !land.getOwnerUUID().equals(collabo) && Arrays.asList(land.getCollaboratorsUUID()).contains(collabo)).map(Bukkit::getOfflinePlayer).toArray(OfflinePlayer[]::new), this);
+            GuiManager.singleton().setScreen(this.player, this.removeCollaboGui);
             return true;
-        } else if (cleanLandItem.equals(event.getCurrentItem())) {
-            GuiManager.singleton().setScreen(player, cleanLandGui);
+        } else if (this.cleanLandItem.equals(event.getCurrentItem())) {
+            GuiManager.singleton().setScreen(this.player, this.cleanLandGui);
             return true;
-        } else if (removeLandItem.equals(event.getCurrentItem())) {
-            GuiManager.singleton().setScreen(player, removeLandGui);
+        } else if (this.removeLandItem.equals(event.getCurrentItem())) {
+            GuiManager.singleton().setScreen(this.player, this.removeLandGui);
             return true;
-        } else if (teleportLandItem.equals(event.getCurrentItem())) {
-            MapartPlugin.MESSAGE_HELPER.sendMessage(player, I18n.of("library.message.teleporting"));
-            final Player p = Bukkit.getPlayer(player);
+        } else if (this.teleportLandItem.equals(event.getCurrentItem())) {
+            MapartPlugin.MESSAGE_HELPER.sendMessage(this.player, I18n.of("library.message.teleporting"));
+            final Player p = Bukkit.getPlayer(this.player);
             p.closeInventory();
 
-            MapartManager.teleportLand(landId, player, false);
+            MapartManager.teleportLand(this.landId, this.player, false);
         }
         return false;
     }
 
     @Override
     protected void onGuiOpen(final InventoryOpenEvent event) {
-        if (isWaiting &&
-                (StringUtils.getLength(StringUtils.getIndex(nameSelector.getResult(), 0)) <= 0 || StringUtils.getIndex(nameSelector.getResult(), 0).equalsIgnoreCase("cancel rename!"))) {
+        if (this.isWaiting &&
+                (StringUtils.getLength(StringUtils.getIndex(this.nameSelector.getResult(), 0)) <= 0 || StringUtils.getIndex(this.nameSelector.getResult(), 0).equalsIgnoreCase("cancel rename!"))) {
             MapartPlugin.MESSAGE_HELPER.sendMessage(event.getPlayer(), I18n.of("mapart.panel.name.cancel"));
         }
-        isWaiting = false;
+        this.isWaiting = false;
     }
 }

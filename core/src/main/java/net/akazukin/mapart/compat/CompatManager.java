@@ -1,11 +1,10 @@
 package net.akazukin.mapart.compat;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.logging.Level;
 import lombok.Getter;
 import net.akazukin.library.LibraryPlugin;
 import net.akazukin.mapart.MapartPlugin;
-
-import java.lang.reflect.InvocationTargetException;
-import java.util.logging.Level;
 
 @Getter
 public class CompatManager {

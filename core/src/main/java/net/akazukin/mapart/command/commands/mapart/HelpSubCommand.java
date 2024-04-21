@@ -1,5 +1,6 @@
 package net.akazukin.mapart.command.commands.mapart;
 
+import java.util.Arrays;
 import net.akazukin.library.command.Command;
 import net.akazukin.library.command.CommandInfo;
 import net.akazukin.library.command.SubCommand;
@@ -7,8 +8,6 @@ import net.akazukin.library.i18n.I18n;
 import net.akazukin.library.utils.StringUtils;
 import net.akazukin.mapart.MapartPlugin;
 import org.bukkit.command.CommandSender;
-
-import java.util.Arrays;
 
 @CommandInfo(name = "help", description = "Show list of commands and descriptions")
 public class HelpSubCommand extends SubCommand {

@@ -1,5 +1,12 @@
 package net.akazukin.mapart.gui;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 import net.akazukin.library.LibraryPlugin;
 import net.akazukin.library.gui.GuiManager;
 import net.akazukin.library.gui.screens.chest.GuiBase;
@@ -19,14 +26,6 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 public class GuiMapartPanel extends GuiPagedSingleSelector {
     private final UUID guiUserUuid;
@@ -119,12 +118,12 @@ public class GuiMapartPanel extends GuiPagedSingleSelector {
     protected Inventory getInventory() {
         final Inventory inv = super.getInventory();
 
-        inv.setItem(4, headItem);
+        inv.setItem(4, this.headItem);
 
-        if (player == guiUserUuid) {
-            inv.setItem(48, createItem);
-            if (!player.equals(guiUserUuid)) inv.setItem(51, myMapartsItem);
-            inv.setItem(52, collaboMapartsItem);
+        if (this.player == this.guiUserUuid) {
+            inv.setItem(48, this.createItem);
+            if (!this.player.equals(this.guiUserUuid)) inv.setItem(51, this.myMapartsItem);
+            inv.setItem(52, this.collaboMapartsItem);
         }
 
         return inv;
@@ -142,28 +141,28 @@ public class GuiMapartPanel extends GuiPagedSingleSelector {
                 return landId != null ? MapartLandRepo.selectByLand(landId) : null;
             });
             if (land == null) {
-                MapartPlugin.MESSAGE_HELPER.sendMessage(player, I18n.of("mapart.land.notFound"));
-            } else if ((land.getOwnerUUID().equals(player) && land.getStatus().equals("A")) || isAdmin) {
-                GuiManager.singleton().setScreen(player, new MapartLandGui(player, land.getLandId(), this));
-            } else if (Arrays.asList(land.getCollaboratorsUUID()).contains(player)) {
+                MapartPlugin.MESSAGE_HELPER.sendMessage(this.player, I18n.of("mapart.land.notFound"));
+            } else if ((land.getOwnerUUID().equals(this.player) && land.getStatus().equals("A")) || this.isAdmin) {
+                GuiManager.singleton().setScreen(this.player, new MapartLandGui(this.player, land.getLandId(), this));
+            } else if (Arrays.asList(land.getCollaboratorsUUID()).contains(this.player)) {
                 if (MapartManager.getWorld() == null) {
-                    MapartPlugin.MESSAGE_HELPER.sendMessage(player, I18n.of("library.message.world.notFound"));
+                    MapartPlugin.MESSAGE_HELPER.sendMessage(this.player, I18n.of("library.message.world.notFound"));
                 } else {
-                    MapartPlugin.MESSAGE_HELPER.sendMessage(player, I18n.of("library.message.teleporting"));
-                    MapartManager.teleportLand(land.getLandId(), player, false);
+                    MapartPlugin.MESSAGE_HELPER.sendMessage(this.player, I18n.of("library.message.teleporting"));
+                    MapartManager.teleportLand(land.getLandId(), this.player, false);
                 }
             } else {
-                MapartPlugin.MESSAGE_HELPER.sendMessage(player, I18n.of("library.message.requirePerm"));
+                MapartPlugin.MESSAGE_HELPER.sendMessage(this.player, I18n.of("library.message.requirePerm"));
             }
             return true;
-        } else if (createItem.equals(event.getCurrentItem())) {
-            GuiManager.singleton().setScreen(player, new GuiMapartCreate(player, this));
+        } else if (this.createItem.equals(event.getCurrentItem())) {
+            GuiManager.singleton().setScreen(this.player, new GuiMapartCreate(this.player, this));
             return true;
-        } else if (myMapartsItem.equals(event.getCurrentItem())) {
-            GuiManager.singleton().setScreen(player, this);
+        } else if (this.myMapartsItem.equals(event.getCurrentItem())) {
+            GuiManager.singleton().setScreen(this.player, this);
             return true;
-        } else if (collaboMapartsItem.equals(event.getCurrentItem())) {
-            GuiManager.singleton().setScreen(player, new GuiMapartCollaboPanel(player, this));
+        } else if (this.collaboMapartsItem.equals(event.getCurrentItem())) {
+            GuiManager.singleton().setScreen(this.player, new GuiMapartCollaboPanel(this.player, this));
             return true;
         }
         return false;

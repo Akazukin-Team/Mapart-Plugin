@@ -5,6 +5,17 @@ import com.palmergames.bukkit.towny.event.TownPreClaimEvent;
 import com.sk89q.worldguard.protection.flags.Flags;
 import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.stream.Collectors;
 import lombok.Getter;
 import net.akazukin.library.LibraryPlugin;
 import net.akazukin.library.compat.worldedit.ChancePattern;
@@ -48,18 +59,6 @@ import org.bukkit.event.vehicle.VehicleEnterEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.Timestamp;
-import java.time.Instant;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.stream.Collectors;
-
 public class MapartManager implements Listenable {
     public final static MapartManager SINGLETON = new MapartManager();
 
@@ -67,14 +66,6 @@ public class MapartManager implements Listenable {
 
     @Getter
     private final Map<UUID, Location> lastPos = new HashMap<>();
-
-    public static World getWorld() {
-        return Bukkit.getWorld(getWorldName());
-    }
-
-    public static String getWorldName() {
-        return MapartPlugin.CONFIG_UTILS.getConfig("config.yaml").getString("world");
-    }
 
     public static boolean removeWorld() {
         final World world = getWorld();
@@ -93,6 +84,14 @@ public class MapartManager implements Listenable {
             MapartPlugin.MESSAGE_HELPER.broadcast(I18n.of("library.message.world.notfound"));
         }
         return false;
+    }
+
+    public static World getWorld() {
+        return Bukkit.getWorld(getWorldName());
+    }
+
+    public static String getWorldName() {
+        return MapartPlugin.CONFIG_UTILS.getConfig("config.yaml").getString("world");
     }
 
     public static World generateWorld() {

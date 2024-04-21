@@ -1,7 +1,5 @@
 package net.akazukin.mapart.doma;
 
-import lombok.AllArgsConstructor;
-
 import java.util.EnumSet;
 import java.util.Set;
 import java.util.function.BiConsumer;
@@ -9,6 +7,7 @@ import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
+import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 public class CollectorImpl<A, B, R> implements Collector<A, B, R> {
@@ -32,26 +31,26 @@ public class CollectorImpl<A, B, R> implements Collector<A, B, R> {
 
     @Override
     public Supplier<B> supplier() {
-        return supplier;
+        return this.supplier;
     }
 
     @Override
     public BiConsumer<B, A> accumulator() {
-        return accumulator;
+        return this.accumulator;
     }
 
     @Override
     public BinaryOperator<B> combiner() {
-        return combiner;
+        return this.combiner;
     }
 
     @Override
     public Function<B, R> finisher() {
-        return finisher;
+        return this.finisher;
     }
 
     @Override
     public Set<Characteristics> characteristics() {
-        return characteristics;
+        return this.characteristics;
     }
 }

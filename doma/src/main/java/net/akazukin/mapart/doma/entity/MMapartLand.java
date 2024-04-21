@@ -1,14 +1,13 @@
 package net.akazukin.mapart.doma.entity;
 
+import java.sql.Timestamp;
+import java.util.UUID;
 import lombok.Data;
 import org.seasar.doma.Column;
 import org.seasar.doma.Entity;
 import org.seasar.doma.Id;
 import org.seasar.doma.Table;
 import org.seasar.doma.Version;
-
-import java.sql.Timestamp;
-import java.util.UUID;
 
 @Entity
 @Data
