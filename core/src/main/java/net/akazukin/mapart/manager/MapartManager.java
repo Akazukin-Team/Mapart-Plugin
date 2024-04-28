@@ -13,7 +13,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
-import java.util.stream.Collectors;
 import lombok.Getter;
 import net.akazukin.library.LibraryPlugin;
 import net.akazukin.library.compat.worldedit.ChancePattern;
@@ -28,8 +27,10 @@ import net.akazukin.mapart.MapartPlugin;
 import net.akazukin.mapart.doma.MapartSQLConfig;
 import net.akazukin.mapart.doma.entity.DMapartLandCollaborator;
 import net.akazukin.mapart.doma.entity.MMapartLand;
+import net.akazukin.mapart.doma.entity.MMapartUser;
 import net.akazukin.mapart.doma.repo.DMapartLandCollaboratorRepo;
 import net.akazukin.mapart.doma.repo.MMapartLandRepo;
+import net.akazukin.mapart.doma.repo.MMapartUserRepo;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -110,60 +111,66 @@ public class MapartManager implements Listenable {
     }
 
     public static MMapartLand lent(final UUID player, final String name, final int height, final int width) {
-        return MapartSQLConfig.singleton().getTransactionManager().required(() -> {
-            final List<Integer> landIds = MMapartLandRepo.selectAll().stream().map(MMapartLand::getLandId).collect(Collectors.toList());
-            for (int i = 0; i < Integer.MAX_VALUE; i++) {
-                if (landIds.contains(i)) continue;
-                final int[] loc = getLocation(i);
-
-                final MMapartLand landData = new MMapartLand();
-                landData.setLandId(i);
-                landData.setOwnerUuid(player);
-                landData.setName(name);
-                landData.setX(loc[0]);
-                landData.setZ(loc[1]);
-                landData.setHeight(height);
-                landData.setWidth(width);
-                landData.setCreateDate(Timestamp.from(Instant.now()));
-                landData.setStatus("A");
-
-                MMapartLandRepo.save(landData);
-
-
-                final int minY = LibraryPlugin.COMPAT.getMinHeight(getWorld());
-                final int maxY = getWorld().getMaxHeight();
-
-                int i2 = (int) Math.sqrt(landData.getLandId());
-                if (i2 != 0 && i2 % 2 == 0) i2--;
-                if (i2 == 0) i2 = 1;
-                i2 += 4;
-                for (int j = landData.getLandId(); j < (i2 * i2); j++) {
-                    if (WorldGuardCompat.getRegion(getWorld(), "mapart-" + j) != null) continue;
-
-                    final int[] loc2 = getLocation(j);
-                    final Location minLoc = new Location(getWorld(), ((loc2[0] * 16) - 4) * 16, minY, ((loc2[1] * 16) - 4) * 16);
-                    final Location maxLoc = minLoc.clone().add(((2 * 8) * 16) - 1, 0, ((2 * 8) * 16) - 1);
-                    final Location minLoc2 = minLoc.clone();
-                    final Location maxLoc2 = maxLoc.clone();
-                    minLoc2.setY(maxY);
-                    maxLoc2.setY(maxY);
-
-                    addProtectedRegion("mapart-" + j, minLoc.add(0, 1, 0), maxLoc2.add(0, 20, 0));
-                    WorldGuardCompat.getRegion(getWorld(), "mapart-" + j).setPriority(10);
-                }
-                WorldGuardCompat.addMember(getWorld(), "mapart-" + i, player);
-
-                final Location minLoc = new Location(getWorld(), ((loc[0] * 16) + 12) * 16 - 1, minY + 1, ((loc[1] * 16) + 12) * 16 - 1);
-                final Location maxLoc = minLoc.clone().add(((landData.getHeight() * -8) * 16) + 1, 0, ((landData.getWidth() * -8) * 16) + 1);
-                maxLoc.setY(maxY + 20);
-                WorldGuardCompat.createRegion("mapart-" + i + "-area", maxLoc, minLoc);
-                WorldGuardCompat.addFlag(getWorld(), "mapart-" + i + "-area", Flags.EXIT, StateFlag.State.DENY);
-                WorldGuardCompat.getRegion(getWorld(), "mapart-" + i + "-area").setPriority(9);
-
-                return landData;
+        MapartSQLConfig.singleton().getTransactionManager().required(() -> {
+            if (MMapartUserRepo.selectByPlayer(player) == null) {
+                final MMapartUser e = new MMapartUser();
+                e.setPlayerUuid(player);
+                e.setMaxLand(null);
+                MMapartUserRepo.save(e);
             }
-            return null;
         });
+
+        final int landId = MapartSQLConfig.singleton().getTransactionManager().required(MMapartLandRepo::getMissing);
+        final int[] loc = getLocation(landId);
+
+        final MMapartLand landData = MapartSQLConfig.singleton().getTransactionManager().required(() -> {
+            final MMapartLand landData_ = new MMapartLand();
+            landData_.setLandId(landId);
+            landData_.setOwnerUuid(player);
+            landData_.setName(name);
+            landData_.setX(loc[0]);
+            landData_.setZ(loc[1]);
+            landData_.setHeight(height);
+            landData_.setWidth(width);
+            landData_.setCreateDate(Timestamp.from(Instant.now()));
+            landData_.setStatus("A");
+
+            MMapartLandRepo.save(landData_);
+            return landData_;
+        });
+
+
+        final int minY = LibraryPlugin.COMPAT.getMinHeight(getWorld());
+        final int maxY = getWorld().getMaxHeight();
+
+        int i2 = (int) Math.sqrt(landData.getLandId());
+        if (i2 != 0 && i2 % 2 == 0) i2--;
+        if (i2 == 0) i2 = 1;
+        i2 += 4;
+        for (int j = landData.getLandId(); j < (i2 * i2); j++) {
+            if (WorldGuardCompat.getRegion(getWorld(), "mapart-" + j) != null) continue;
+
+            final int[] loc2 = getLocation(j);
+            final Location minLoc = new Location(getWorld(), ((loc2[0] * 16) - 4) * 16, minY, ((loc2[1] * 16) - 4) * 16);
+            final Location maxLoc = minLoc.clone().add(((2 * 8) * 16) - 1, 0, ((2 * 8) * 16) - 1);
+            final Location minLoc2 = minLoc.clone();
+            final Location maxLoc2 = maxLoc.clone();
+            minLoc2.setY(maxY);
+            maxLoc2.setY(maxY);
+
+            addProtectedRegion("mapart-" + j, minLoc.add(0, 1, 0), maxLoc2.add(0, 20, 0));
+            WorldGuardCompat.getRegion(getWorld(), "mapart-" + j).setPriority(10);
+        }
+        WorldGuardCompat.addMember(getWorld(), "mapart-" + landId, player);
+
+        final Location minLoc = new Location(getWorld(), ((loc[0] * 16) + 12) * 16 - 1, minY + 1, ((loc[1] * 16) + 12) * 16 - 1);
+        final Location maxLoc = minLoc.clone().add(((landData.getHeight() * -8) * 16) + 1, 0, ((landData.getWidth() * -8) * 16) + 1);
+        maxLoc.setY(maxY + 20);
+        WorldGuardCompat.createRegion("mapart-" + landId + "-area", maxLoc, minLoc);
+        WorldGuardCompat.addFlag(getWorld(), "mapart-" + landId + "-area", Flags.EXIT, StateFlag.State.DENY);
+        WorldGuardCompat.getRegion(getWorld(), "mapart-" + landId + "-area").setPriority(9);
+
+        return landData;
     }
 
     public static int[] getLocation(final int landId) {
