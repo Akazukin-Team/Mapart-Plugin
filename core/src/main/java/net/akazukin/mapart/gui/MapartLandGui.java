@@ -25,8 +25,10 @@ import net.akazukin.mapart.doma.MapartSQLConfig;
 import net.akazukin.mapart.doma.dto.MapartLandDto;
 import net.akazukin.mapart.doma.entity.DMapartLandCollaborator;
 import net.akazukin.mapart.doma.entity.MMapartLand;
+import net.akazukin.mapart.doma.entity.MMapartUser;
 import net.akazukin.mapart.doma.repo.DMapartLandCollaboratorRepo;
 import net.akazukin.mapart.doma.repo.MMapartLandRepo;
+import net.akazukin.mapart.doma.repo.MMapartUserRepo;
 import net.akazukin.mapart.doma.repo.MapartLandRepo;
 import net.akazukin.mapart.manager.MapartManager;
 import org.bukkit.Bukkit;
@@ -143,6 +145,14 @@ public class MapartLandGui extends ChestGuiBase {
                 }
             });
             for (final OfflinePlayer selectedPlayer : this.addCollaboGui.getSelectedPlayers()) {
+                MapartSQLConfig.singleton().getTransactionManager().required(() -> {
+                    if (MMapartUserRepo.selectByPlayer(this.player) == null) {
+                        final MMapartUser e = new MMapartUser();
+                        e.setPlayerUuid(selectedPlayer.getUniqueId());
+                        e.setMaxLand(null);
+                        MMapartUserRepo.save(e);
+                    }
+                });
                 WorldGuardCompat.addMember(MapartManager.getWorld(), "mapart-" + this.landId, selectedPlayer.getUniqueId());
             }
             this.addCollaboGui = null;

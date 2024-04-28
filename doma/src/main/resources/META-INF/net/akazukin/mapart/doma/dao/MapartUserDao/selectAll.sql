@@ -1,11 +1,7 @@
-select --/*%expand*/*,
-       case
-           when M_MAPART_USER.PLAYER_UUID is not null then M_MAPART_USER.PLAYER_UUID
-           when M_MAPART_LAND.OWNER_UUID is not null then M_MAPART_LAND.OWNER_UUID
-           end as PLAYER_UUID_,
+SELECT --/*%expand*/*,
+       M_MAPART_USER.PLAYER_UUID,
        MAX_LAND,
        LAND_ID
-from M_MAPART_USER full outer join
-        M_MAPART_LAND
-on
-    M_MAPART_USER.PLAYER_UUID = M_MAPART_LAND.OWNER_UUID
+FROM M_MAPART_USER
+         LEFT OUTER JOIN M_MAPART_LAND
+                         ON M_MAPART_USER.PLAYER_UUID = M_MAPART_LAND.OWNER_UUID
