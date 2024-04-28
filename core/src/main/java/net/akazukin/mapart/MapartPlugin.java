@@ -145,12 +145,12 @@ public final class MapartPlugin extends JavaPlugin {
         EVENT_MANAGER = new MapartEventManager();
         EVENT_MANAGER.registerListeners();
         Bukkit.getPluginManager().registerEvents(new Events(), this);
-        final GrimACEvents grimACEvents = new GrimACEvents();
-        if (grimACEvents.isHandleEvents())
-            Bukkit.getPluginManager().registerEvents(grimACEvents, this);
-        final TownyEvents townyEvents = new TownyEvents();
-        if (townyEvents.isHandleEvents())
-            Bukkit.getPluginManager().registerEvents(townyEvents, this);
+        if (Bukkit.getPluginManager().isPluginEnabled("GrimAC")) {
+            Bukkit.getPluginManager().registerEvents(new GrimACEvents(), this);
+        }
+        if (Bukkit.getPluginManager().isPluginEnabled("Towny")) {
+            Bukkit.getPluginManager().registerEvents(new TownyEvents(), this);
+        }
         getLogManager().info("Successfully Initialized event manager");
 
 
