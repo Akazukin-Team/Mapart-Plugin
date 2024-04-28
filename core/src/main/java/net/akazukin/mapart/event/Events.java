@@ -1,7 +1,5 @@
 package net.akazukin.mapart.event;
 
-import ac.grim.grimac.api.events.FlagEvent;
-import com.palmergames.bukkit.towny.event.TownPreClaimEvent;
 import net.akazukin.mapart.MapartPlugin;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
@@ -30,22 +28,12 @@ import org.bukkit.event.vehicle.VehicleEnterEvent;
 
 public class Events implements Listener {
     @EventHandler(priority = EventPriority.HIGH)
-    public void onGrimACFlagged(final FlagEvent event) {
+    public void onBlockBreak(final BlockBreakEvent event) {
         this.callEvent(event, EventPriority.HIGH);
     }
 
     private void callEvent(final Event event, final EventPriority priority) {
         MapartPlugin.EVENT_MANAGER.callEvent(event, priority);
-    }
-
-    @EventHandler(priority = EventPriority.HIGH)
-    public void onBlockBreak(final BlockBreakEvent event) {
-        this.callEvent(event, EventPriority.HIGH);
-    }
-
-    @EventHandler(priority = EventPriority.HIGH)
-    public void onTownClaim(final TownPreClaimEvent event) {
-        this.callEvent(event, EventPriority.HIGH);
     }
 
     @EventHandler(priority = EventPriority.HIGH)
