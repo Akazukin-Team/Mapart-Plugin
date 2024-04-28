@@ -24,6 +24,9 @@ public interface MMapartLandDao {
     @Select
     List<MMapartLand> selectByPlayer(UUID player);
 
+    @Select
+    int missing();
+
     @Insert
     int insert(MMapartLand entity);
 

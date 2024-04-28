@@ -41,4 +41,8 @@ public class MMapartLandRepo {
     public static void insert(final MMapartLand entity) {
         M_MAPART_LAND_DAO.insert(entity);
     }
+
+    public static int getMissing() {
+        return M_MAPART_LAND_DAO.missing();
+    }
 }
