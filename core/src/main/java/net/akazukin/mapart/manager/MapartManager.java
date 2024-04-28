@@ -1,7 +1,5 @@
 package net.akazukin.mapart.manager;
 
-import ac.grim.grimac.api.events.FlagEvent;
-import com.palmergames.bukkit.towny.event.TownPreClaimEvent;
 import com.sk89q.worldguard.protection.flags.Flags;
 import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
@@ -292,27 +290,6 @@ public class MapartManager implements Listenable {
                         ((loc[1] * 16) + 12) * 16 - 0.5
                 )
         );
-    }
-
-    @EventTarget(bktPriority = EventPriority.HIGH)
-    public void onGrimACFlagEvent(final FlagEvent event) {
-        if (Bukkit.getPlayer(event.getPlayer().getUniqueId()).getWorld().getUID() != getWorld().getUID()) return;
-
-        switch (event.getCheck().getCheckName()) {
-            case "GroundSpoof":
-            case "Simulation":
-            case "PositionPlace":
-            case "Post": {
-                event.setCancelled(true);
-            }
-        }
-    }
-
-    @EventTarget(bktPriority = EventPriority.HIGH)
-    public void onTownClaimEvent(final TownPreClaimEvent event) {
-        if (event.getTownBlock().getWorld().getBukkitWorld().getUID() != getWorld().getUID()) return;
-
-        event.setCancelled(true);
     }
 
     @EventTarget

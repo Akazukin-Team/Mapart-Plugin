@@ -69,12 +69,18 @@ dependencies {
     compileOnly 'org.projectlombok:lombok:1.18.30'
     annotationProcessor 'org.projectlombok:lombok:1.18.30'
 
-    compileOnly "net.akazukin:plugin-library:1.0.2"
+    compileOnly "net.akazukin:plugin-library:1.0.2.1"
     //compileOnly 'org.seasar.doma:doma-core:2.56.0'
 
 
     //testImplementation 'org.junit.jupiter:junit-jupiter:5.10.1'
     //testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+compileJava.options.encoding = 'UTF-8'
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
 }
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(properties.getOrDefault("java_version", 8) as int)

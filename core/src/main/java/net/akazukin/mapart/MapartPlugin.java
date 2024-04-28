@@ -25,7 +25,9 @@ import net.akazukin.mapart.doma.dao.DMapartLandCollaboratorDaoImpl;
 import net.akazukin.mapart.doma.dao.MMapartLandDaoImpl;
 import net.akazukin.mapart.doma.dao.MMapartUserDaoImpl;
 import net.akazukin.mapart.event.Events;
+import net.akazukin.mapart.event.GrimACEvents;
 import net.akazukin.mapart.event.MapartEventManager;
+import net.akazukin.mapart.event.TownyEvents;
 import net.akazukin.mapart.manager.MapartManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -143,6 +145,12 @@ public final class MapartPlugin extends JavaPlugin {
         EVENT_MANAGER = new MapartEventManager();
         EVENT_MANAGER.registerListeners();
         Bukkit.getPluginManager().registerEvents(new Events(), this);
+        if (Bukkit.getPluginManager().isPluginEnabled("GrimAC")) {
+            Bukkit.getPluginManager().registerEvents(new GrimACEvents(), this);
+        }
+        if (Bukkit.getPluginManager().isPluginEnabled("Towny")) {
+            Bukkit.getPluginManager().registerEvents(new TownyEvents(), this);
+        }
         getLogManager().info("Successfully Initialized event manager");
 
 
