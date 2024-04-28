@@ -19,5 +19,5 @@ dependencies {
     }
     compileOnly 'com.palmergames.bukkit.towny:towny:0.100.2.0'
 
-    pluginImpl "net.akazukin:plugin-library:1.0.2"
+    pluginImpl "net.akazukin:plugin-library:1.0.2.1"
 }
