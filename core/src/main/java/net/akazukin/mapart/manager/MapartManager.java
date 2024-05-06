@@ -270,7 +270,7 @@ public class MapartManager implements Listenable {
         final Player p = Bukkit.getPlayer(player);
         if (p == null) return;
 
-        if (!isForce) {
+        if (!isForce && MapartPlugin.CONFIG_UTILS.getConfig("config.yaml").getInt("teleport.cooltime") != -1) {
             final long lastDmg = PlayerManager.SINGLETON.getLastDamageTick(player);
             final long lastMoved = PlayerManager.SINGLETON.getLastMovedTick(player);
             final long lastPos = PlayerManager.SINGLETON.getLastPosTick(player);

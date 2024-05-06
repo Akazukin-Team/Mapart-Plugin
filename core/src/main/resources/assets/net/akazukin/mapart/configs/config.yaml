@@ -8,3 +8,6 @@ limit:
   land:
     default: 5
     max: 50
+
+teleport:
+  cooltime: 10 #Seconds (disable: -1)
