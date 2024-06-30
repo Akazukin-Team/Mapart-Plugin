@@ -6,8 +6,8 @@ website: https://discord.gg/De8T2NS74X
 
 depend:
   - AkazukinLibrary
-  - WorldEdit
   - WorldGuard
+  - WorldEdit
 softdepend:
   - FastAsyncWorldEdit
   - GrimAC

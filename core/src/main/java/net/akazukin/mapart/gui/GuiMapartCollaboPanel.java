@@ -22,11 +22,12 @@ public class GuiMapartCollaboPanel extends GuiPagedSinglePlayerSelector {
     private final ItemStack myMapartsItem;
 
     public GuiMapartCollaboPanel(final UUID player, final GuiBase prevGui) {
-        super(MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(player), I18n.of("mapart.panel.gui.collaboration")),
+        super(MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(player), I18n.of("mapart.panel.gui" +
+                        ".collaboration")),
                 6, 6, player,
                 Arrays.stream(MapartSQLConfig.singleton().getTransactionManager().required(() ->
                                 RepoUtils.getMapartLandsByCollaborator(player)
-                        ))
+                        )).parallel()
                         .map(land -> Bukkit.getOfflinePlayer(land.getOwnerUUID()))
                         .toArray(OfflinePlayer[]::new), prevGui);
 
@@ -49,10 +50,12 @@ public class GuiMapartCollaboPanel extends GuiPagedSinglePlayerSelector {
         if (event.getCurrentItem() == null) return false;
 
         if (!result && this.myMapartsItem.equals(event.getCurrentItem())) {
-            GuiManager.singleton().setScreen(this.player, this.prevGui);
+            GuiManager.singleton().setScreen(this.player, () -> this.prevGui);
             return true;
         } else if (result && this.selectedPlayer != null) {
-            GuiManager.singleton().setScreen(this.player, new GuiMapartPanel(this.player, UUID.fromString(LibraryPlugin.COMPAT.getNBTString(event.getCurrentItem(), "HEAD_UUID")), false, this));
+            GuiManager.singleton().setScreen(this.player, () -> new GuiMapartPanel(this.player,
+                    UUID.fromString(LibraryPlugin.COMPAT.getNBTString(event.getCurrentItem(), "HEAD_UUID")), false,
+                    this));
             return true;
         }
         return false;
