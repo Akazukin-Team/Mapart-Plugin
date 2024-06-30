@@ -13,11 +13,11 @@ configurations {
 }
 
 dependencies {
-    pluginImpl "net.akazukin:plugin-library:1.0.2.3"
+    pluginImpl "net.akazukin:plugin-library:1.0.3"
 }
 
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
 runServer {
     jar {
