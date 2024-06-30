@@ -16,10 +16,11 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 
 public class GuiManageMapartUsers extends GuiPagedSinglePlayerSelector {
     public GuiManageMapartUsers(final UUID player, final GuiBase prevGui) {
-        super(MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(player), I18n.of("mapart.panel.manage.users.gui")),
+        super(MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(player), I18n.of("mapart.panel.manage.users" +
+                        ".gui")),
                 6, 6, player,
                 MapartSQLConfig.singleton().getTransactionManager().required(MapartUserRepo::selectAll)
-                        .stream()
+                        .parallelStream()
                         .map(entity -> Bukkit.getOfflinePlayer(entity.getPlayerUuid()))
                         .toArray(OfflinePlayer[]::new),
                 prevGui);
@@ -32,7 +33,10 @@ public class GuiManageMapartUsers extends GuiPagedSinglePlayerSelector {
         if (event.getCurrentItem() == null) return false;
 
         if (result && this.selectedPlayer != null) {
-            GuiManager.singleton().setScreen(this.player, new GuiMapartManageUser(this.player, UUID.fromString(LibraryPlugin.COMPAT.getNBTString(event.getCurrentItem(), "HEAD_UUID")), this));
+            GuiManager.singleton().setScreen(this.player, () ->
+                    new GuiMapartManageUser(this.player,
+                            UUID.fromString(LibraryPlugin.COMPAT.getNBTString(event.getCurrentItem(), "HEAD_UUID")),
+                            this));
             return true;
         }
         return false;

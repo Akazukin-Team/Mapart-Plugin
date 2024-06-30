@@ -41,28 +41,35 @@ public class GuiMapartCreate extends ChestGuiBase {
     public GuiMapartCreate(final UUID player, final GuiBase prevGui) {
         super(MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(player), I18n.of("mapart.panel.gui.create.main")),
                 4, player, false, prevGui);
-        this.heightSelector = new GuiSizeSelector(MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(player), I18n.of("mapart.panel.gui.select.height")),
+        this.heightSelector = new GuiSizeSelector(MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(player),
+                I18n.of("mapart.panel.gui.select.height")),
                 player, 1, 2, 1, this);
-        this.widthSelector = new GuiSizeSelector(MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(player), I18n.of("mapart.panel.gui.select.width")),
+        this.widthSelector = new GuiSizeSelector(MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(player),
+                I18n.of("mapart.panel.gui.select.width")),
                 player, 1, 2, 1, this);
-        this.name = MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(player), I18n.of("mapart.panel.defaultName"), Bukkit.getPlayer(player).getName());
+        this.name = MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(player), I18n.of("mapart.panel" +
+                ".defaultName"), Bukkit.getPlayer(player).getName());
 
 
         final ItemStack nameItem = new ItemStack(Material.getMaterial("OAK_SIGN"));
-        ItemUtils.setDisplayName(nameItem, MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(player), I18n.of("mapart.panel.gui.land.item.name")));
+        ItemUtils.setDisplayName(nameItem, MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(player), I18n.of(
+                "mapart.panel.gui.land.item.name")));
         this.nameItem = ItemUtils.setGuiItem(nameItem);
 
         final ItemStack heightItem = new ItemStack(Material.getMaterial("ARROW"));
-        ItemUtils.setDisplayName(heightItem, MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(player), I18n.of("mapart.panel.gui.land.item.height")));
+        ItemUtils.setDisplayName(heightItem, MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(player),
+                I18n.of("mapart.panel.gui.land.item.height")));
         this.heightItem = ItemUtils.setGuiItem(heightItem);
 
         final ItemStack widthItem = new ItemStack(Material.getMaterial("ARROW"));
-        ItemUtils.setDisplayName(widthItem, MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(player), I18n.of("mapart.panel.gui.land.item.width")));
+        ItemUtils.setDisplayName(widthItem, MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(player), I18n.of(
+                "mapart.panel.gui.land.item.width")));
         this.widthItem = ItemUtils.setGuiItem(widthItem);
 
 
         final ItemStack borrowItem = new ItemStack(Material.getMaterial("LIME_WOOL"));
-        ItemUtils.setDisplayName(borrowItem, MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(player), I18n.of("mapart.panel.gui.land.item.borrow")));
+        ItemUtils.setDisplayName(borrowItem, MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(player),
+                I18n.of("mapart.panel.gui.land.item.borrow")));
         this.borrowItem = ItemUtils.setGuiItem(borrowItem);
     }
 
@@ -83,8 +90,10 @@ public class GuiMapartCreate extends ChestGuiBase {
         inv.setItem(13, this.widthItem);
 
         ItemUtils.setLore(this.borrowItem, Arrays.asList(
-                MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(this.player), I18n.of("mapart.panel.gui.land.borrow.name"), StringUtils.getColoredString(this.name)),
-                MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(this.player), I18n.of("mapart.panel.gui.land.borrow.size"), this.heightSelector.getResult(), this.widthSelector.getResult())
+                MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(this.player), I18n.of("mapart.panel.gui.land" +
+                        ".borrow.name"), StringUtils.getColoredString(this.name)),
+                MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(this.player), I18n.of("mapart.panel.gui.land" +
+                        ".borrow.size"), this.heightSelector.getResult(), this.widthSelector.getResult())
         ));
         inv.setItem(15, this.borrowItem);
 
@@ -95,13 +104,13 @@ public class GuiMapartCreate extends ChestGuiBase {
     public boolean onGuiClick(final InventoryClickEvent event) {
         if (this.nameItem.equals(event.getCurrentItem())) {
             MapartPlugin.MESSAGE_HELPER.sendMessage(this.player, I18n.of("mapart.panel.name.message"));
-            GuiManager.singleton().setScreen(this.player, this.nameSelector);
+            GuiManager.singleton().setScreen(this.player, () -> this.nameSelector);
             return true;
         } else if (this.heightItem.equals(event.getCurrentItem())) {
-            GuiManager.singleton().setScreen(this.player, this.heightSelector);
+            GuiManager.singleton().setScreen(this.player, () -> this.heightSelector);
             return true;
         } else if (this.widthItem.equals(event.getCurrentItem())) {
-            GuiManager.singleton().setScreen(this.player, this.widthSelector);
+            GuiManager.singleton().setScreen(this.player, () -> this.widthSelector);
             return true;
         } else if (this.borrowItem.equals(event.getCurrentItem())) {
             event.getWhoClicked().closeInventory();
@@ -123,12 +132,14 @@ public class GuiMapartCreate extends ChestGuiBase {
                     if (MapartManager.getWorld() == null) {
                         final World world = MapartManager.generateWorld();
                         if (world == null) {
-                            MapartPlugin.MESSAGE_HELPER.sendMessage(event.getWhoClicked(), I18n.of("library.message.world.notfound"));
+                            MapartPlugin.MESSAGE_HELPER.sendMessage(event.getWhoClicked(), I18n.of("library.message" +
+                                    ".world.notfound"));
                             return;
                         }
                     }
 
-                    final MMapartLand landData = MapartManager.lent(this.player, this.name, this.heightSelector.getResult(), this.widthSelector.getResult());
+                    final MMapartLand landData = MapartManager.lent(this.player, this.name,
+                            this.heightSelector.getResult(), this.widthSelector.getResult());
                     MapartPlugin.MESSAGE_HELPER.sendMessage(p, I18n.of("mapart.land.borrowed"), landData.getLandId());
                     MapartManager.teleportLand(landData.getLandId(), this.player, false);
                 });

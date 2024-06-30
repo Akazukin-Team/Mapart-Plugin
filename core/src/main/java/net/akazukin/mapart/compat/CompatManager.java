@@ -3,14 +3,12 @@ package net.akazukin.mapart.compat;
 import java.lang.reflect.InvocationTargetException;
 import java.util.logging.Level;
 import lombok.Getter;
-import net.akazukin.library.LibraryPlugin;
 import net.akazukin.mapart.MapartPlugin;
 
 @Getter
 public class CompatManager {
     public static Compat initCompat() {
-        final String version = LibraryPlugin.getPlugin().getServer().getClass().getPackage().getName().split("\\.")[3];
-        return getCompat("net.akazukin.mapart.compat.compats.Compat_" + version);
+        return getCompat("net.akazukin.mapart.compat.compats.Compat_" + net.akazukin.library.compat.minecraft.CompatManager.getMappingVersion());
     }
 
     public static Compat getCompat(final String clazzName) {
