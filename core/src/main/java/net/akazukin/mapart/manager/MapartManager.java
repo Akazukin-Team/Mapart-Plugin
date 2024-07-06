@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
@@ -90,14 +91,14 @@ public class MapartManager implements Listenable {
     public static boolean isMapartWorld(final World world) {
         return MapartManager.singletons.values().stream().anyMatch(mgr -> {
             final World w = mgr.getWorld();
-            return w != null && w.getUID().equals(world.getUID());
+            return w != null && Objects.equals(w.getUID(), world.getUID());
         });
     }
 
     public World getWorld() {
         final MMapartWorld w = MapartSQLConfig.singleton().getTransactionManager().required(() ->
                 MMapartWorldRepo.select(this.size));
-        if (w == null) return null;
+        if (w == null || w.getUuid() == null) return null;
         return Bukkit.getWorld(w.getUuid());
     }
 
@@ -106,7 +107,7 @@ public class MapartManager implements Listenable {
         final Optional<MapartManager> opt = singletons.values().stream()
                 .filter(w -> {
                     final World w2 = w.getWorld();
-                    return w2 != null && w2.getUID() == world;
+                    return w2 != null && Objects.equals(w2.getUID(), world);
                 }).findFirst();
         return opt.orElse(null);
     }
@@ -178,7 +179,7 @@ public class MapartManager implements Listenable {
             MapartPlugin.MESSAGE_HELPER.broadcast(I18n.of("library.message.world.generating"));
 
             final World world = MapartPlugin.COMPAT.createMapartWorld(this);
-            if (world == null || this.getWorld() == null) {
+            if (world == null) {
                 MapartPlugin.MESSAGE_HELPER.broadcast(I18n.of("library.message.world.generate.failed"));
             } else {
                 MapartSQLConfig.singleton().getTransactionManager().required(() -> {
@@ -195,8 +196,9 @@ public class MapartManager implements Listenable {
                 MapartPlugin.MESSAGE_HELPER.broadcast(I18n.of("library.message.world.generate.success"));
                 return world;
             }
+        } else {
+            MapartPlugin.MESSAGE_HELPER.broadcast(I18n.of("library.message.world.alreadyExists"));
         }
-        MapartPlugin.MESSAGE_HELPER.broadcast(I18n.of("library.message.world.alreadyExists"));
         return null;
     }
 
@@ -553,16 +555,15 @@ public class MapartManager implements Listenable {
 
     @EventTarget(bktPriority = EventPriority.HIGH)
     public void onPlayerInteract(final PlayerInteractEvent event) {
-        if (this.getWorld() == null || event.getClickedBlock().getWorld().getUID() != this.getWorld().getUID()) return;
+        if (this.getWorld() == null || event.getClickedBlock() == null || event.getClickedBlock().getWorld().getUID() != this.getWorld().getUID())
+            return;
         if (!event.isCancelled()) return;
         MapartManager.onPlayerInteract_(event);
     }
 
     public static void onPlayerInteract_(final PlayerInteractEvent event) {
-        if (event.getClickedBlock() != null &&
-                event.getAction() == Action.RIGHT_CLICK_BLOCK
-        ) {
-            Class<?> data = null;
+        if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+            Class<?> data;
             try {
                 data = event.getClickedBlock().getBlockData().getMaterial().getData();
             } catch (final IllegalArgumentException ignore) {
