@@ -1,4 +1,5 @@
 select M_MAPART_LAND.LAND_ID,
+       SIZE,
        OWNER_UUID,
        NAME,
        X,

@@ -8,6 +8,7 @@ limit:
   land:
     default: 5
     max: 50
+    size: 8
 
 teleport:
   cooltime: 10 #Seconds (disable: -1)

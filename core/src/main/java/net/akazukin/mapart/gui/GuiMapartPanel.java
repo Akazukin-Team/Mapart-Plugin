@@ -91,7 +91,7 @@ public class GuiMapartPanel extends GuiPagedSingleSelector {
                                             (milliSec >= 100 ? "" : (milliSec >= 10 ? "0" : "00")) + milliSec
                                     ));
                             ItemUtils.setLore(landItem, lore);
-                            return LibraryPlugin.COMPAT.setNBT(landItem, "landId", land.getLandId());
+                            return LibraryPlugin.COMPAT.setPlData(landItem, "landId", land.getLandId());
                         }).toArray(ItemStack[]::new),
                 prevGui);
 
@@ -144,10 +144,10 @@ public class GuiMapartPanel extends GuiPagedSingleSelector {
         if (event.getCurrentItem() == null) return false;
 
         if (event.getCurrentItem().getType() == Material.getMaterial("PAPER") &&
-                LibraryPlugin.COMPAT.containsNBT(event.getCurrentItem(), "landId")
+                LibraryPlugin.COMPAT.containsPlData(event.getCurrentItem(), "landId")
         ) {
             final MapartLandDto land = MapartSQLConfig.singleton().getTransactionManager().required(() -> {
-                final Long landId = LibraryPlugin.COMPAT.getNBTLong(event.getCurrentItem(), "landId");
+                final Long landId = LibraryPlugin.COMPAT.getPlDataLong(event.getCurrentItem(), "landId");
                 return landId != null ? MapartLandRepo.selectByLand(landId) : null;
             });
             if (land == null) {
@@ -156,11 +156,12 @@ public class GuiMapartPanel extends GuiPagedSingleSelector {
                 GuiManager.singleton().setScreen(this.player, () -> new MapartLandGui(this.player, land.getLandId(),
                         this));
             } else if (Arrays.asList(land.getCollaboratorsUUID()).contains(this.player)) {
-                if (MapartManager.getWorld() == null) {
+                final MapartManager mgr = MapartManager.singleton(land.getSize());
+                if (mgr.getWorld() == null) {
                     MapartPlugin.MESSAGE_HELPER.sendMessage(this.player, I18n.of("library.message.world.notFound"));
                 } else {
                     MapartPlugin.MESSAGE_HELPER.sendMessage(this.player, I18n.of("library.message.teleporting"));
-                    MapartManager.teleportLand(land.getLandId(), this.player, false);
+                    mgr.teleportLand(land.getLocationId(), this.player, false);
                 }
             } else {
                 MapartPlugin.MESSAGE_HELPER.sendMessage(this.player, I18n.of("library.message.requirePerm"));

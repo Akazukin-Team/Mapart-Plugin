@@ -11,22 +11,22 @@ public class MMapartLandRepo {
     private static final MMapartLandDao M_MAPART_LAND_DAO = new MMapartLandDaoImpl(MapartSQLConfig.singleton());
 
     public static List<MMapartLand> select(final UUID player) {
-        return M_MAPART_LAND_DAO.selectByPlayer(player);
+        return MMapartLandRepo.M_MAPART_LAND_DAO.selectByPlayer(player);
     }
 
     public static MMapartLand select(final long land) {
-        return M_MAPART_LAND_DAO.selectByLand(land);
+        return MMapartLandRepo.M_MAPART_LAND_DAO.selectByLand(land);
     }
 
     public static List<MMapartLand> selectAll() {
-        return M_MAPART_LAND_DAO.selectAll();
+        return MMapartLandRepo.M_MAPART_LAND_DAO.selectAll();
     }
 
     public static void save(final MMapartLand entity) {
         if (entity.getVersionNo() <= 0) {
-            M_MAPART_LAND_DAO.insert(entity);
+            MMapartLandRepo.M_MAPART_LAND_DAO.insert(entity);
         } else {
-            M_MAPART_LAND_DAO.update(entity);
+            MMapartLandRepo.M_MAPART_LAND_DAO.update(entity);
         }
     }
 
@@ -38,11 +38,11 @@ public class MMapartLandRepo {
         M_MAPART_LAND_DAO.create();
     }
 
-    public static void insert(final MMapartLand entity) {
-        M_MAPART_LAND_DAO.insert(entity);
+    public static int getMissingLoc(final long size) {
+        return M_MAPART_LAND_DAO.missingLoc(size);
     }
 
-    public static int getMissing() {
-        return M_MAPART_LAND_DAO.missing();
+    public static int getMissingLand() {
+        return M_MAPART_LAND_DAO.missingLand();
     }
 }

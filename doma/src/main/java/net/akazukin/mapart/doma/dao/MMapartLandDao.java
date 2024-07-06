@@ -25,7 +25,10 @@ public interface MMapartLandDao {
     List<MMapartLand> selectByPlayer(UUID player);
 
     @Select
-    int missing();
+    int missingLoc(long size);
+
+    @Select
+    int missingLand();
 
     @Insert
     int insert(MMapartLand entity);

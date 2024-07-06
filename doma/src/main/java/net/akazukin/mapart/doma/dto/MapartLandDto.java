@@ -7,13 +7,14 @@ import lombok.Data;
 @Data
 public class MapartLandDto {
     private int landId;
+    private int locationId;
+
+    private long size;
+    
     private String name;
 
     private UUID ownerUUID;
     private UUID[] collaboratorsUUID;
-
-    private long x;
-    private long z;
 
     private long height;
     private long width;

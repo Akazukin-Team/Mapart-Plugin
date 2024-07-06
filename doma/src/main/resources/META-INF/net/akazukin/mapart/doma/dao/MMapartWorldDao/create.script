@@ -1,0 +1,9 @@
+-- マップアート土地マスタ
+create table if not exists M_MAPART_WORLD (
+    LAND_SIZE BIGINT not null -- 土地ID
+    , WORLD_NAME CHAR(50) not null -- ワールド名
+    , WORLD_UUID CHAR(36) not null -- ワールドUUID
+    , VERSION_NO BIGINT not null -- バージョン
+    , constraint M_MAPART_WORLD_PKC primary key (LAND_SIZE)
+) -- マップアート土地マスタ:Mapartワールド管理用マスタ
+;

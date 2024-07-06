@@ -1,6 +1,7 @@
 package net.akazukin.mapart.module.m1_8_to_1_16;
 
 import java.util.Random;
+import javax.annotation.Nonnull;
 import net.akazukin.library.utils.ServerUtils;
 import net.akazukin.mapart.module.m1_15_to_1_16.Module_1_15_to_1_16;
 import net.akazukin.mapart.module.m1_8_to_1_14.Module_1_8_to_1_14;
@@ -12,7 +13,8 @@ import org.bukkit.generator.ChunkGenerator;
 
 public class MapartChunkGenerator extends ChunkGenerator {
     @Override
-    public ChunkData generateChunkData(final World world, final Random random, final int x, final int z, BiomeGrid biome) {
+    public ChunkData generateChunkData(@Nonnull final World world, @Nonnull final Random random,
+                                       final int chunkX, final int chunkZ, @Nonnull BiomeGrid biome) {
         for (int X = 0; X < 16; X++) {
             for (int Z = 0; Z < 16; Z++) {
                 if (ServerUtils.getProtocolVersion() >= 573) {
@@ -25,7 +27,7 @@ public class MapartChunkGenerator extends ChunkGenerator {
             }
         }
 
-        final ChunkData chunkData = super.generateChunkData(world, random, x, z, biome);
+        final ChunkData chunkData = super.generateChunkData(world, random, chunkX, chunkZ, biome);
 
         chunkData.setRegion(0, 0, 0, 15, 0, 15, Material.STONE);
         chunkData.setRegion(1, 0, 1, 14, 0, 14, Material.WHITE_WOOL);
