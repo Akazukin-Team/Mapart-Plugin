@@ -21,9 +21,11 @@ import org.bukkit.inventory.ItemStack;
 
 public class CopyrightManager implements Listenable {
     public static ItemStack setCopyright(final ItemStack itemStack, final UUID player) {
-        final String lore = MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(player), I18n.of("mapart.copyright.lore"), Bukkit.getOfflinePlayer(player).getName());
-        ItemStack item = LibraryPlugin.COMPAT.setNBT(itemStack, "AKZ_MAPART_COPYRIGHT_OWNER", String.valueOf(player));
-        item = LibraryPlugin.COMPAT.setNBT(item, "AKZ_MAPART_COPYRIGHT_LORE", lore);
+        final String lore = MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(player), I18n.of("mapart" +
+                ".copyright.lore"), Bukkit.getOfflinePlayer(player).getName());
+        ItemStack item = LibraryPlugin.COMPAT.setPlData(itemStack, "AKZ_MAPART_COPYRIGHT_OWNER",
+                String.valueOf(player));
+        item = LibraryPlugin.COMPAT.setPlData(item, "AKZ_MAPART_COPYRIGHT_LORE", lore);
         final List<String> lores = ItemUtils.getLore(itemStack);
         lores.add(lore);
         ItemUtils.setLore(item, lores);
@@ -32,14 +34,14 @@ public class CopyrightManager implements Listenable {
 
     @Nullable
     public static ItemStack removeCopyright(final ItemStack itemStack) {
-        if (!LibraryPlugin.COMPAT.containsNBT(itemStack, "AKZ_MAPART_COPYRIGHT_LORE") ||
-                !LibraryPlugin.COMPAT.containsNBT(itemStack, "AKZ_MAPART_COPYRIGHT_OWNER")) return null;
+        if (!LibraryPlugin.COMPAT.containsPlData(itemStack, "AKZ_MAPART_COPYRIGHT_LORE") ||
+                !LibraryPlugin.COMPAT.containsPlData(itemStack, "AKZ_MAPART_COPYRIGHT_OWNER")) return null;
 
         final List<String> lores = ItemUtils.getLore(itemStack);
-        if (lores.contains(LibraryPlugin.COMPAT.getNBTString(itemStack, "AKZ_MAPART_COPYRIGHT_LORE"))) {
-            lores.remove(LibraryPlugin.COMPAT.getNBTString(itemStack, "AKZ_MAPART_COPYRIGHT_LORE"));
-            ItemStack item = LibraryPlugin.COMPAT.removeNBT(itemStack, "AKZ_MAPART_COPYRIGHT_LORE");
-            item = LibraryPlugin.COMPAT.removeNBT(item, "AKZ_MAPART_COPYRIGHT_OWNER");
+        if (lores.contains(LibraryPlugin.COMPAT.getPlDataString(itemStack, "AKZ_MAPART_COPYRIGHT_LORE"))) {
+            lores.remove(LibraryPlugin.COMPAT.getPlDataString(itemStack, "AKZ_MAPART_COPYRIGHT_LORE"));
+            ItemStack item = LibraryPlugin.COMPAT.removePlData(itemStack, "AKZ_MAPART_COPYRIGHT_LORE");
+            item = LibraryPlugin.COMPAT.removePlData(item, "AKZ_MAPART_COPYRIGHT_OWNER");
             ItemUtils.setLore(item, lores);
             return item;
         }
@@ -61,11 +63,12 @@ public class CopyrightManager implements Listenable {
     }
 
     public static boolean hasCopyright(final ItemStack itemStack) {
-        return LibraryPlugin.COMPAT.containsNBT(itemStack, "AKZ_MAPART_COPYRIGHT_OWNER") && LibraryPlugin.COMPAT.containsNBT(itemStack, "AKZ_MAPART_COPYRIGHT_LORE");
+        return LibraryPlugin.COMPAT.containsPlData(itemStack, "AKZ_MAPART_COPYRIGHT_OWNER") && LibraryPlugin.COMPAT.containsPlData(itemStack, "AKZ_MAPART_COPYRIGHT_LORE");
     }
 
     public static boolean isOwner(final ItemStack itemStack, @Nonnull final UUID player) {
-        return player.equals(StringUtils.toUuid(LibraryPlugin.COMPAT.getNBTString(itemStack, "AKZ_MAPART_COPYRIGHT_OWNER")));
+        return player.equals(StringUtils.toUuid(LibraryPlugin.COMPAT.getPlDataString(itemStack,
+                "AKZ_MAPART_COPYRIGHT_OWNER")));
     }
 
     @EventTarget
@@ -77,7 +80,8 @@ public class CopyrightManager implements Listenable {
 
     @EventTarget
     public void onPrepareAnvil(final PrepareAnvilEvent event) {
-        if (event.getResult() != null && hasCopyright(event.getResult()) && isOwner(event.getResult(), event.getView().getPlayer().getUniqueId())) {
+        if (event.getResult() != null && hasCopyright(event.getResult()) && isOwner(event.getResult(),
+                event.getView().getPlayer().getUniqueId())) {
             event.setResult(null);
         }
     }

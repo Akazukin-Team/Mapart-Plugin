@@ -9,21 +9,21 @@ import org.seasar.doma.Id;
 
 @Entity
 @Data
-//@Table(name = "M_MAPART_LAND")
 public class MapartLand {
     @Column(name = "LAND_ID")
     @Id
     private int landId;
 
+    @Column(name = "LOCATION_ID")
+    private int locationId;
+
+    @Column(name = "SIZE")
+    private long size;
+
     @Column(name = "NAME")
     private String name;
     @Column(name = "OWNER_UUID")
     private UUID ownerUuid;
-
-    @Column(name = "X")
-    private long x;
-    @Column(name = "Z")
-    private long z;
 
     @Column(name = "HEIGHT")
     private long height;

@@ -35,7 +35,7 @@ public class GuiManageMapartUsers extends GuiPagedSinglePlayerSelector {
         if (result && this.selectedPlayer != null) {
             GuiManager.singleton().setScreen(this.player, () ->
                     new GuiMapartManageUser(this.player,
-                            UUID.fromString(LibraryPlugin.COMPAT.getNBTString(event.getCurrentItem(), "HEAD_UUID")),
+                            UUID.fromString(LibraryPlugin.COMPAT.getPlDataString(event.getCurrentItem(), "HEAD_UUID")),
                             this));
             return true;
         }

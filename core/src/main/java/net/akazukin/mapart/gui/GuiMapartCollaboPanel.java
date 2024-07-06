@@ -54,7 +54,7 @@ public class GuiMapartCollaboPanel extends GuiPagedSinglePlayerSelector {
             return true;
         } else if (result && this.selectedPlayer != null) {
             GuiManager.singleton().setScreen(this.player, () -> new GuiMapartPanel(this.player,
-                    UUID.fromString(LibraryPlugin.COMPAT.getNBTString(event.getCurrentItem(), "HEAD_UUID")), false,
+                    UUID.fromString(LibraryPlugin.COMPAT.getPlDataString(event.getCurrentItem(), "HEAD_UUID")), false,
                     this));
             return true;
         }

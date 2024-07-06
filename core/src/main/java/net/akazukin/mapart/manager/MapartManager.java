@@ -5,14 +5,17 @@ import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
+import javax.annotation.Nullable;
 import lombok.Getter;
 import net.akazukin.library.LibraryPlugin;
 import net.akazukin.library.compat.worldedit.ChancePattern;
@@ -25,12 +28,16 @@ import net.akazukin.library.manager.PlayerManager;
 import net.akazukin.library.utils.FileUtils;
 import net.akazukin.mapart.MapartPlugin;
 import net.akazukin.mapart.doma.MapartSQLConfig;
+import net.akazukin.mapart.doma.dto.MapartLandDto;
 import net.akazukin.mapart.doma.entity.DMapartLandCollaborator;
 import net.akazukin.mapart.doma.entity.MMapartLand;
 import net.akazukin.mapart.doma.entity.MMapartUser;
+import net.akazukin.mapart.doma.entity.MMapartWorld;
 import net.akazukin.mapart.doma.repo.DMapartLandCollaboratorRepo;
 import net.akazukin.mapart.doma.repo.MMapartLandRepo;
 import net.akazukin.mapart.doma.repo.MMapartUserRepo;
+import net.akazukin.mapart.doma.repo.MMapartWorldRepo;
+import net.akazukin.mapart.doma.repo.MapartLandRepo;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -59,48 +66,131 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class MapartManager implements Listenable {
-    public final static MapartManager SINGLETON = new MapartManager();
-
+    public final static Map<Long, MapartManager> singletons = new HashMap<>();
     private static final Logger log = LoggerFactory.getLogger(MapartManager.class);
+    @Getter
+    private static final Map<UUID, Location> lastPos = new HashMap<>();
+    public static int MAP_SIZE = 8;
 
     @Getter
-    private final Map<UUID, Location> lastPos = new HashMap<>();
+    private final long size;
 
-    public static boolean removeWorld() {
-        final World world = getWorld();
-        if (world != null) {
-            MapartPlugin.MESSAGE_HELPER.broadcast(I18n.of("library.message.world.removing"));
-            Bukkit.unloadWorld(world, false);
-            FileUtils.delete(world.getWorldFolder());
-            WorldGuardCompat.removeRegion(world);
-            MapartSQLConfig.singleton().getTransactionManager().required(() -> {
-                MMapartLandRepo.selectAll().forEach(MMapartLandRepo::delete);
-                DMapartLandCollaboratorRepo.selectAll().forEach(DMapartLandCollaboratorRepo::delete);
+    private MapartManager(final long size) {
+        this.size = size;
+
+        MapartPlugin.EVENT_MANAGER.registerListener(this);
+    }
+
+    @Nullable
+    public static MapartManager singleton(final long size) {
+        if (!MapartManager.singletons.containsKey(size)) MapartManager.singletons.put(size, new MapartManager(size));
+        return MapartManager.singletons.get(size);
+    }
+
+    public static boolean isMapartWorld(final World world) {
+        return MapartManager.singletons.values().stream().anyMatch(mgr -> {
+            final World w = mgr.getWorld();
+            return w != null && w.getUID().equals(world.getUID());
+        });
+    }
+
+    public World getWorld() {
+        final MMapartWorld w = MapartSQLConfig.singleton().getTransactionManager().required(() ->
+                MMapartWorldRepo.select(this.size));
+        if (w == null) return null;
+        return Bukkit.getWorld(w.getUuid());
+    }
+
+    @Nullable
+    public static MapartManager singleton(final UUID world) {
+        final Optional<MapartManager> opt = singletons.values().stream()
+                .filter(w -> {
+                    final World w2 = w.getWorld();
+                    return w2 != null && w2.getUID() == world;
+                }).findFirst();
+        return opt.orElse(null);
+    }
+
+    public static void addCollaborator(final int landId, final UUID... players) {
+        Arrays.stream(players).forEach(player -> {
+            final MMapartWorld world = MapartSQLConfig.singleton().getTransactionManager().required(() -> {
+                if (MMapartUserRepo.selectByPlayer(player) == null) {
+                    final MMapartUser e = new MMapartUser();
+                    e.setPlayerUuid(player);
+                    e.setMaxLand(null);
+                    MMapartUserRepo.save(e);
+                }
+
+                final DMapartLandCollaborator entity = new DMapartLandCollaborator();
+                entity.setLandId(landId);
+                entity.setCollaboratorUuid(player);
+                DMapartLandCollaboratorRepo.save(entity);
+
+                return MMapartWorldRepo.select(MMapartLandRepo.select(landId).getSize());
             });
-            MapartPlugin.MESSAGE_HELPER.broadcast(I18n.of("library.message.world.removed"));
-            return true;
-        } else {
-            MapartPlugin.MESSAGE_HELPER.broadcast(I18n.of("library.message.world.notfound"));
-        }
-        return false;
+
+            WorldGuardCompat.addMember(
+                    Bukkit.getWorld(world.getUuid()),
+                    "mapart-" + landId,
+                    player);
+        });
     }
 
-    public static World getWorld() {
-        return Bukkit.getWorld(getWorldName());
+    public static MapartLandDto getLandData(final long landId) {
+        return MapartSQLConfig.singleton().getTransactionManager().required(() ->
+                MapartLandRepo.selectByLand(landId));
     }
 
-    public static String getWorldName() {
-        return MapartPlugin.CONFIG_UTILS.getConfig("config.yaml").getString("world");
+    public static void removeCollaborator(final int landId, final UUID... players) {
+        Arrays.stream(players).forEach(player -> {
+            final MMapartWorld world = MapartSQLConfig.singleton().getTransactionManager().required(() -> {
+                final DMapartLandCollaborator collabo =
+                        DMapartLandCollaboratorRepo.selectByLandAndCollaborator(landId, player);
+                if (collabo != null) {
+                    DMapartLandCollaboratorRepo.delete(collabo);
+                }
+
+                return MMapartWorldRepo.select(MMapartLandRepo.select(landId).getSize());
+            });
+
+            WorldGuardCompat.removeMember(
+                    Bukkit.getWorld(world.getUuid()),
+                    "mapart-" + landId,
+                    player);
+        });
     }
 
-    public static World generateWorld() {
-        if (getWorld() == null) {
+    public String getWorldName() {
+        return MapartPlugin.CONFIG_UTILS.getConfig("config.yaml").getString("world") + "-x" + this.size;
+    }
+
+    public void addProtectedRegion(final String name, final Location min, final Location max) {
+        WorldGuardCompat.createRegion(name, min, max);
+
+        WorldGuardCompat.addFlag(this.getWorld(), name, Flags.INTERACT, StateFlag.State.DENY);
+        WorldGuardCompat.addFlag(this.getWorld(), name, Flags.USE, StateFlag.State.DENY);
+        WorldGuardCompat.addFlag(this.getWorld(), name, Flags.ITEM_FRAME_ROTATE, StateFlag.State.DENY);
+        WorldGuardCompat.addFlag(this.getWorld(), name, Flags.ENTRY, StateFlag.State.DENY);
+    }
+
+    public World generateWorld() {
+        if (this.getWorld() == null) {
             MapartPlugin.MESSAGE_HELPER.broadcast(I18n.of("library.message.world.generating"));
 
-            final World world = MapartPlugin.COMPAT.createMapartWorld();
-            if (world == null || getWorld() == null) {
+            final World world = MapartPlugin.COMPAT.createMapartWorld(this);
+            if (world == null || this.getWorld() == null) {
                 MapartPlugin.MESSAGE_HELPER.broadcast(I18n.of("library.message.world.generate.failed"));
             } else {
+                MapartSQLConfig.singleton().getTransactionManager().required(() -> {
+                    final MMapartWorld e = MMapartWorldRepo.select(this.size);
+                    if (e != null) MMapartWorldRepo.delete(e);
+
+                    final MMapartWorld e2 = new MMapartWorld();
+                    e2.setLandSize(this.size);
+                    e2.setWorldName(world.getName());
+                    e2.setUuid(world.getUID());
+                    MMapartWorldRepo.save(e2);
+                });
                 world.setAutoSave(true);
                 MapartPlugin.MESSAGE_HELPER.broadcast(I18n.of("library.message.world.generate.success"));
                 return world;
@@ -110,7 +200,7 @@ public class MapartManager implements Listenable {
         return null;
     }
 
-    public static MMapartLand lent(final UUID player, final String name, final int height, final int width) {
+    public MMapartLand lent(final UUID player, final String name, final int height, final int width) {
         MapartSQLConfig.singleton().getTransactionManager().required(() -> {
             if (MMapartUserRepo.selectByPlayer(player) == null) {
                 final MMapartUser e = new MMapartUser();
@@ -120,16 +210,19 @@ public class MapartManager implements Listenable {
             }
         });
 
-        final int landId = MapartSQLConfig.singleton().getTransactionManager().required(MMapartLandRepo::getMissing);
-        final int[] loc = getLocation(landId);
+        final int landId =
+                MapartSQLConfig.singleton().getTransactionManager().required(MMapartLandRepo::getMissingLand);
+        final int locId = MapartSQLConfig.singleton().getTransactionManager().required(() ->
+                MMapartLandRepo.getMissingLoc(this.size));
+        final int[] loc = MapartManager.getLocation(locId);
 
         final MMapartLand landData = MapartSQLConfig.singleton().getTransactionManager().required(() -> {
             final MMapartLand landData_ = new MMapartLand();
             landData_.setLandId(landId);
+            landData_.setSize(this.size);
+            landData_.setLocationId(locId);
             landData_.setOwnerUuid(player);
             landData_.setName(name);
-            landData_.setX(loc[0]);
-            landData_.setZ(loc[1]);
             landData_.setHeight(height);
             landData_.setWidth(width);
             landData_.setCreateDate(Timestamp.from(Instant.now()));
@@ -140,47 +233,74 @@ public class MapartManager implements Listenable {
         });
 
 
-        final int minY = LibraryPlugin.COMPAT.getMinHeight(getWorld());
-        final int maxY = getWorld().getMaxHeight();
+        final int minY = LibraryPlugin.COMPAT.getMinHeight(this.getWorld());
+        final int maxY = this.getWorld().getMaxHeight();
 
         int i2 = (int) Math.sqrt(landData.getLandId());
         if (i2 != 0 && i2 % 2 == 0) i2--;
         if (i2 == 0) i2 = 1;
         i2 += 4;
-        for (int j = landData.getLandId(); j < (i2 * i2); j++) {
-            if (WorldGuardCompat.getRegion(getWorld(), "mapart-" + j) != null) continue;
+        for (long j = landData.getLocationId(); j < ((long) i2 * i2); j++) {
+            if (WorldGuardCompat.getRegion(this.getWorld(), "mapart-" + j) != null) continue;
 
-            final int[] loc2 = getLocation(j);
-            final Location minLoc = new Location(getWorld(), ((loc2[0] * 16) - 4) * 16, minY, ((loc2[1] * 16) - 4) * 16);
-            final Location maxLoc = minLoc.clone().add(((2 * 8) * 16) - 1, 0, ((2 * 8) * 16) - 1);
-            final Location minLoc2 = minLoc.clone();
-            final Location maxLoc2 = maxLoc.clone();
-            minLoc2.setY(maxY);
-            maxLoc2.setY(maxY);
+            final int[] loc2 = MapartManager.getLocation((int) j);
+            final Location maxLoc = new Location(this.getWorld(),
+                    ((loc2[0] * (this.size * MapartManager.MAP_SIZE)) - 4) * 16,
+                    maxY + 50,
+                    ((loc2[1] * (this.size * MapartManager.MAP_SIZE)) - 4) * 16
+            );
+            final Location minLoc = maxLoc.clone().add(
+                    -((this.size * MapartManager.MAP_SIZE) * 16),
+                    0,
+                    -((this.size * MapartManager.MAP_SIZE) * 16)
+            );
 
-            addProtectedRegion("mapart-" + j, minLoc.add(0, 1, 0), maxLoc2.add(0, 20, 0));
-            WorldGuardCompat.getRegion(getWorld(), "mapart-" + j).setPriority(10);
+            maxLoc.add(-1, 0, -1);
+            minLoc.setY(minY - 50);
+
+
+            WorldGuardCompat.createRegion("mapart-" + j, minLoc, maxLoc);
+
+            WorldGuardCompat.addFlag(this.getWorld(), "mapart-" + j, Flags.INTERACT, StateFlag.State.DENY);
+            WorldGuardCompat.addFlag(this.getWorld(), "mapart-" + j, Flags.USE, StateFlag.State.DENY);
+            WorldGuardCompat.addFlag(this.getWorld(), "mapart-" + j, Flags.ITEM_FRAME_ROTATE, StateFlag.State.DENY);
+            WorldGuardCompat.addFlag(this.getWorld(), "mapart-" + j, Flags.ENTRY, StateFlag.State.DENY);
+            WorldGuardCompat.addFlag(this.getWorld(), "mapart-" + j, Flags.ITEM_PICKUP, StateFlag.State.DENY);
+
+            WorldGuardCompat.getRegion(this.getWorld(), "mapart-" + j).setPriority(10);
         }
-        WorldGuardCompat.addMember(getWorld(), "mapart-" + landId, player);
+        WorldGuardCompat.addMember(this.getWorld(), "mapart-" + locId, player);
 
-        final Location minLoc = new Location(getWorld(), ((loc[0] * 16) + 12) * 16 - 1, minY + 1, ((loc[1] * 16) + 12) * 16 - 1);
-        final Location maxLoc = minLoc.clone().add(((landData.getHeight() * -8) * 16) + 1, 0, ((landData.getWidth() * -8) * 16) + 1);
-        maxLoc.setY(maxY + 20);
-        WorldGuardCompat.createRegion("mapart-" + landId + "-area", maxLoc, minLoc);
-        WorldGuardCompat.addFlag(getWorld(), "mapart-" + landId + "-area", Flags.EXIT, StateFlag.State.DENY);
-        WorldGuardCompat.getRegion(getWorld(), "mapart-" + landId + "-area").setPriority(9);
+        final Location maxLoc = new Location(this.getWorld(),
+                ((loc[0] * (this.size * MapartManager.MAP_SIZE)) - 4) * 16,
+                maxY + 10,
+                ((loc[1] * (this.size * MapartManager.MAP_SIZE)) - 4) * 16
+        );
+        final Location minLoc = maxLoc.clone().add(
+                -((landData.getHeight() * MapartManager.MAP_SIZE) * 16),
+                0,
+                -((landData.getWidth() * MapartManager.MAP_SIZE) * 16)
+        );
+
+        maxLoc.add(-1, 0, -1);
+        minLoc.setY(minY + 1);
+
+        WorldGuardCompat.createRegion("mapart-" + locId + "-area", maxLoc, minLoc);
+        WorldGuardCompat.addFlag(this.getWorld(), "mapart-" + locId + "-area", Flags.EXIT,
+                StateFlag.State.DENY);
+        WorldGuardCompat.getRegion(this.getWorld(), "mapart-" + locId + "-area").setPriority(9);
 
         return landData;
     }
 
-    public static int[] getLocation(final int landId) {
-        int i2 = (int) Math.floor(Math.sqrt(landId));
+    public static int[] getLocation(final long locId) {
+        long i2 = (int) Math.floor(Math.sqrt(locId));
         if (i2 != 0 && i2 % 2 == 0) i2--;
-        final int i3 = landId - (i2 * i2);
-        final int pos = (i2 + 1) / 2;
-        int x = pos;
-        int z = 0;
-        for (int n = 0; n < i3; n++) {
+        final long i3 = locId - (i2 * i2);
+        final long pos = (i2 + 1) / 2;
+        long x = pos;
+        long z = 0;
+        for (long n = 0; n < i3; n++) {
             if (n < (pos)) {
                 z--;
             } else if (n < (pos * 3)) {
@@ -193,63 +313,64 @@ public class MapartManager implements Listenable {
                 z--;
             }
         }
-        return new int[]{x, z};
+        return new int[]{(int) x, (int) z};
     }
 
-    public static void addProtectedRegion(final String name, final Location min, final Location max) {
-        WorldGuardCompat.createRegion(name, min, max);
-
-        WorldGuardCompat.addFlag(getWorld(), name, Flags.INTERACT, StateFlag.State.DENY);
-        WorldGuardCompat.addFlag(getWorld(), name, Flags.USE, StateFlag.State.DENY);
-        WorldGuardCompat.addFlag(getWorld(), name, Flags.ITEM_FRAME_ROTATE, StateFlag.State.DENY);
-        WorldGuardCompat.addFlag(getWorld(), name, Flags.ENTRY, StateFlag.State.DENY);
-    }
-
-    public static void deleteLand(final int landId, final Runnable doLast) {
-        WorldGuardCompat.removeAllMembers(MapartManager.getWorld(), "mapart-" + landId);
+    public void deleteLand(final int locId, final Runnable doLast) {
+        WorldGuardCompat.removeAllMembers(this.getWorld(), "mapart-" + locId);
 
         MapartSQLConfig.singleton().getTransactionManager().required(() -> {
-            final MMapartLand land = MMapartLandRepo.select(landId);
+            final MMapartLand land = MMapartLandRepo.select(locId);
             if (land != null) MMapartLandRepo.delete(land);
 
-            final List<DMapartLandCollaborator> collabos = DMapartLandCollaboratorRepo.selectByLand(landId);
+            final List<DMapartLandCollaborator> collabos = DMapartLandCollaboratorRepo.selectByLand(locId);
             for (final DMapartLandCollaborator collabo : collabos) {
                 DMapartLandCollaboratorRepo.delete(collabo);
             }
         });
 
-        final ProtectedRegion rg = WorldGuardCompat.getRegion(MapartManager.getWorld(), "mapart-" + landId);
+        final ProtectedRegion rg = WorldGuardCompat.getRegion(this.getWorld(), "mapart-" + locId);
         rg.getMembers().getUniqueIds().stream().map(Bukkit::getPlayer).filter(player -> player != null && rg.contains(player.getLocation().getBlockX(), player.getLocation().getBlockY(), player.getLocation().getBlockZ())).forEach(player -> player.teleport(Bukkit.getWorld("world").getSpawnLocation()));
 
-        WorldGuardCompat.removeRegion(MapartManager.getWorld(), "mapart-" + landId + "-area");
+        WorldGuardCompat.removeRegion(this.getWorld(), "mapart-" + locId + "-area");
 
-        cleanLand(landId, doLast);
+        this.cleanLand(locId, doLast);
     }
 
-    public static void cleanLand(final int landId, final Runnable doLast) {
+    public void cleanLand(final int locId, final Runnable doLast) {
         Bukkit.getScheduler().runTaskAsynchronously(MapartPlugin.getPlugin(), () -> {
-            resetLand(landId);
+            this.resetLand(locId);
             doLast.run();
         });
     }
 
-    public static void resetLand(final int landId) {
-        final int[] loc = getLocation(landId);
-        final ExecutorService pool = Executors.newFixedThreadPool(MapartPlugin.CONFIG_UTILS.getConfig("config.yaml").getInt("workers.thread"));
-        for (int i = 0; i < 16; i++) {
-            for (int i2 = 0; i2 < 16; i2++) {
-                if (!MapartManager.getWorld().isChunkLoaded(loc[0] + i, loc[1] + i2)) continue;
+    public void resetLand(final int locId) {
+        final int[] loc = MapartManager.getLocation(locId);
+        final int minY = LibraryPlugin.COMPAT.getMinHeight(this.getWorld());
+        final int maxY = this.getWorld().getMaxHeight();
+        final ExecutorService pool =
+                Executors.newFixedThreadPool(MapartPlugin.CONFIG_UTILS.getConfig("config.yaml").getInt("workers" +
+                        ".thread"));
+        for (int i = 0; i < this.size * MapartManager.MAP_SIZE; i++) {
+            for (int i2 = 0; i2 < this.size * MapartManager.MAP_SIZE; i2++) {
+                if (!this.getWorld().isChunkLoaded(loc[0] + i, loc[1] + i2)) continue;
                 final int finalI = i;
                 final int finalI1 = i2;
                 pool.execute(() -> {
-                    final Location minLoc = new Location(
-                            MapartManager.getWorld(),
-                            ((loc[0] * 16) + finalI - 4) * 16,
-                            LibraryPlugin.COMPAT.getMinHeight(MapartManager.getWorld()) + 1,
-                            ((loc[1] * 16) + finalI1 - 4) * 16
+
+                    final Location maxLoc = new Location(this.getWorld(),
+                            ((loc[0] * (this.size * MapartManager.MAP_SIZE)) - 4 - finalI) * 16,
+                            maxY,
+                            ((loc[1] * (this.size * MapartManager.MAP_SIZE)) - 4 - finalI1) * 16
                     );
-                    final Location maxLoc = minLoc.clone().add(15, 0, 15);
-                    maxLoc.setY(MapartManager.getWorld().getMaxHeight());
+                    final Location minLoc = maxLoc.clone().add(
+                            -16,
+                            0,
+                            -16
+                    );
+
+                    maxLoc.add(-1, 0, -1);
+                    minLoc.setY(minY + 1);
 
                     WorldEditCompat.fill(
                             minLoc, maxLoc,
@@ -266,7 +387,7 @@ public class MapartManager implements Listenable {
         }
     }
 
-    public static void teleportLand(final int landId, final UUID player, final boolean isForce) {
+    public void teleportLand(final long landId, final UUID player, final boolean isForce) {
         final Player p = Bukkit.getPlayer(player);
         if (p == null) return;
 
@@ -286,86 +407,103 @@ public class MapartManager implements Listenable {
             }
         }
 
-        final int[] loc = getLocation(landId);
+        final int[] loc = MapartManager.getLocation(landId);
 
         MapartPlugin.MESSAGE_HELPER.sendMessage(player, I18n.of("library.message.teleporting"));
         Bukkit.getPlayer(player).teleport(
                 new Location(
-                        MapartManager.getWorld(),
-                        ((loc[0] * 16) + 12) * 16 - 0.5,
-                        LibraryPlugin.COMPAT.getMinHeight(MapartManager.getWorld()) + 1,
-                        ((loc[1] * 16) + 12) * 16 - 0.5
+                        this.getWorld(),
+                        ((loc[0] * (this.size * MapartManager.MAP_SIZE)) - 4) * 16 - 0.5,
+                        LibraryPlugin.COMPAT.getMinHeight(this.getWorld()) + 1,
+                        ((loc[1] * (this.size * MapartManager.MAP_SIZE)) - 4) * 16 - 0.5
                 )
         );
     }
 
+    public boolean removeWorld() {
+        final World world = this.getWorld();
+        if (world != null) {
+            MapartPlugin.MESSAGE_HELPER.broadcast(I18n.of("library.message.world.removing"));
+            Bukkit.unloadWorld(world, false);
+            FileUtils.delete(world.getWorldFolder());
+            WorldGuardCompat.removeRegion(world);
+            MapartSQLConfig.singleton().getTransactionManager().required(() -> {
+                MMapartLandRepo.selectAll().forEach(MMapartLandRepo::delete);
+                DMapartLandCollaboratorRepo.selectAll().forEach(DMapartLandCollaboratorRepo::delete);
+            });
+            MapartPlugin.MESSAGE_HELPER.broadcast(I18n.of("library.message.world.removed"));
+            return true;
+        } else {
+            MapartPlugin.MESSAGE_HELPER.broadcast(I18n.of("library.message.world.notFound"));
+        }
+        return false;
+    }
+
     @EventTarget
     public void onPlayerJoin(final PlayerJoinEvent event) {
-        if (event.getPlayer().getWorld().getUID() == getWorld().getUID()) {
-            event.getPlayer().setAllowFlight(true);
-        }
+        if (this.getWorld() == null || event.getPlayer().getWorld().getUID() != this.getWorld().getUID()) return;
+        event.getPlayer().setAllowFlight(true);
     }
 
     @EventTarget(bktPriority = EventPriority.HIGH)
     public void onVehicleEnter(final VehicleEnterEvent event) {
-        if (event.getEntered().getWorld().getUID() != getWorld().getUID()) return;
+        if (this.getWorld() == null || event.getEntered().getWorld().getUID() != this.getWorld().getUID()) return;
         event.setCancelled(true);
     }
 
     @EventTarget
     public void onPlayerTeleport(final PlayerTeleportEvent event) {
-        if (event.getPlayer().getWorld().getUID() == getWorld().getUID()) {
+        if (this.getWorld() == null) return;
+
+        if (event.getPlayer().getWorld().getUID() == this.getWorld().getUID()) {
             if (event.getCause() == PlayerTeleportEvent.TeleportCause.CHORUS_FRUIT ||
-                    event.getCause() == PlayerTeleportEvent.TeleportCause.ENDER_PEARL
-            ) {
+                    event.getCause() == PlayerTeleportEvent.TeleportCause.ENDER_PEARL) {
                 event.setCancelled(true);
             } else {
-                this.lastPos.remove(event.getPlayer().getUniqueId());
+                MapartManager.lastPos.remove(event.getPlayer().getUniqueId());
             }
-        } else if (event.getFrom().getWorld().getUID() != getWorld().getUID()) {
-            this.lastPos.put(event.getPlayer().getUniqueId(), event.getFrom());
+        } else if (event.getFrom().getWorld().getUID() != this.getWorld().getUID()) {
+            MapartManager.lastPos.put(event.getPlayer().getUniqueId(), event.getFrom());
         }
     }
 
     @EventTarget
     public void onWorldChange(final PlayerChangedWorldEvent event) {
-        if (event.getFrom().getUID() == getWorld().getUID()) {
+        if (this.getWorld() == null) return;
+
+        if (event.getFrom().getUID() == this.getWorld().getUID()) {
             if (event.getPlayer().getGameMode() == GameMode.SURVIVAL || event.getPlayer().getGameMode() == GameMode.ADVENTURE) {
                 event.getPlayer().setFlying(false);
                 event.getPlayer().setAllowFlight(false);
             }
-        } else if (event.getPlayer().getWorld().getUID() == getWorld().getUID()) {
+        } else if (event.getPlayer().getWorld().getUID() == this.getWorld().getUID()) {
             event.getPlayer().setAllowFlight(true);
         }
     }
 
     @EventTarget(bktPriority = EventPriority.HIGH)
     public void onBlockBreak(final BlockBreakEvent event) {
-        if (event.getBlock().getWorld().getUID() != getWorld().getUID()) return;
-
-        if (event.getBlock().getY() == LibraryPlugin.COMPAT.getMinHeight(getWorld())) {
+        if (this.getWorld() == null || event.getBlock().getWorld().getUID() != this.getWorld().getUID()) return;
+        if (event.getBlock().getY() == LibraryPlugin.COMPAT.getMinHeight(this.getWorld())) {
             event.setCancelled(true);
         }
     }
 
     @EventTarget(bktPriority = EventPriority.HIGH)
     public void onBlockExplode(final ExplosionPrimeEvent event) {
-        if (event.getEntity().getWorld().getUID() != getWorld().getUID()) return;
-
+        if (this.getWorld() == null || event.getEntity().getWorld().getUID() != this.getWorld().getUID()) return;
         event.setCancelled(true);
     }
 
     @EventTarget(bktPriority = EventPriority.HIGH)
     public void onEntityRegainHealth(final EntityRegainHealthEvent event) {
-        if (event.getEntity().getWorld().getUID() != getWorld().getUID()) return;
-
+        if (this.getWorld() == null || event.getEntity().getWorld().getUID() != this.getWorld().getUID()) return;
         event.setCancelled(true);
     }
 
     @EventTarget(bktPriority = EventPriority.HIGH)
     public void onEntityDamage(final EntityDamageEvent event) {
-        if (event.getEntity().getWorld().getUID() != getWorld().getUID()) return;
-
+        if (this.getWorld() == null || event.getEntity().getWorld().getUID() != this.getWorld().getUID()) return;
         event.setCancelled(true);
     }
 
@@ -385,45 +523,43 @@ public class MapartManager implements Listenable {
 
     @EventTarget(bktPriority = EventPriority.HIGH)
     public void onBlockPhysics(final BlockPhysicsEvent event) {
-        if (event.getBlock().getWorld().getUID() != getWorld().getUID()) return;
-
+        if (this.getWorld() == null || event.getBlock().getWorld().getUID() != this.getWorld().getUID()) return;
         event.setCancelled(true);
     }
 
     @EventTarget(bktPriority = EventPriority.HIGH)
     public void onBlockIgnite(final BlockIgniteEvent event) {
-        if (event.getBlock().getWorld().getUID() != getWorld().getUID()) return;
-
+        if (this.getWorld() == null || event.getBlock().getWorld().getUID() != this.getWorld().getUID()) return;
         event.setCancelled(true);
     }
 
     @EventTarget(bktPriority = EventPriority.HIGH)
     public void onBlockFrom(final BlockFormEvent event) {
-        if (event.getBlock().getWorld().getUID() != getWorld().getUID()) return;
-
+        if (this.getWorld() == null || event.getBlock().getWorld().getUID() != this.getWorld().getUID()) return;
         event.setCancelled(true);
     }
 
     @EventTarget(bktPriority = EventPriority.HIGH)
     public void onEntityPlace(final EntityPlaceEvent event) {
-        if (event.getBlock().getWorld().getUID() != getWorld().getUID()) return;
-
+        if (this.getWorld() == null || event.getBlock().getWorld().getUID() != this.getWorld().getUID()) return;
         event.setCancelled(true);
     }
 
     @EventTarget(bktPriority = EventPriority.HIGH)
     public void onEntityBlockForm(final EntityBlockFormEvent event) {
-        if (event.getBlock().getWorld().getUID() != getWorld().getUID()) return;
-
+        if (this.getWorld() == null || event.getBlock().getWorld().getUID() != this.getWorld().getUID()) return;
         event.setCancelled(true);
     }
 
     @EventTarget(bktPriority = EventPriority.HIGH)
     public void onPlayerInteract(final PlayerInteractEvent event) {
+        if (this.getWorld() == null || event.getClickedBlock().getWorld().getUID() != this.getWorld().getUID()) return;
         if (!event.isCancelled()) return;
+        MapartManager.onPlayerInteract_(event);
+    }
 
+    public static void onPlayerInteract_(final PlayerInteractEvent event) {
         if (event.getClickedBlock() != null &&
-                event.getClickedBlock().getWorld().getUID() != getWorld().getUID() &&
                 event.getAction() == Action.RIGHT_CLICK_BLOCK
         ) {
             Class<?> data = null;
@@ -452,7 +588,11 @@ public class MapartManager implements Listenable {
 
     @EventTarget(bktPriority = EventPriority.HIGH)
     public void onBlockCanBuild(final BlockCanBuildEvent event) {
-        if (event.getBlock().getWorld().getUID() != getWorld().getUID()) return;
+        if (this.getWorld() == null || event.getBlock().getWorld().getUID() != this.getWorld().getUID()) return;
+        MapartManager.onBlockCanBuild_(event);
+    }
+
+    private static void onBlockCanBuild_(final BlockCanBuildEvent event) {
         if (!event.isBuildable()) return;
 
         Class<?> data;
@@ -620,11 +760,14 @@ public class MapartManager implements Listenable {
 
     @EventTarget
     public void onPlayerQuit(final PlayerQuitEvent event) {
-        if (event.getPlayer().getWorld().getUID() != getWorld().getUID()) return;
+        if (this.getWorld() == null || event.getPlayer().getWorld().getUID() != this.getWorld().getUID()) return;
+        MapartManager.onPlayerQuit_(event);
+    }
 
-        if (this.lastPos.containsKey(event.getPlayer().getUniqueId())) {
-            event.getPlayer().teleport(this.lastPos.get(event.getPlayer().getUniqueId()));
-            this.lastPos.remove(event.getPlayer().getUniqueId());
+    private static void onPlayerQuit_(final PlayerQuitEvent event) {
+        if (MapartManager.lastPos.containsKey(event.getPlayer().getUniqueId())) {
+            event.getPlayer().teleport(MapartManager.lastPos.get(event.getPlayer().getUniqueId()));
+            MapartManager.lastPos.remove(event.getPlayer().getUniqueId());
         }
     }
 

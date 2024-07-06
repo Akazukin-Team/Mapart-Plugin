@@ -15,17 +15,18 @@ import org.seasar.doma.Version;
 public class MMapartLand {
     @Column(name = "LAND_ID")
     @Id
-    private int landId;
+    private long landId;
+
+    @Column(name = "LOCATION_ID")
+    private long locationId;
 
     @Column(name = "OWNER_UUID")
     private UUID ownerUuid;
     @Column(name = "NAME")
     private String name;
 
-    @Column(name = "X")
-    private int x;
-    @Column(name = "Z")
-    private int z;
+    @Column(name = "SIZE")
+    private long size;
 
     @Column(name = "HEIGHT")
     private int height;

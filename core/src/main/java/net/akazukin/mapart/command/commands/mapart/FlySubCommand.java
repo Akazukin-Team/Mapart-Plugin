@@ -13,7 +13,7 @@ import org.bukkit.entity.Player;
 public class FlySubCommand extends SubCommand {
     @Override
     public void run(final CommandSender sender, final String... args) {
-        if (((Player) sender).getWorld().getUID() == MapartManager.getWorld().getUID()) {
+        if (MapartManager.isMapartWorld(((Player) sender).getWorld())) {
             ((Player) sender).setAllowFlight(((Player) sender).getAllowFlight());
             MapartPlugin.MESSAGE_HELPER.sendMessage(sender, I18n.of("mapart.command.fly.toggled"));
         } else {

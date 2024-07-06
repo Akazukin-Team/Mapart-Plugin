@@ -10,7 +10,7 @@ public class TownyAdaptor implements Listenable {
 
     @EventTarget(bktPriority = EventPriority.HIGH)
     public void onTownClaimEvent(final TownPreClaimEvent event) {
-        if (event.getTownBlock().getWorld().getBukkitWorld().getUID() != MapartManager.getWorld().getUID()) return;
+        if (MapartManager.isMapartWorld(event.getTownBlock().getWorld().getBukkitWorld())) return;
 
         event.setCancelled(true);
     }
