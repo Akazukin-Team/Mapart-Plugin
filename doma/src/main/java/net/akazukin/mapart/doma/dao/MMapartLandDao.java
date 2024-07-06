@@ -22,7 +22,10 @@ public interface MMapartLandDao {
     MMapartLand selectByLand(long land);
 
     @Select
-    List<MMapartLand> selectByPlayer(UUID player);
+    List<MMapartLand> selectByOwner(UUID player);
+
+    @Select
+    List<MMapartLand> selectBySize(long size);
 
     @Select
     int missingLoc(long size);

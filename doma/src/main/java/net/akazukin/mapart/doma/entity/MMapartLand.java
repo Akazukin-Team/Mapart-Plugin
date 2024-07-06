@@ -41,5 +41,5 @@ public class MMapartLand {
 
     @Column(name = "VERSION_NO")
     @Version
-    private long versionNo = -1;
+    private Long versionNo;
 }
