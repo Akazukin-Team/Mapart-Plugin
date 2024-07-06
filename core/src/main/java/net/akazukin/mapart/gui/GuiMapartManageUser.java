@@ -85,7 +85,7 @@ public class GuiMapartManageUser extends ChestGuiBase {
 
 
         final List<MMapartLand> landsEntity = MapartSQLConfig.singleton().getTransactionManager().required(() ->
-                MMapartLandRepo.select(this.member));
+                MMapartLandRepo.selectByOwner(this.member));
 
         final Inventory inv = super.getInventory();
         InventoryUtils.fillBlankItems(inv, MessageHelper.getLocale(this.player));

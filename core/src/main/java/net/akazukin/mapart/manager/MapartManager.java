@@ -127,7 +127,7 @@ public class MapartManager implements Listenable {
                 entity.setCollaboratorUuid(player);
                 DMapartLandCollaboratorRepo.save(entity);
 
-                return MMapartWorldRepo.select(MMapartLandRepo.select(landId).getSize());
+                return MMapartWorldRepo.select(MMapartLandRepo.selectByOwner(landId).getSize());
             });
 
             WorldGuardCompat.addMember(
@@ -151,7 +151,7 @@ public class MapartManager implements Listenable {
                     DMapartLandCollaboratorRepo.delete(collabo);
                 }
 
-                return MMapartWorldRepo.select(MMapartLandRepo.select(landId).getSize());
+                return MMapartWorldRepo.select(MMapartLandRepo.selectByOwner(landId).getSize());
             });
 
             WorldGuardCompat.removeMember(
@@ -322,7 +322,7 @@ public class MapartManager implements Listenable {
         WorldGuardCompat.removeAllMembers(this.getWorld(), "mapart-" + locId);
 
         MapartSQLConfig.singleton().getTransactionManager().required(() -> {
-            final MMapartLand land = MMapartLandRepo.select(locId);
+            final MMapartLand land = MMapartLandRepo.selectByOwner(locId);
             if (land != null) MMapartLandRepo.delete(land);
 
             final List<DMapartLandCollaborator> collabos = DMapartLandCollaboratorRepo.selectByLand(locId);
@@ -426,13 +426,15 @@ public class MapartManager implements Listenable {
         final World world = this.getWorld();
         if (world != null) {
             MapartPlugin.MESSAGE_HELPER.broadcast(I18n.of("library.message.world.removing"));
+            WorldGuardCompat.removeRegion(world);
             Bukkit.unloadWorld(world, false);
             FileUtils.delete(world.getWorldFolder());
-            WorldGuardCompat.removeRegion(world);
-            MapartSQLConfig.singleton().getTransactionManager().required(() -> {
-                MMapartLandRepo.selectAll().forEach(MMapartLandRepo::delete);
-                DMapartLandCollaboratorRepo.selectAll().forEach(DMapartLandCollaboratorRepo::delete);
-            });
+            MapartSQLConfig.singleton().getTransactionManager().required(() ->
+                    MMapartLandRepo.selectBySize(this.size).forEach(e -> {
+                        MMapartLandRepo.delete(e);
+                        DMapartLandCollaboratorRepo.selectByLand(e.getLandId()).forEach(DMapartLandCollaboratorRepo::delete);
+                    })
+            );
             MapartPlugin.MESSAGE_HELPER.broadcast(I18n.of("library.message.world.removed"));
             return true;
         } else {

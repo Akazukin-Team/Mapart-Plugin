@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import net.akazukin.library.gui.GuiManager;
@@ -60,7 +61,7 @@ public class MapartLandGui extends ChestGuiBase {
                 5, player, false, prevGui);
         this.landId = landId;
         final MMapartLand land = MapartSQLConfig.singleton().getTransactionManager().required(() ->
-                MMapartLandRepo.select(landId));
+                MMapartLandRepo.selectByOwner(landId));
         if (land == null) {
             throw new IllegalStateException();
         }
@@ -136,7 +137,7 @@ public class MapartLandGui extends ChestGuiBase {
         final String lines = ArrayUtils.join("", this.nameSelector.getResult());
         if (0 < StringUtils.getLength(lines) && StringUtils.getLength(lines) < 30) {
             MapartSQLConfig.singleton().getTransactionManager().required(() -> {
-                final MMapartLand land_ = MMapartLandRepo.select(this.landId);
+                final MMapartLand land_ = MMapartLandRepo.selectByOwner(this.landId);
 
                 land_.setName(lines);
                 MMapartLandRepo.save(land_);
@@ -309,7 +310,7 @@ public class MapartLandGui extends ChestGuiBase {
             this.addCollaboGui =
                     new GuiPagedMultiPlayerSelector(MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(this.player), I18n.of("mapart.panel.gui.manage.collaborators.add")),
                             6, 6, this.player,
-                            Arrays.stream(Bukkit.getOfflinePlayers()).filter(online -> !land.getOwnerUUID().equals(online.getUniqueId()) && !Arrays.asList(land.getCollaboratorsUUID()).contains(online.getUniqueId())).toArray(OfflinePlayer[]::new), this);
+                            Arrays.stream(Bukkit.getOfflinePlayers()).filter(online -> !land.getOwnerUUID().equals(online.getUniqueId()) && !Objects.equals(land.getCollaboratorsUUID(), online.getUniqueId())).toArray(OfflinePlayer[]::new), this);
             GuiManager.singleton().setScreen(this.player, () -> this.addCollaboGui);
             return true;
         } else if (this.removeCollaboGuiItem.equals(event.getCurrentItem())) {
@@ -317,7 +318,7 @@ public class MapartLandGui extends ChestGuiBase {
                     new GuiPagedMultiPlayerSelector(MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(this.player), I18n.of("mapart.panel.gui.manage.collaborators.remove")),
                             6, 6, this.player,
                             Arrays.stream(land.getCollaboratorsUUID()).parallel()
-                                    .filter(collabo -> !land.getOwnerUUID().equals(collabo) && Arrays.asList(land.getCollaboratorsUUID()).contains(collabo))
+                                    .filter(collabo -> !land.getOwnerUUID().equals(collabo) && Objects.equals(land.getCollaboratorsUUID(), collabo))
                                     .map(Bukkit::getOfflinePlayer).toArray(OfflinePlayer[]::new), this);
             GuiManager.singleton().setScreen(this.player, () -> this.removeCollaboGui);
             return true;

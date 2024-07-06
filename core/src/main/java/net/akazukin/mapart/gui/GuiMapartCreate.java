@@ -150,7 +150,7 @@ public class GuiMapartCreate extends ChestGuiBase {
                 return e.getMaxLand();
             }) <=
                     MapartSQLConfig.singleton().getTransactionManager().required(() ->
-                            MMapartLandRepo.select(this.player)).size()) {
+                            MMapartLandRepo.selectByOwner(this.player)).size()) {
                 MapartPlugin.MESSAGE_HELPER.sendMessage(event.getWhoClicked(), I18n.of("mapart.land.limitReached"));
             } else {
                 final Player p = Bukkit.getPlayer(this.player);

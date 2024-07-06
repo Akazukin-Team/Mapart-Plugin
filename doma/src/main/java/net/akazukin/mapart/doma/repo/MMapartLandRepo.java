@@ -10,11 +10,15 @@ import net.akazukin.mapart.doma.entity.MMapartLand;
 public class MMapartLandRepo {
     private static final MMapartLandDao M_MAPART_LAND_DAO = new MMapartLandDaoImpl(MapartSQLConfig.singleton());
 
-    public static List<MMapartLand> select(final UUID player) {
-        return MMapartLandRepo.M_MAPART_LAND_DAO.selectByPlayer(player);
+    public static List<MMapartLand> selectByOwner(final UUID owner) {
+        return MMapartLandRepo.M_MAPART_LAND_DAO.selectByOwner(owner);
     }
 
-    public static MMapartLand select(final long land) {
+    public static List<MMapartLand> selectBySize(final long size) {
+        return MMapartLandRepo.M_MAPART_LAND_DAO.selectBySize(size);
+    }
+
+    public static MMapartLand selectByOwner(final long land) {
         return MMapartLandRepo.M_MAPART_LAND_DAO.selectByLand(land);
     }
 
@@ -23,7 +27,7 @@ public class MMapartLandRepo {
     }
 
     public static void save(final MMapartLand entity) {
-        if (entity.getVersionNo() <= 0) {
+        if (entity.getVersionNo() == null) {
             MMapartLandRepo.M_MAPART_LAND_DAO.insert(entity);
         } else {
             MMapartLandRepo.M_MAPART_LAND_DAO.update(entity);
