@@ -21,8 +21,4 @@ public class MapartUser {
 
     @Column(name = "LAND_ID")
     private Integer landId;
-
-    @Column(name = "VERSION_NO")
-    @Version
-    private long versionNo = -1;
 }

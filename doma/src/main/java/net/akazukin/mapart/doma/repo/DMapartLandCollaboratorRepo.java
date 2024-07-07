@@ -23,7 +23,7 @@ public class DMapartLandCollaboratorRepo {
     }
 
     public static void save(final DMapartLandCollaborator entity) {
-        if (entity.getVersionNo() <= 0) {
+        if (entity.getVersionNo() == null) {
             D_MAPART_LAND_COLLABORATOR_DAO.insert(entity);
         } else {
             D_MAPART_LAND_COLLABORATOR_DAO.update(entity);

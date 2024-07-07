@@ -12,10 +12,10 @@ import org.seasar.doma.Id;
 public class MapartLand {
     @Column(name = "LAND_ID")
     @Id
-    private int landId;
+    private long landId;
 
     @Column(name = "LOCATION_ID")
-    private int locationId;
+    private long locationId;
 
     @Column(name = "SIZE")
     private long size;

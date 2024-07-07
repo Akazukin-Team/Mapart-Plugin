@@ -13,7 +13,7 @@ configurations {
 }
 
 dependencies {
-    pluginImpl "net.akazukin:plugin-library:1.1.0"
+    pluginImpl "net.akazukin:plugin-library:1.2.0"
 }
 
 
