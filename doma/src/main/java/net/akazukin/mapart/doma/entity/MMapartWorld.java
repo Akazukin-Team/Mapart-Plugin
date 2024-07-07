@@ -23,5 +23,5 @@ public class MMapartWorld {
 
     @Column(name = "VERSION_NO")
     @Version
-    private long versionNo = -1;
+    private Long versionNo;
 }

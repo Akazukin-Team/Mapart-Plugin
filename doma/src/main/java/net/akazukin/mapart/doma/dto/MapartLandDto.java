@@ -6,8 +6,8 @@ import lombok.Data;
 
 @Data
 public class MapartLandDto {
-    private int landId;
-    private int locationId;
+    private long landId;
+    private long locationId;
 
     private long size;
     

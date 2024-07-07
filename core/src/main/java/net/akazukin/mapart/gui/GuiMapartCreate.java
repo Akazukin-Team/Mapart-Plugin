@@ -161,15 +161,14 @@ public class GuiMapartCreate extends ChestGuiBase {
                     final MapartManager mgr = MapartManager.singleton(Math.max(
                             this.heightSelector.getResult(), this.widthSelector.getResult()
                     ));
-                    if (mgr.getWorld() == null) {
-                        final World world = mgr.generateWorld();
-                        if (world == null) {
-                            MapartPlugin.MESSAGE_HELPER.sendMessage(
-                                    event.getWhoClicked(),
-                                    I18n.of("library.message.world.notfound")
-                            );
-                            return;
-                        }
+
+                    World w = mgr.getWorld();
+                    if (w == null) {
+                        MapartPlugin.MESSAGE_HELPER.sendMessage(
+                                event.getWhoClicked(),
+                                I18n.of("library.message.world.notFound")
+                        );
+                        return;
                     }
 
                     final MMapartLand landData = mgr.lent(this.player, this.name,

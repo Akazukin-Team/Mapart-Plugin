@@ -19,7 +19,7 @@ public class MMapartUserRepo {
     }
 
     public static void save(final MMapartUser entity) {
-        if (entity.getVersionNo() <= 0) {
+        if (entity.getVersionNo() == null) {
             M_MAPART_USER_DAO.insert(entity);
         } else {
             M_MAPART_USER_DAO.update(entity);

@@ -22,7 +22,7 @@ public class MMapartWorldRepo {
     }
 
     public static void save(final MMapartWorld entity) {
-        if (entity.getVersionNo() <= 0) {
+        if (entity.getVersionNo() == null) {
             MMapartWorldRepo.M_MAPART_WORLD_DAO.insert(entity);
         } else {
             MMapartWorldRepo.M_MAPART_WORLD_DAO.update(entity);

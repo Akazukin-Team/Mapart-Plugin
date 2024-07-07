@@ -37,7 +37,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 public class MapartLandGui extends ChestGuiBase {
-    private final int landId;
+    private final long landId;
 
     private final SignStringSelectorGui nameSelector = new SignStringSelectorGui(this.player, this);
     private final GuiSizeSelector heightSelector;
@@ -56,7 +56,7 @@ public class MapartLandGui extends ChestGuiBase {
     private GuiPagedMultiPlayerSelector removeCollaboGui = null;
     private boolean isWaiting;
 
-    public MapartLandGui(final UUID player, final int landId, final GuiBase prevGui) {
+    public MapartLandGui(final UUID player, final long landId, final GuiBase prevGui) {
         super(MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(player), I18n.of("mapart.panel.gui.manage.main")),
                 5, player, false, prevGui);
         this.landId = landId;
@@ -329,10 +329,8 @@ public class MapartLandGui extends ChestGuiBase {
             GuiManager.singleton().setScreen(this.player, () -> this.removeLandGui);
             return true;
         } else if (this.teleportLandItem.equals(event.getCurrentItem())) {
-            MapartPlugin.MESSAGE_HELPER.sendMessage(this.player, I18n.of("library.message.teleporting"));
             final Player p = Bukkit.getPlayer(this.player);
             p.closeInventory();
-
             mgr.teleportLand(land.getLocationId(), this.player, false);
         }
         return false;
