@@ -18,7 +18,7 @@ public class MapartLand {
     private long locationId;
 
     @Column(name = "SIZE")
-    private long size;
+    private int size;
 
     @Column(name = "NAME")
     private String name;

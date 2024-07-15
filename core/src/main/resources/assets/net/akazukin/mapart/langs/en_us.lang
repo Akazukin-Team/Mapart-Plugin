@@ -70,3 +70,7 @@ mapart.panel.manage.maxLand.item                = §aSetting MaxLand
 mapart.panel.manage.maparts.item                = §aManage maparts
 mapart.panel.manage.user.head.lore.maxLand      = §eMaxLand: §a<args[0]>
 mapart.panel.manage.user.head.lore.countLand    = §eLand: §a<args[0]>
+mapart.land.cleanCooltime    = §cPlease wait <args[0]> sec to try again to clean land...
+mapart.land.cleaningNow    = §cIn order to clean up land, all land cleanup processes must be completed.
+
+

@@ -79,7 +79,6 @@ public class GuiMapartManageUser extends ChestGuiBase {
                 }
                 entity.setMaxLand(this.maxLandSelector.getResult());
             });
-            Bukkit.getPlayer(this.player).sendMessage(this.maxLandSelector.getResult() + "");
             this.maxLandSelector.reset();
         }
 
@@ -94,10 +93,10 @@ public class GuiMapartManageUser extends ChestGuiBase {
             InventoryUtils.fillBackItem(inv, MessageHelper.getLocale(this.player));
 
         ItemUtils.setLore(this.headItem, Arrays.asList(
-                MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(this.player), I18n.of("mapart.panel.manage" +
-                        ".user.head.lore.maxLand"), this.maxLandSelector.getResult()),
-                MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(this.player), I18n.of("mapart.panel.manage" +
-                        ".user.head.lore.countLand"), landsEntity.size())
+                MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(this.player),
+                        I18n.of("mapart.panel.manage.user.head.lore.maxLand"), this.maxLandSelector.getResult()),
+                MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(this.player),
+                        I18n.of("mapart.panel.manage.user.head.lore.countLand"), landsEntity.size())
         ));
         inv.setItem(4, this.headItem);
         inv.setItem(10, this.maxLandItem);

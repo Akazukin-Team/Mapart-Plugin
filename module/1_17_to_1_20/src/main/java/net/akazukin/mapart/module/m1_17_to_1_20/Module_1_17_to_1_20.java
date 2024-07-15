@@ -14,7 +14,7 @@ public class Module_1_17_to_1_20 {
         final WorldCreator wc = new WorldCreator(mgr.getWorldName());
         wc.environment(World.Environment.NORMAL);
         wc.biomeProvider(new MapartBiomeProvidor());
-        wc.generator(new MapartChunkGenerator(mgr));
+        wc.generator(new MapartChunkGenerator(mgr.getSize()));
         final World world = Bukkit.createWorld(wc);
 
         if (world == null) return null;

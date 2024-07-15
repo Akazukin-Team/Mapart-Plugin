@@ -9,8 +9,8 @@ public class MapartLandDto {
     private long landId;
     private long locationId;
 
-    private long size;
-    
+    private int size;
+
     private String name;
 
     private UUID ownerUUID;

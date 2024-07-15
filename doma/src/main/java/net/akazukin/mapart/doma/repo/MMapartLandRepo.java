@@ -14,7 +14,7 @@ public class MMapartLandRepo {
         return MMapartLandRepo.M_MAPART_LAND_DAO.selectByOwner(owner);
     }
 
-    public static List<MMapartLand> selectBySize(final long size) {
+    public static List<MMapartLand> selectBySize(final int size) {
         return MMapartLandRepo.M_MAPART_LAND_DAO.selectBySize(size);
     }
 
@@ -35,18 +35,22 @@ public class MMapartLandRepo {
     }
 
     public static void delete(final MMapartLand entity) {
-        M_MAPART_LAND_DAO.delete(entity);
+        MMapartLandRepo.M_MAPART_LAND_DAO.delete(entity);
     }
 
     public static void createTable() {
-        M_MAPART_LAND_DAO.create();
+        MMapartLandRepo.M_MAPART_LAND_DAO.create();
     }
 
     public static int getMissingLoc(final long size) {
-        return M_MAPART_LAND_DAO.missingLoc(size);
+        return MMapartLandRepo.M_MAPART_LAND_DAO.missingLoc(size);
     }
 
     public static int getMissingLand() {
-        return M_MAPART_LAND_DAO.missingLand();
+        return MMapartLandRepo.M_MAPART_LAND_DAO.missingLand();
+    }
+
+    public static MMapartLand selectBySizeAndLocation(final long size, final long locationId) {
+        return MMapartLandRepo.M_MAPART_LAND_DAO.selectBySizeAndLocation(size, locationId);
     }
 }

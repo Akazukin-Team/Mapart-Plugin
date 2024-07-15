@@ -25,7 +25,7 @@ public interface MMapartLandDao {
     List<MMapartLand> selectByOwner(UUID player);
 
     @Select
-    List<MMapartLand> selectBySize(long size);
+    List<MMapartLand> selectBySize(int size);
 
     @Select
     int missingLoc(long size);
@@ -41,4 +41,7 @@ public interface MMapartLandDao {
 
     @Delete
     int delete(MMapartLand entity);
+
+    @Select
+    MMapartLand selectBySizeAndLocation(long size, long locationId);
 }

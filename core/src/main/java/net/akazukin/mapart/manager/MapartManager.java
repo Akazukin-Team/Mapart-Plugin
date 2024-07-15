@@ -3,9 +3,9 @@ package net.akazukin.mapart.manager;
 import com.sk89q.worldguard.protection.flags.Flags;
 import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-import java.io.File;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -13,21 +13,20 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
+import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.Nullable;
 import lombok.Getter;
 import net.akazukin.library.LibraryPlugin;
-import net.akazukin.library.compat.worldedit.ChancePattern;
-import net.akazukin.library.compat.worldedit.WorldEditCompat;
 import net.akazukin.library.compat.worldguard.WorldGuardCompat;
 import net.akazukin.library.event.EventTarget;
 import net.akazukin.library.event.Listenable;
 import net.akazukin.library.i18n.I18n;
 import net.akazukin.library.manager.PlayerManager;
-import net.akazukin.library.utils.FileUtils;
+import net.akazukin.library.utils.WorldUtils;
+import net.akazukin.library.world.WorldData;
+import net.akazukin.library.worldedit.EditSession;
+import net.akazukin.library.worldedit.Region;
+import net.akazukin.library.worldedit.Vec3i;
 import net.akazukin.mapart.MapartPlugin;
 import net.akazukin.mapart.doma.MapartSQLConfig;
 import net.akazukin.mapart.doma.dto.MapartLandDto;
@@ -45,7 +44,6 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.WorldCreator;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.Action;
@@ -69,22 +67,25 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class MapartManager implements Listenable {
-    public final static Map<Long, MapartManager> singletons = new HashMap<>();
+    public final static Map<Integer, MapartManager> singletons = new ConcurrentHashMap<>();
+    public final static Map<UUID, Long> LAST_DELETED = new HashMap<>();
+    public final static List<UUID> CLEANING = new ArrayList<>();
     private static final Logger log = LoggerFactory.getLogger(MapartManager.class);
     @Getter
     private static final Map<UUID, Location> lastPos = new HashMap<>();
     public static int MAP_SIZE = 8;
-
     @Getter
-    private final long size;
+    private final int size;
 
-    private MapartManager(final long size) {
+    private WorldData worldData;
+
+    private MapartManager(final int size) {
         this.size = size;
 
         MapartPlugin.EVENT_MANAGER.registerListener(this);
     }
 
-    public static MapartManager singleton(final long size) {
+    public static MapartManager singleton(final int size) {
         if (!MapartManager.singletons.containsKey(size)) MapartManager.singletons.put(size, new MapartManager(size));
         return MapartManager.singletons.get(size);
     }
@@ -97,20 +98,23 @@ public class MapartManager implements Listenable {
     }
 
     public World getWorld() {
-        final MMapartWorld w = MapartSQLConfig.singleton().getTransactionManager().required(() ->
-                MMapartWorldRepo.select(this.size));
-        if (w == null || w.getUuid() == null) return generateWorld();
+        if (this.worldData != null) {
+            final World w = Bukkit.getWorld(this.worldData.getUid());
 
-        World w2 = Bukkit.getWorld(w.getUuid());
-        if (w2 != null) return w2;
+            if (w != null &&
+                    Objects.equals(w.getName(), this.worldData.getName()) &&
+                    Objects.equals(w.getUID(), this.worldData.getUid()))
+                return w;
 
-        return generateWorld();
+            this.removeWorld();
+        }
+
+        final World w2 = this.generateWorld();
+        if (w2 != null) this.worldData = new WorldData(w2.getUID(), w2.getName());
+        return w2;
     }
 
     public World generateWorld() {
-        if (new File(Bukkit.getWorldContainer(), getWorldName()).exists())
-            return Bukkit.createWorld(WorldCreator.name(getWorldName()));
-
         MapartPlugin.MESSAGE_HELPER.broadcast(I18n.of("library.message.world.generating"));
         final World w = MapartPlugin.COMPAT.createMapartWorld(this);
         if (w == null) {
@@ -133,17 +137,29 @@ public class MapartManager implements Listenable {
         }
     }
 
-    public String getWorldName() {
-        final MMapartWorld w = MapartSQLConfig.singleton().getTransactionManager().required(() ->
-                MMapartWorldRepo.select(this.size));
-        if (w != null) return w.getWorldName();
+    public boolean removeWorld() {
+        if (this.worldData != null) {
+            WorldUtils.deleteWorld(this.worldData);
+            this.worldData = null;
 
-        return MapartPlugin.CONFIG_UTILS.getConfig("config.yaml").getString("world") + "-x" + this.size;
+            MapartPlugin.MESSAGE_HELPER.broadcast(I18n.of("library.message.world.removing"));
+            MapartSQLConfig.singleton().getTransactionManager().required(() ->
+                    MMapartLandRepo.selectBySize(this.size).forEach(e -> {
+                        MMapartLandRepo.delete(e);
+                        DMapartLandCollaboratorRepo.selectByLand(e.getLandId()).forEach(DMapartLandCollaboratorRepo::delete);
+                    })
+            );
+            MapartPlugin.MESSAGE_HELPER.broadcast(I18n.of("library.message.world.removed"));
+            return true;
+        } else {
+            MapartPlugin.MESSAGE_HELPER.broadcast(I18n.of("library.message.world.notFound"));
+        }
+        return false;
     }
 
     @Nullable
     public static MapartManager singleton(final UUID world) {
-        final Optional<MapartManager> opt = singletons.values().stream()
+        final Optional<MapartManager> opt = MapartManager.singletons.values().stream()
                 .filter(w -> {
                     final World w2 = w.getWorld();
                     return w2 != null && Objects.equals(w2.getUID(), world);
@@ -200,13 +216,34 @@ public class MapartManager implements Listenable {
         });
     }
 
-    public void addProtectedRegion(final String name, final Location min, final Location max) {
-        WorldGuardCompat.createRegion(name, min, max);
+    public static boolean canRemove(final UUID player) {
+        if (MapartManager.CLEANING.contains(player)) {
+            MapartPlugin.MESSAGE_HELPER.sendMessage(player, I18n.of("mapart.land.cleaningNow"));
+            return false;
+        }
+        if (MapartManager.LAST_DELETED.containsKey(player) &&
+                System.currentTimeMillis() - MapartManager.LAST_DELETED.get(player) <= MapartPlugin.CONFIG_UTILS.getConfig("config.yaml").getLong("cooltime.clean") * 1000) {
+            MapartPlugin.MESSAGE_HELPER.sendMessage(player, I18n.of("mapart.land.cleanCooltime"));
+            return false;
+        }
+        return true;
+    }
 
-        WorldGuardCompat.addFlag(this.getWorld(), name, Flags.INTERACT, StateFlag.State.DENY);
-        WorldGuardCompat.addFlag(this.getWorld(), name, Flags.USE, StateFlag.State.DENY);
-        WorldGuardCompat.addFlag(this.getWorld(), name, Flags.ITEM_FRAME_ROTATE, StateFlag.State.DENY);
-        WorldGuardCompat.addFlag(this.getWorld(), name, Flags.ENTRY, StateFlag.State.DENY);
+    public String getWorldName() {
+        if (this.worldData == null) {
+            this.worldData = MapartManager.getWorldDataFromSQL(this.size);
+        }
+        if (this.worldData != null) return this.worldData.getName();
+
+        return MapartPlugin.CONFIG_UTILS.getConfig("config.yaml").getString("world") + "-x" + this.size;
+    }
+
+    public static WorldData getWorldDataFromSQL(final long size) {
+        final MMapartWorld w = MapartSQLConfig.singleton().getTransactionManager().required(() ->
+                MMapartWorldRepo.select(size));
+        if (w == null) return null;
+
+        return new WorldData(w.getUuid(), w.getWorldName());
     }
 
     public MMapartLand lent(final UUID player, final String name, final int height, final int width) {
@@ -326,6 +363,8 @@ public class MapartManager implements Listenable {
     }
 
     public void deleteLand(final long locId, final Runnable doLast) {
+        this.cleanLand(locId, doLast);
+
         WorldGuardCompat.removeAllMembers(this.getWorld(), "mapart-" + locId);
 
         MapartSQLConfig.singleton().getTransactionManager().required(() -> {
@@ -342,84 +381,69 @@ public class MapartManager implements Listenable {
         rg.getMembers().getUniqueIds().stream().map(Bukkit::getPlayer).filter(player -> player != null && rg.contains(player.getLocation().getBlockX(), player.getLocation().getBlockY(), player.getLocation().getBlockZ())).forEach(player -> player.teleport(Bukkit.getWorld("world").getSpawnLocation()));
 
         WorldGuardCompat.removeRegion(this.getWorld(), "mapart-" + locId + "-area");
-
-        this.cleanLand(locId, doLast);
     }
 
     public void cleanLand(final long locId, final Runnable doLast) {
-        Bukkit.getScheduler().runTaskAsynchronously(MapartPlugin.getPlugin(), () -> {
+        new Thread(() -> {
             this.resetLand(locId);
-            doLast.run();
-        });
+            Bukkit.getScheduler().runTask(MapartPlugin.getPlugin(), doLast);
+        }).start();
     }
 
     public void resetLand(final long locId) {
         final int[] loc = MapartManager.getLocation(locId);
-        final int minY = LibraryPlugin.COMPAT.getMinHeight(this.getWorld());
-        final int maxY = this.getWorld().getMaxHeight();
-        final ExecutorService pool =
-                Executors.newFixedThreadPool(MapartPlugin.CONFIG_UTILS.getConfig("config.yaml").getInt("workers" +
-                        ".thread"));
-        for (int i = 0; i < this.size * MapartManager.MAP_SIZE; i++) {
-            for (int i2 = 0; i2 < this.size * MapartManager.MAP_SIZE; i2++) {
-                if (!this.getWorld().isChunkLoaded(loc[0] + i, loc[1] + i2)) continue;
-                final int finalI = i;
-                final int finalI1 = i2;
-                pool.execute(() -> {
+        final World w = this.getWorld();
+        final int min = LibraryPlugin.COMPAT.getMinHeight(w);
 
-                    final Location maxLoc = new Location(this.getWorld(),
-                            ((loc[0] * (this.size * MapartManager.MAP_SIZE)) - 4 - finalI) * 16,
-                            maxY,
-                            ((loc[1] * (this.size * MapartManager.MAP_SIZE)) - 4 - finalI1) * 16
-                    );
-                    final Location minLoc = maxLoc.clone().add(
-                            -16,
-                            0,
-                            -16
-                    );
+        final Vec3i maxLoc_ = new Vec3i(
+                ((loc[0] * (this.size * MapartManager.MAP_SIZE)) - 4) * 16,
+                Math.min(w.getMaxHeight() - 1,
+                        min + MapartPlugin.CONFIG_UTILS.getConfig("config.yaml").getInt("limit.land.height")),
+                ((loc[1] * (this.size * MapartManager.MAP_SIZE)) - 4) * 16
+        );
+        final Vec3i minLoc_ = maxLoc_.clone().add(
+                -(this.size * MapartManager.MAP_SIZE) * 16,
+                0,
+                -(this.size * MapartManager.MAP_SIZE) * 16
+        );
+        maxLoc_.add(-1, 0, -1);
+        minLoc_.setY(min + 1);
 
-                    maxLoc.add(-1, 0, -1);
-                    minLoc.setY(minY + 1);
-
-                    WorldEditCompat.fill(
-                            minLoc, maxLoc,
-                            new ChancePattern(Material.AIR.createBlockData(), 1)
-                    );
-                });
-            }
-        }
-        pool.shutdown();
-        try {
-            pool.awaitTermination(30L, TimeUnit.MINUTES);
-        } catch (final InterruptedException e) {
-            MapartPlugin.getLogManager().log(Level.SEVERE, "Failed to reset land", e);
-        }
+        final EditSession session = new EditSession(
+                MapartPlugin.CONFIG_UTILS.getConfig("config.yaml").getInt("thread"),
+                w);
+        session.setBlock(
+                new Region<>(new Vec3i(maxLoc_), new Vec3i(minLoc_)),
+                LibraryPlugin.COMPAT.getNMSNewBlockDate(Material.AIR, (byte) 0)
+        );
+        session.complete();
     }
 
-    public void teleportLand(final long landId, final UUID player, final boolean isForce) {
+    public boolean teleportLand(final long landId, final UUID player, final boolean isForce) {
         final Player p = Bukkit.getPlayer(player);
-        if (p == null) return;
+        if (p == null) return false;
 
-        if (!isForce && MapartPlugin.CONFIG_UTILS.getConfig("config.yaml").getInt("teleport.cooltime") != -1) {
+        if (!isForce) {
             final long lastDmg = PlayerManager.SINGLETON.getLastDamageTick(player);
             final long lastMoved = PlayerManager.SINGLETON.getLastMovedTick(player);
-            final long lastPos = PlayerManager.SINGLETON.getLastPosTick(player);
-            final long lastRot = PlayerManager.SINGLETON.getLastRotatedTick(player);
             final long lastInteract = PlayerManager.SINGLETON.getLastInteractTick(player);
-            if (lastDmg != -1 && lastDmg <= 10 * 20) {
-                MapartPlugin.MESSAGE_HELPER.sendMessage(player, I18n.of("library.message.teleport.combating"));
-                return;
-            } else if (lastMoved != -1 && lastMoved <= 10 * 20 ||
-                    lastInteract != -1 && lastInteract <= 10 * 20) {
-                MapartPlugin.MESSAGE_HELPER.sendMessage(player, I18n.of("library.message.teleport.dontMove"));
-                return;
+
+            final int sec = MapartPlugin.CONFIG_UTILS.getConfig("config.yaml").getInt("cooltime.teleport");
+
+            if (lastDmg != -1 && lastDmg <= sec * 20L) {
+                MapartPlugin.MESSAGE_HELPER.sendMessage(player, I18n.of("library.message.teleport.combating"), sec);
+                return false;
+            } else if ((lastMoved != -1 && lastMoved <= sec * 20L) ||
+                    (lastInteract != -1 && lastInteract <= sec * 20L)) {
+                MapartPlugin.MESSAGE_HELPER.sendMessage(player, I18n.of("library.message.teleport.dontMove"), sec);
+                return false;
             }
         }
 
-        World w = getWorld();
+        final World w = this.getWorld();
         if (w == null) {
             MapartPlugin.MESSAGE_HELPER.sendMessage(player, I18n.of("library.message.world.notFound"));
-            return;
+            return false;
         }
 
         MapartPlugin.MESSAGE_HELPER.sendMessage(player, I18n.of("library.message.teleporting"));
@@ -433,27 +457,8 @@ public class MapartManager implements Listenable {
                         ((loc[1] * (this.size * MapartManager.MAP_SIZE)) - 4) * 16 - 0.5
                 )
         );
-    }
 
-    public boolean removeWorld() {
-        final World world = this.getWorld();
-        if (world != null) {
-            MapartPlugin.MESSAGE_HELPER.broadcast(I18n.of("library.message.world.removing"));
-            WorldGuardCompat.removeRegion(world);
-            Bukkit.unloadWorld(world, false);
-            FileUtils.delete(world.getWorldFolder());
-            MapartSQLConfig.singleton().getTransactionManager().required(() ->
-                    MMapartLandRepo.selectBySize(this.size).forEach(e -> {
-                        MMapartLandRepo.delete(e);
-                        DMapartLandCollaboratorRepo.selectByLand(e.getLandId()).forEach(DMapartLandCollaboratorRepo::delete);
-                    })
-            );
-            MapartPlugin.MESSAGE_HELPER.broadcast(I18n.of("library.message.world.removed"));
-            return true;
-        } else {
-            MapartPlugin.MESSAGE_HELPER.broadcast(I18n.of("library.message.world.notFound"));
-        }
-        return false;
+        return true;
     }
 
     @EventTarget
@@ -610,6 +615,14 @@ public class MapartManager implements Listenable {
 
     private static void onBlockCanBuild_(final BlockCanBuildEvent event) {
         if (!event.isBuildable()) return;
+
+        if (event.getBlock().getY() >
+                MapartPlugin.CONFIG_UTILS.getConfig("config.yaml").getInt("limit.land.height") +
+                        LibraryPlugin.COMPAT.getMinHeight(event.getBlock().getWorld())
+        ) {
+            event.setBuildable(false);
+            return;
+        }
 
         Class<?> data;
         try {

@@ -14,7 +14,7 @@ import org.seasar.doma.Version;
 public class MMapartWorld {
     @Column(name = "LAND_SIZE")
     @Id
-    private long landSize;
+    private int landSize;
 
     @Column(name = "WORLD_NAME")
     private String worldName;

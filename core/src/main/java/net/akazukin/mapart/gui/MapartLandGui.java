@@ -201,28 +201,40 @@ public class MapartLandGui extends ChestGuiBase {
             .contains(player.getLocation().getBlockX(), player.getLocation().getBlockY(), player.getLocation()
             .getBlockZ())).forEach(player -> MapartManager.teleportLand(this.landId, player.getUniqueId(), false));
         }*/
+        final boolean isOwner = MapartManager.getLandData(this.landId).getOwnerUUID().equals(this.player);
         if (this.removeLandGui.getResult() != null && this.removeLandGui.getResult()) {
             this.removeLandGui.reset();
+            if (!isOwner || MapartManager.canRemove(this.player)) {
+                if (isOwner) MapartManager.CLEANING.add(this.player);
 
-            MapartPlugin.MESSAGE_HELPER.sendMessage(this.player, I18n.of("mapart.land.removing"));
+                MapartPlugin.MESSAGE_HELPER.sendMessage(this.player, I18n.of("mapart.land.removing"));
+                mgr.deleteLand(land.getLocationId(), () -> {
+                    if (isOwner) MapartManager.CLEANING.remove(this.player);
+                    if (isOwner) MapartManager.LAST_DELETED.put(this.player, System.currentTimeMillis());
+                    MapartPlugin.MESSAGE_HELPER.sendMessage(this.player, I18n.of("mapart.land.removed"));
+                });
 
-            mgr.deleteLand(land.getLocationId(), () ->
-                    MapartPlugin.MESSAGE_HELPER.sendMessage(this.player, I18n.of("mapart.land.removed")));
+                GuiManager.singleton().setScreen(this.player, () -> this.prevGui);
 
-            GuiManager.singleton().setScreen(this.player, () -> this.prevGui);
-
-            return super.getInventory();
+                return super.getInventory();
+            }
         }
         if (this.cleanLandGui.getResult() != null && this.cleanLandGui.getResult()) {
             this.cleanLandGui.reset();
+            if (!isOwner || MapartManager.canRemove(this.player)) {
+                if (isOwner) MapartManager.CLEANING.add(this.player);
 
-            MapartPlugin.MESSAGE_HELPER.sendMessage(this.player, I18n.of("mapart.land.cleaning"));
+                MapartPlugin.MESSAGE_HELPER.sendMessage(this.player, I18n.of("mapart.land.cleaning"));
+                mgr.cleanLand(land.getLocationId(), () -> {
+                    if (isOwner) MapartManager.CLEANING.remove(this.player);
+                    if (isOwner) MapartManager.LAST_DELETED.put(this.player, System.currentTimeMillis());
+                    MapartPlugin.MESSAGE_HELPER.sendMessage(this.player, I18n.of("mapart.land.cleaned"));
+                });
 
-            mgr.cleanLand(land.getLocationId(), () ->
-                    MapartPlugin.MESSAGE_HELPER.sendMessage(this.player, I18n.of("mapart.land.cleaned")));
-            Bukkit.getScheduler().scheduleSyncDelayedTask(MapartPlugin.getPlugin(), () ->
-                    GuiManager.singleton().setScreen(this.player, () -> this.prevGui));
-            return super.getInventory();
+                Bukkit.getScheduler().scheduleSyncDelayedTask(MapartPlugin.getPlugin(), () ->
+                        GuiManager.singleton().setScreen(this.player, () -> this.prevGui));
+                return super.getInventory();
+            }
         }
 
         final Inventory inv = super.getInventory();

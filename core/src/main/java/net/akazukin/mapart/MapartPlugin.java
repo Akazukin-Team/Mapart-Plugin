@@ -25,6 +25,7 @@ import net.akazukin.mapart.doma.dao.DMapartLandCollaboratorDaoImpl;
 import net.akazukin.mapart.doma.dao.MMapartLandDaoImpl;
 import net.akazukin.mapart.doma.dao.MMapartUserDaoImpl;
 import net.akazukin.mapart.doma.dao.MMapartWorldDaoImpl;
+import net.akazukin.mapart.doma.repo.MMapartWorldRepo;
 import net.akazukin.mapart.event.Events;
 import net.akazukin.mapart.event.GrimACEvents;
 import net.akazukin.mapart.event.MapartEventManager;
@@ -51,6 +52,8 @@ public final class MapartPlugin extends JavaPlugin {
 
     @Override
     public void onLoad() {
+        MapartPlugin.PLUGIN_NAME = this.getName();
+
         MapartPlugin.getPlugin().getLogger().addHandler(new Handler() {
             private final File file = new File(MapartPlugin.getPlugin().getDataFolder(), "error.log");
 
@@ -79,6 +82,25 @@ public final class MapartPlugin extends JavaPlugin {
             public void close() throws SecurityException {
             }
         });
+
+
+        try {
+            Files.createDirectories(this.getDataFolder().toPath());
+        } catch (final IOException e) {
+            throw new RuntimeException(e);
+        }
+
+
+        MapartPlugin.getLogManager().info("Initializing database...");
+        MapartSQLConfig.setFile(new File(this.getDataFolder(), "mapart.db"));
+        final MapartSQLConfig sqlCfg = MapartSQLConfig.singleton();
+        sqlCfg.getTransactionManager().required(() -> {
+            new DMapartLandCollaboratorDaoImpl(sqlCfg).create();
+            new MMapartLandDaoImpl(sqlCfg).create();
+            new MMapartUserDaoImpl(sqlCfg).create();
+            new MMapartWorldDaoImpl(sqlCfg).create();
+        });
+        MapartPlugin.getLogManager().info("Successfully Initialized database");
     }
 
     public static MapartPlugin getPlugin() {
@@ -103,27 +125,6 @@ public final class MapartPlugin extends JavaPlugin {
             this.setEnabled(false);
             return;
         }
-
-        MapartPlugin.PLUGIN_NAME = this.getName();
-
-        try {
-            Files.createDirectories(this.getDataFolder().toPath());
-        } catch (final IOException e) {
-            throw new RuntimeException(e);
-        }
-
-
-        MapartPlugin.getLogManager().info("Initializing database...");
-        MapartSQLConfig.setFile(new File(this.getDataFolder(), "mapart.db"));
-        final MapartSQLConfig sqlCfg = MapartSQLConfig.singleton();
-        sqlCfg.getTransactionManager().required(() -> {
-            new DMapartLandCollaboratorDaoImpl(sqlCfg).create();
-            new MMapartLandDaoImpl(sqlCfg).create();
-            new MMapartUserDaoImpl(sqlCfg).create();
-            new MMapartWorldDaoImpl(sqlCfg).create();
-        });
-        MapartPlugin.getLogManager().info("Successfully Initialized database");
-
 
         MapartPlugin.getLogManager().info("Initializing version manager...");
         MapartPlugin.COMPAT = CompatManager.initCompat();
@@ -156,6 +157,12 @@ public final class MapartPlugin extends JavaPlugin {
         MapartPlugin.getLogManager().info("Successfully Initialized event manager");
 
 
+        MapartPlugin.getLogManager().info("Initializing worlds for mapart...");
+        MapartSQLConfig.singleton().getTransactionManager().required(MMapartWorldRepo::selectAll)
+                .forEach(w -> MapartManager.singleton(w.getLandSize()).generateWorld());
+        MapartPlugin.getLogManager().info("Successfully Initialized worlds");
+
+
         MapartPlugin.getLogManager().info("Initializing command manager...");
         MapartPlugin.COMMAND_MANAGER = new MapartCommandManager(this);
         MapartPlugin.COMMAND_MANAGER.registerCommands();
@@ -169,7 +176,7 @@ public final class MapartPlugin extends JavaPlugin {
         MapartPlugin.getLogManager().info("Successfully Initialized command manager");
 
 
-        Bukkit.broadcastMessage("Successfully enabled");
+        MapartPlugin.getLogManager().info("Successfully enabled");
     }
 
     public static Logger getLogManager() {
