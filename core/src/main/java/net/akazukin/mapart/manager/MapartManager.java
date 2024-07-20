@@ -107,32 +107,10 @@ public class MapartManager implements Listenable {
             this.removeWorld();
         }
 
-        final World w2 = this.generateWorld();
-        if (w2 != null) this.worldData = new WorldData(w2.getUID(), w2.getName());
-        return w2;
-    }
+        final World w3 = WorldUtils.getOrLoadWorld(worldData, this::generateWorld);
 
-    public World generateWorld() {
-        MapartPlugin.MESSAGE_HELPER.broadcast(I18n.of("library.message.world.generating"));
-        final World w = MapartPlugin.COMPAT.createMapartWorld(this);
-        if (w == null) {
-            MapartPlugin.MESSAGE_HELPER.broadcast(I18n.of("library.message.world.generate.failed"));
-            return null;
-        } else {
-            MapartSQLConfig.singleton().getTransactionManager().required(() -> {
-                final MMapartWorld e = MMapartWorldRepo.select(this.size);
-                if (e != null) MMapartWorldRepo.delete(e);
-
-                final MMapartWorld e2 = new MMapartWorld();
-                e2.setLandSize(this.size);
-                e2.setWorldName(w.getName());
-                e2.setUuid(w.getUID());
-                MMapartWorldRepo.save(e2);
-            });
-            w.setAutoSave(true);
-            MapartPlugin.MESSAGE_HELPER.broadcast(I18n.of("library.message.world.generate.success"));
-            return w;
-        }
+        if (w3 != null) this.worldData = new WorldData(w3.getUID(), w3.getName());
+        return w3;
     }
 
     public boolean removeWorld() {
@@ -169,6 +147,29 @@ public class MapartManager implements Listenable {
         if (w == null) return null;
 
         return new WorldData(w.getUuid(), w.getWorldName());
+    }
+
+    public World generateWorld() {
+        MapartPlugin.MESSAGE_HELPER.broadcast(I18n.of("library.message.world.generating"));
+        final World w = MapartPlugin.COMPAT.createMapartWorld(this);
+        if (w == null) {
+            MapartPlugin.MESSAGE_HELPER.broadcast(I18n.of("library.message.world.generate.failed"));
+            return null;
+        } else {
+            MapartSQLConfig.singleton().getTransactionManager().required(() -> {
+                final MMapartWorld e = MMapartWorldRepo.select(this.size);
+                if (e != null) MMapartWorldRepo.delete(e);
+
+                final MMapartWorld e2 = new MMapartWorld();
+                e2.setLandSize(this.size);
+                e2.setWorldName(w.getName());
+                e2.setUuid(w.getUID());
+                MMapartWorldRepo.save(e2);
+            });
+            w.setAutoSave(true);
+            MapartPlugin.MESSAGE_HELPER.broadcast(I18n.of("library.message.world.generate.success"));
+            return w;
+        }
     }
 
     @Nullable
