@@ -5,8 +5,8 @@ plugins {
 }
 
 dependencies {
-    include("com.google.code.gson:gson:2.10.1")
-    compileOnly 'com.github.MWHunter:GrimAPI:9f5aaef74b'
+    include libs.grimac
+    compileOnly libs.grimac
 }
 
 application {
