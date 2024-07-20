@@ -6,8 +6,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
-import java.util.Map;
-import java.util.UUID;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
@@ -32,9 +30,7 @@ import net.akazukin.mapart.event.MapartEventManager;
 import net.akazukin.mapart.event.TownyEvents;
 import net.akazukin.mapart.manager.MapartManager;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.command.PluginCommand;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class MapartPlugin extends JavaPlugin {
@@ -109,12 +105,9 @@ public final class MapartPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        for (final Map.Entry<UUID, Location> entry : MapartManager.getLastPos().entrySet()) {
-            final Player p = Bukkit.getPlayer(entry.getKey());
-            if (p != null && MapartManager.isMapartWorld(p.getWorld()))
-                p.teleport(entry.getValue());
-            MapartManager.getLastPos().remove(entry.getKey());
-        }
+        this.getServer().getOnlinePlayers().stream()
+                .filter(p -> MapartManager.isMapartWorld(p.getWorld()))
+                .forEach(MapartManager::teleportLastPos);
     }
 
     @Override

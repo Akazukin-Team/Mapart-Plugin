@@ -18,7 +18,7 @@ public class MMapartLandRepo {
         return MMapartLandRepo.M_MAPART_LAND_DAO.selectBySize(size);
     }
 
-    public static MMapartLand selectByOwner(final long land) {
+    public static MMapartLand selectByLand(final long land) {
         return MMapartLandRepo.M_MAPART_LAND_DAO.selectByLand(land);
     }
 

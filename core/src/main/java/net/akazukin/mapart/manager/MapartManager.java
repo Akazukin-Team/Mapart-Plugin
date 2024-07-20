@@ -56,6 +56,7 @@ import org.bukkit.event.block.EntityBlockFormEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityPlaceEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
+import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.event.entity.ExplosionPrimeEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -182,12 +183,14 @@ public class MapartManager implements Listenable {
                 entity.setCollaboratorUuid(player);
                 DMapartLandCollaboratorRepo.save(entity);
 
-                return MMapartWorldRepo.select(MMapartLandRepo.selectByOwner(landId).getSize());
+                return MMapartWorldRepo.select(MMapartLandRepo.selectByLand(landId).getSize());
             });
+            final MMapartLand land = MapartSQLConfig.singleton().getTransactionManager().required(() ->
+                    MMapartLandRepo.selectByLand(landId));
 
             WorldGuardCompat.addMember(
                     Bukkit.getWorld(world.getUuid()),
-                    "mapart-" + landId,
+                    "mapart-" + land.getLocationId(),
                     player);
         });
     }
@@ -206,12 +209,14 @@ public class MapartManager implements Listenable {
                     DMapartLandCollaboratorRepo.delete(collabo);
                 }
 
-                return MMapartWorldRepo.select(MMapartLandRepo.selectByOwner(landId).getSize());
+                return MMapartWorldRepo.select(MMapartLandRepo.selectByLand(landId).getSize());
             });
+            final MMapartLand land = MapartSQLConfig.singleton().getTransactionManager().required(() ->
+                    MMapartLandRepo.selectByLand(landId));
 
             WorldGuardCompat.removeMember(
                     Bukkit.getWorld(world.getUuid()),
-                    "mapart-" + landId,
+                    "mapart-" + land.getLocationId(),
                     player);
         });
     }
@@ -221,9 +226,10 @@ public class MapartManager implements Listenable {
             MapartPlugin.MESSAGE_HELPER.sendMessage(player, I18n.of("mapart.land.cleaningNow"));
             return false;
         }
+        final long ct = MapartPlugin.CONFIG_UTILS.getConfig("config.yaml").getLong("cooltime.clean");
         if (MapartManager.LAST_DELETED.containsKey(player) &&
-                System.currentTimeMillis() - MapartManager.LAST_DELETED.get(player) <= MapartPlugin.CONFIG_UTILS.getConfig("config.yaml").getLong("cooltime.clean") * 1000) {
-            MapartPlugin.MESSAGE_HELPER.sendMessage(player, I18n.of("mapart.land.cleanCooltime"));
+                System.currentTimeMillis() - MapartManager.LAST_DELETED.get(player) <= ct * 1000) {
+            MapartPlugin.MESSAGE_HELPER.sendMessage(player, I18n.of("mapart.land.cleanCooltime"), ct);
             return false;
         }
         return true;
@@ -368,7 +374,7 @@ public class MapartManager implements Listenable {
         WorldGuardCompat.removeAllMembers(this.getWorld(), "mapart-" + locId);
 
         MapartSQLConfig.singleton().getTransactionManager().required(() -> {
-            final MMapartLand land = MMapartLandRepo.selectByOwner(locId);
+            final MMapartLand land = MMapartLandRepo.selectByLand(locId);
             if (land != null) MMapartLandRepo.delete(land);
 
             final List<DMapartLandCollaborator> collabos = DMapartLandCollaboratorRepo.selectByLand(locId);
@@ -384,10 +390,11 @@ public class MapartManager implements Listenable {
     }
 
     public void cleanLand(final long locId, final Runnable doLast) {
-        new Thread(() -> {
+        Bukkit.getScheduler().runTaskAsynchronously(MapartPlugin.getPlugin(), () -> {
+            //new Thread(() -> {
             this.resetLand(locId);
-            Bukkit.getScheduler().runTask(MapartPlugin.getPlugin(), doLast);
-        }).start();
+            doLast.run();
+        });//.start();
     }
 
     public void resetLand(final long locId) {
@@ -419,7 +426,7 @@ public class MapartManager implements Listenable {
         session.complete();
     }
 
-    public boolean teleportLand(final long landId, final UUID player, final boolean isForce) {
+    public boolean teleportLand(final long locId, final UUID player, final boolean isForce) {
         final Player p = Bukkit.getPlayer(player);
         if (p == null) return false;
 
@@ -448,7 +455,7 @@ public class MapartManager implements Listenable {
 
         MapartPlugin.MESSAGE_HELPER.sendMessage(player, I18n.of("library.message.teleporting"));
 
-        final int[] loc = MapartManager.getLocation(landId);
+        final int[] loc = MapartManager.getLocation(locId);
         p.teleport(
                 new Location(
                         w,
@@ -525,6 +532,12 @@ public class MapartManager implements Listenable {
 
     @EventTarget(bktPriority = EventPriority.HIGH)
     public void onEntityDamage(final EntityDamageEvent event) {
+        if (this.getWorld() == null || event.getEntity().getWorld().getUID() != this.getWorld().getUID()) return;
+        event.setCancelled(true);
+    }
+
+    @EventTarget(bktPriority = EventPriority.HIGH)
+    public void onEntitySpawn(final EntitySpawnEvent event) {
         if (this.getWorld() == null || event.getEntity().getWorld().getUID() != this.getWorld().getUID()) return;
         event.setCancelled(true);
     }
@@ -790,14 +803,16 @@ public class MapartManager implements Listenable {
     @EventTarget
     public void onPlayerQuit(final PlayerQuitEvent event) {
         if (this.getWorld() == null || event.getPlayer().getWorld().getUID() != this.getWorld().getUID()) return;
-        MapartManager.onPlayerQuit_(event);
+        MapartManager.teleportLastPos(event.getPlayer());
     }
 
-    private static void onPlayerQuit_(final PlayerQuitEvent event) {
-        if (MapartManager.lastPos.containsKey(event.getPlayer().getUniqueId())) {
-            event.getPlayer().teleport(MapartManager.lastPos.get(event.getPlayer().getUniqueId()));
-            MapartManager.lastPos.remove(event.getPlayer().getUniqueId());
+    public static boolean teleportLastPos(final Player p) {
+        if (lastPos.containsKey(p.getUniqueId())) {
+            p.teleport(MapartManager.lastPos.get(p.getUniqueId()));
+            MapartManager.lastPos.remove(p.getUniqueId());
+            return true;
         }
+        return false;
     }
 
     @Override

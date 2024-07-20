@@ -15,6 +15,7 @@ import org.bukkit.event.enchantment.PrepareItemEnchantEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityPlaceEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
+import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.event.entity.ExplosionPrimeEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.PrepareAnvilEvent;
@@ -68,6 +69,11 @@ public class Events implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onBlockFrom(final BlockFormEvent event) {
+        this.callEvent(event, EventPriority.HIGH);
+    }
+
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onEntitySpawn(final EntitySpawnEvent event) {
         this.callEvent(event, EventPriority.HIGH);
     }
 
