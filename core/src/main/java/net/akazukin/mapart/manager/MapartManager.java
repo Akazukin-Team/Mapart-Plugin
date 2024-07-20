@@ -99,14 +99,11 @@ public class MapartManager implements Listenable {
     }
 
     public World getWorld() {
-        if (this.worldData != null) {
-            final World w = Bukkit.getWorld(this.worldData.getUid());
+        final WorldData worldData = this.getWorldData();
 
-            if (w != null &&
-                    Objects.equals(w.getName(), this.worldData.getName()) &&
-                    Objects.equals(w.getUID(), this.worldData.getUid()))
-                return w;
-
+        final World w = WorldUtils.getWorld(this.worldData);
+        if (w != null) {
+            if (worldData.equalsBkt(w)) return w;
             this.removeWorld();
         }
 
@@ -156,6 +153,22 @@ public class MapartManager implements Listenable {
             MapartPlugin.MESSAGE_HELPER.broadcast(I18n.of("library.message.world.notFound"));
         }
         return false;
+    }
+
+    public WorldData getWorldData() {
+        if (this.worldData == null) this.worldData = getWorldDataFromSQL(this.size);
+        if (this.worldData == null)
+            this.worldData = new WorldData(null,
+                    MapartPlugin.CONFIG_UTILS.getConfig("config.yaml").getString("world") + "-x" + this.size);
+        return this.worldData;
+    }
+
+    public static WorldData getWorldDataFromSQL(final long size) {
+        final MMapartWorld w = MapartSQLConfig.singleton().getTransactionManager().required(() ->
+                MMapartWorldRepo.select(size));
+        if (w == null) return null;
+
+        return new WorldData(w.getUuid(), w.getWorldName());
     }
 
     @Nullable
@@ -233,23 +246,6 @@ public class MapartManager implements Listenable {
             return false;
         }
         return true;
-    }
-
-    public String getWorldName() {
-        if (this.worldData == null) {
-            this.worldData = MapartManager.getWorldDataFromSQL(this.size);
-        }
-        if (this.worldData != null) return this.worldData.getName();
-
-        return MapartPlugin.CONFIG_UTILS.getConfig("config.yaml").getString("world") + "-x" + this.size;
-    }
-
-    public static WorldData getWorldDataFromSQL(final long size) {
-        final MMapartWorld w = MapartSQLConfig.singleton().getTransactionManager().required(() ->
-                MMapartWorldRepo.select(size));
-        if (w == null) return null;
-
-        return new WorldData(w.getUuid(), w.getWorldName());
     }
 
     public MMapartLand lent(final UUID player, final String name, final int height, final int width) {

@@ -13,7 +13,7 @@ public class Module_1_7_to_1_16 {
     private final Module_1_7_to_1_16 SINGLETON = new Module_1_7_to_1_16();
 
     public World createMapartWorld(final MapartManager mgr) {
-        final WorldCreator wc = new WorldCreator(mgr.getWorldName());
+        final WorldCreator wc = new WorldCreator(mgr.getWorldData().getName());
         wc.environment(World.Environment.NORMAL);
         wc.generator(new MapartChunkGenerator());
         final World world = Bukkit.createWorld(wc);
