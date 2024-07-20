@@ -17,7 +17,7 @@ dependencies {
         compileOnly "com.sk89q.worldguard:worldguard-bukkit:${project.worldguard_version}"
         compileOnly "com.sk89q.worldguard:worldguard-core:${project.worldguard_version}"
     }
-    compileOnly 'com.palmergames.bukkit.towny:towny:0.100.2.0'
+    compileOnly libs.towny
 
-    pluginImpl "net.akazukin:plugin-library:1.2.0"
+    pluginImpl libs.akz.libs
 }

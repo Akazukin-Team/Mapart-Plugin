@@ -1,14 +1,15 @@
-workers:
-  thread: 50
+thread: 100
 
 world: mapart
 
 limit:
   collaborator: 10
   land:
-    default: 5
+    default: 20
     max: 50
-    size: 8
+    size: 4
+    height: 150
 
-teleport:
-  cooltime: 10 #Seconds (disable: -1)
+cooltime:
+  teleport: 10 #Seconds
+  clean: 300 #Seconds

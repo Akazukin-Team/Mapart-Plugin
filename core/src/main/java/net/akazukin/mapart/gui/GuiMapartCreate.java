@@ -146,7 +146,7 @@ public class GuiMapartCreate extends ChestGuiBase {
             if (MapartSQLConfig.singleton().getTransactionManager().required(() -> {
                 final MMapartUser e = MMapartUserRepo.selectByPlayer(this.player);
                 if (e == null || e.getMaxLand() == null)
-                    return MapartPlugin.CONFIG_UTILS.getConfig("config.yaml").getInt("limit.land.max");
+                    return MapartPlugin.CONFIG_UTILS.getConfig("config.yaml").getInt("limit.land.default");
                 return e.getMaxLand();
             }) <=
                     MapartSQLConfig.singleton().getTransactionManager().required(() ->
@@ -162,7 +162,7 @@ public class GuiMapartCreate extends ChestGuiBase {
                             this.heightSelector.getResult(), this.widthSelector.getResult()
                     ));
 
-                    World w = mgr.getWorld();
+                    final World w = mgr.getWorld();
                     if (w == null) {
                         MapartPlugin.MESSAGE_HELPER.sendMessage(
                                 event.getWhoClicked(),

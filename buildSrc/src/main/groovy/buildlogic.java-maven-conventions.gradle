@@ -12,6 +12,13 @@ configurations {
 
 repositories {
     mavenCentral()
+
+    repositories {
+        maven {
+            name "Jitpack"
+            url "https://jitpack.io/"
+        }
+    }
 }
 
 tasks.register("sourcesJar", Jar) {

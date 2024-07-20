@@ -66,3 +66,5 @@ mapart.panel.manage.maxLand.item                = §a土地の最大数を設定
 mapart.panel.manage.maparts.item                = §aマップアートを管理する
 mapart.panel.manage.user.head.lore.maxLand      = §e最大土地数: §a<args[0]>
 mapart.panel.manage.user.head.lore.countLand    = §e土地数: §a<args[0]>
+mapart.land.cleanCooltime    = §c土地のクリーンアップをするには、<args[0]>秒待ってから再実行してください。
+mapart.land.cleaningNow    = §c土地のクリーンアップをするには、すべての土地のクリーンアップの処理が終わっている必要があります。

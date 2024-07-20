@@ -13,6 +13,7 @@ import net.akazukin.library.utils.MessageHelper;
 import net.akazukin.library.utils.StringUtils;
 import net.akazukin.mapart.MapartPlugin;
 import org.bukkit.Bukkit;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.enchantment.PrepareItemEnchantEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.PrepareAnvilEvent;
@@ -48,17 +49,13 @@ public class CopyrightManager implements Listenable {
         return null;
     }
 
-    @EventTarget
+    @EventTarget(bktPriority = EventPriority.HIGH)
     public void onInventoryClick(final InventoryClickEvent event) {
-        if (event.getClickedInventory() == null || event.isCancelled()) return;
-        try {
-            if (Class.forName("org.bukkit.inventory.CartographyInventory").isAssignableFrom(event.getClickedInventory().getClass())) {
-                final ItemStack result = event.getClickedInventory().getItem(2);
-                if (result != null && hasCopyright(result) && isOwner(result, event.getWhoClicked().getUniqueId())) {
-                    event.setCancelled(true);
-                }
+        if (event.getClickedInventory() instanceof org.bukkit.inventory.CartographyInventory) {
+            final ItemStack result = event.getInventory().getItem(2);
+            if (result != null && hasCopyright(result) && !isOwner(result, event.getWhoClicked().getUniqueId())) {
+                event.getView().setItem(2, null);
             }
-        } catch (final ClassNotFoundException ignored) {
         }
     }
 
@@ -71,14 +68,14 @@ public class CopyrightManager implements Listenable {
                 "AKZ_MAPART_COPYRIGHT_OWNER")));
     }
 
-    @EventTarget
+    @EventTarget(bktPriority = EventPriority.HIGH)
     public void onPrepareItemCraft(final PrepareItemCraftEvent event) {
         if (event.getInventory().getResult() != null && hasCopyright(event.getInventory().getResult()) && isOwner(event.getInventory().getResult(), event.getView().getPlayer().getUniqueId())) {
             event.getInventory().setResult(null);
         }
     }
 
-    @EventTarget
+    @EventTarget(bktPriority = EventPriority.HIGH)
     public void onPrepareAnvil(final PrepareAnvilEvent event) {
         if (event.getResult() != null && hasCopyright(event.getResult()) && isOwner(event.getResult(),
                 event.getView().getPlayer().getUniqueId())) {
@@ -86,8 +83,8 @@ public class CopyrightManager implements Listenable {
         }
     }
 
-    @EventTarget
-    public void onPrepareAnvil(final PrepareItemEnchantEvent event) {
+    @EventTarget(bktPriority = EventPriority.HIGH)
+    public void onPrepareEnch(final PrepareItemEnchantEvent event) {
         if (event.isCancelled()) return;
         if (hasCopyright(event.getItem()) && isOwner(event.getItem(), event.getView().getPlayer().getUniqueId())) {
             event.setCancelled(true);

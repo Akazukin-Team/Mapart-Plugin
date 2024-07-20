@@ -6,8 +6,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
-import java.util.Map;
-import java.util.UUID;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
@@ -25,15 +23,14 @@ import net.akazukin.mapart.doma.dao.DMapartLandCollaboratorDaoImpl;
 import net.akazukin.mapart.doma.dao.MMapartLandDaoImpl;
 import net.akazukin.mapart.doma.dao.MMapartUserDaoImpl;
 import net.akazukin.mapart.doma.dao.MMapartWorldDaoImpl;
+import net.akazukin.mapart.doma.repo.MMapartWorldRepo;
 import net.akazukin.mapart.event.Events;
 import net.akazukin.mapart.event.GrimACEvents;
 import net.akazukin.mapart.event.MapartEventManager;
 import net.akazukin.mapart.event.TownyEvents;
 import net.akazukin.mapart.manager.MapartManager;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.command.PluginCommand;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class MapartPlugin extends JavaPlugin {
@@ -51,6 +48,8 @@ public final class MapartPlugin extends JavaPlugin {
 
     @Override
     public void onLoad() {
+        MapartPlugin.PLUGIN_NAME = this.getName();
+
         MapartPlugin.getPlugin().getLogger().addHandler(new Handler() {
             private final File file = new File(MapartPlugin.getPlugin().getDataFolder(), "error.log");
 
@@ -79,32 +78,7 @@ public final class MapartPlugin extends JavaPlugin {
             public void close() throws SecurityException {
             }
         });
-    }
 
-    public static MapartPlugin getPlugin() {
-        return JavaPlugin.getPlugin(MapartPlugin.class);
-    }
-
-    @Override
-    public void onDisable() {
-        for (final Map.Entry<UUID, Location> entry : MapartManager.getLastPos().entrySet()) {
-            final Player p = Bukkit.getPlayer(entry.getKey());
-            if (p != null && MapartManager.isMapartWorld(p.getWorld()))
-                p.teleport(entry.getValue());
-            MapartManager.getLastPos().remove(entry.getKey());
-        }
-    }
-
-    @Override
-    public void onEnable() {
-        final LibraryPlugin library = JavaPlugin.getPlugin(LibraryPlugin.class);
-        if (!library.isEnabled()) {
-            MapartPlugin.getLogManager().severe(library.getName() + " is required to enabled!");
-            this.setEnabled(false);
-            return;
-        }
-
-        MapartPlugin.PLUGIN_NAME = this.getName();
 
         try {
             Files.createDirectories(this.getDataFolder().toPath());
@@ -123,7 +97,27 @@ public final class MapartPlugin extends JavaPlugin {
             new MMapartWorldDaoImpl(sqlCfg).create();
         });
         MapartPlugin.getLogManager().info("Successfully Initialized database");
+    }
 
+    public static MapartPlugin getPlugin() {
+        return JavaPlugin.getPlugin(MapartPlugin.class);
+    }
+
+    @Override
+    public void onDisable() {
+        this.getServer().getOnlinePlayers().stream()
+                .filter(p -> MapartManager.isMapartWorld(p.getWorld()))
+                .forEach(MapartManager::teleportLastPos);
+    }
+
+    @Override
+    public void onEnable() {
+        final LibraryPlugin library = JavaPlugin.getPlugin(LibraryPlugin.class);
+        if (!library.isEnabled()) {
+            MapartPlugin.getLogManager().severe(library.getName() + " is required to enabled!");
+            this.setEnabled(false);
+            return;
+        }
 
         MapartPlugin.getLogManager().info("Initializing version manager...");
         MapartPlugin.COMPAT = CompatManager.initCompat();
@@ -156,6 +150,12 @@ public final class MapartPlugin extends JavaPlugin {
         MapartPlugin.getLogManager().info("Successfully Initialized event manager");
 
 
+        MapartPlugin.getLogManager().info("Initializing worlds for mapart...");
+        MapartSQLConfig.singleton().getTransactionManager().required(MMapartWorldRepo::selectAll)
+                .forEach(w -> MapartManager.singleton(w.getLandSize()).generateWorld());
+        MapartPlugin.getLogManager().info("Successfully Initialized worlds");
+
+
         MapartPlugin.getLogManager().info("Initializing command manager...");
         MapartPlugin.COMMAND_MANAGER = new MapartCommandManager(this);
         MapartPlugin.COMMAND_MANAGER.registerCommands();
@@ -169,7 +169,7 @@ public final class MapartPlugin extends JavaPlugin {
         MapartPlugin.getLogManager().info("Successfully Initialized command manager");
 
 
-        Bukkit.broadcastMessage("Successfully enabled");
+        MapartPlugin.getLogManager().info("Successfully enabled");
     }
 
     public static Logger getLogManager() {
