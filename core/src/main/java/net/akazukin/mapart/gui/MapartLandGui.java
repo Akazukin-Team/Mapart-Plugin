@@ -151,7 +151,7 @@ public class MapartLandGui extends ChestGuiBase {
                             Arrays.stream(this.addCollaboGui.getSelectedPlayers()).map(OfflinePlayer::getName).collect(Collectors.toList())));
 
             MapartManager.addCollaborator(this.landId,
-                    Arrays.stream(this.removeCollaboGui.getSelectedPlayers())
+                    Arrays.stream(this.addCollaboGui.getSelectedPlayers())
                             .map(OfflinePlayer::getUniqueId)
                             .toArray(UUID[]::new));
             this.addCollaboGui = null;
