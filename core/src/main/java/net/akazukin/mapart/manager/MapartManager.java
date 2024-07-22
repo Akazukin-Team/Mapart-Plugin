@@ -99,20 +99,54 @@ public class MapartManager implements Listenable {
     }
 
     public World getWorld() {
-        if (this.worldData != null) {
-            final World w = Bukkit.getWorld(this.worldData.getUid());
+        final WorldData worldData = this.getWorldData();
 
-            if (w != null &&
-                    Objects.equals(w.getName(), this.worldData.getName()) &&
-                    Objects.equals(w.getUID(), this.worldData.getUid()))
-                return w;
-
+        final World w = WorldUtils.getWorld(this.worldData);
+        if (w != null) {
+            if (worldData.equalsBkt(w)) return w;
             this.removeWorld();
         }
 
-        final World w2 = this.generateWorld();
-        if (w2 != null) this.worldData = new WorldData(w2.getUID(), w2.getName());
-        return w2;
+        final World w3 = WorldUtils.getOrLoadWorld(worldData, this::generateWorld);
+
+        if (w3 != null) this.worldData = new WorldData(w3.getUID(), w3.getName());
+        return w3;
+    }
+
+    public boolean removeWorld() {
+        if (this.worldData != null) {
+            WorldUtils.deleteWorld(this.worldData);
+            this.worldData = null;
+
+            MapartPlugin.MESSAGE_HELPER.broadcast(I18n.of("library.message.world.removing"));
+            MapartSQLConfig.singleton().getTransactionManager().required(() ->
+                    MMapartLandRepo.selectBySize(this.size).forEach(e -> {
+                        MMapartLandRepo.delete(e);
+                        DMapartLandCollaboratorRepo.selectByLand(e.getLandId()).forEach(DMapartLandCollaboratorRepo::delete);
+                    })
+            );
+            MapartPlugin.MESSAGE_HELPER.broadcast(I18n.of("library.message.world.removed"));
+            return true;
+        } else {
+            MapartPlugin.MESSAGE_HELPER.broadcast(I18n.of("library.message.world.notFound"));
+        }
+        return false;
+    }
+
+    public WorldData getWorldData() {
+        if (this.worldData == null) this.worldData = getWorldDataFromSQL(this.size);
+        if (this.worldData == null)
+            this.worldData = new WorldData(null,
+                    MapartPlugin.CONFIG_UTILS.getConfig("config.yaml").getString("world") + "-x" + this.size);
+        return this.worldData;
+    }
+
+    public static WorldData getWorldDataFromSQL(final long size) {
+        final MMapartWorld w = MapartSQLConfig.singleton().getTransactionManager().required(() ->
+                MMapartWorldRepo.select(size));
+        if (w == null) return null;
+
+        return new WorldData(w.getUuid(), w.getWorldName());
     }
 
     public World generateWorld() {
@@ -136,26 +170,6 @@ public class MapartManager implements Listenable {
             MapartPlugin.MESSAGE_HELPER.broadcast(I18n.of("library.message.world.generate.success"));
             return w;
         }
-    }
-
-    public boolean removeWorld() {
-        if (this.worldData != null) {
-            WorldUtils.deleteWorld(this.worldData);
-            this.worldData = null;
-
-            MapartPlugin.MESSAGE_HELPER.broadcast(I18n.of("library.message.world.removing"));
-            MapartSQLConfig.singleton().getTransactionManager().required(() ->
-                    MMapartLandRepo.selectBySize(this.size).forEach(e -> {
-                        MMapartLandRepo.delete(e);
-                        DMapartLandCollaboratorRepo.selectByLand(e.getLandId()).forEach(DMapartLandCollaboratorRepo::delete);
-                    })
-            );
-            MapartPlugin.MESSAGE_HELPER.broadcast(I18n.of("library.message.world.removed"));
-            return true;
-        } else {
-            MapartPlugin.MESSAGE_HELPER.broadcast(I18n.of("library.message.world.notFound"));
-        }
-        return false;
     }
 
     @Nullable
@@ -233,23 +247,6 @@ public class MapartManager implements Listenable {
             return false;
         }
         return true;
-    }
-
-    public String getWorldName() {
-        if (this.worldData == null) {
-            this.worldData = MapartManager.getWorldDataFromSQL(this.size);
-        }
-        if (this.worldData != null) return this.worldData.getName();
-
-        return MapartPlugin.CONFIG_UTILS.getConfig("config.yaml").getString("world") + "-x" + this.size;
-    }
-
-    public static WorldData getWorldDataFromSQL(final long size) {
-        final MMapartWorld w = MapartSQLConfig.singleton().getTransactionManager().required(() ->
-                MMapartWorldRepo.select(size));
-        if (w == null) return null;
-
-        return new WorldData(w.getUuid(), w.getWorldName());
     }
 
     public MMapartLand lent(final UUID player, final String name, final int height, final int width) {
@@ -426,10 +423,7 @@ public class MapartManager implements Listenable {
         session.complete();
     }
 
-    public boolean teleportLand(final long locId, final UUID player, final boolean isForce) {
-        final Player p = Bukkit.getPlayer(player);
-        if (p == null) return false;
-
+    public boolean teleportLand(final long locId, final Player player, final boolean isForce) {
         if (!isForce) {
             final long lastDmg = PlayerManager.SINGLETON.getLastDamageTick(player);
             final long lastMoved = PlayerManager.SINGLETON.getLastMovedTick(player);
@@ -456,7 +450,7 @@ public class MapartManager implements Listenable {
         MapartPlugin.MESSAGE_HELPER.sendMessage(player, I18n.of("library.message.teleporting"));
 
         final int[] loc = MapartManager.getLocation(locId);
-        p.teleport(
+        player.teleport(
                 new Location(
                         w,
                         ((loc[0] * (this.size * MapartManager.MAP_SIZE)) - 4) * 16 - 0.5,

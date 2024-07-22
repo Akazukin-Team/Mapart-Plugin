@@ -23,6 +23,7 @@ import net.akazukin.mapart.manager.MapartManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -36,20 +37,20 @@ public class GuiMapartPanel extends GuiPagedSingleSelector {
 
     private final boolean isAdmin;
 
-    public GuiMapartPanel(final UUID player, final GuiBase prevGui) {
-        this(player, player, true, prevGui);
+    public GuiMapartPanel(final Player player, final GuiBase prevGui) {
+        this(player, player.getUniqueId(), true, prevGui);
     }
 
-    public GuiMapartPanel(final UUID player, final UUID guiUserUuid, final boolean isAdmin, final GuiBase prevGui) {
+    public GuiMapartPanel(final Player player, final UUID guiUserUuid, final boolean isAdmin, final GuiBase prevGui) {
         super(
                 MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(player),
-                        I18n.of("mapart.panel.gui.list." + (player == guiUserUuid ? "own" : "others")),
-                        (player == guiUserUuid ? null : Bukkit.getOfflinePlayer(guiUserUuid).getName())),
+                        I18n.of("mapart.panel.gui.list." + (player.getUniqueId() == guiUserUuid ? "own" : "others")),
+                        (player.getUniqueId() == guiUserUuid ? null : Bukkit.getOfflinePlayer(guiUserUuid).getName())),
                 6, 6, player, MapartSQLConfig.singleton().getTransactionManager().required(() ->
                                 MapartLandRepo.selectByPlayer(guiUserUuid))
                         .parallelStream()
-                        .filter(land -> isAdmin || player.equals(guiUserUuid) ||
-                                Arrays.asList(land.getCollaboratorsUUID()).contains(player))
+                        .filter(land -> isAdmin || player.getUniqueId().equals(guiUserUuid) ||
+                                Arrays.asList(land.getCollaboratorsUUID()).contains(player.getUniqueId()))
                         .map(land -> {
                             final OfflinePlayer owner = Bukkit.getOfflinePlayer(land.getOwnerUUID());
 
@@ -130,9 +131,9 @@ public class GuiMapartPanel extends GuiPagedSingleSelector {
 
         inv.setItem(4, this.headItem);
 
-        if (this.player == this.guiUserUuid) {
+        if (this.player.getUniqueId().equals(this.guiUserUuid)) {
             inv.setItem(48, this.createItem);
-            if (!this.player.equals(this.guiUserUuid)) inv.setItem(51, this.myMapartsItem);
+            if (!this.player.getUniqueId().equals(this.guiUserUuid)) inv.setItem(51, this.myMapartsItem);
             inv.setItem(52, this.collaboMapartsItem);
         }
 
@@ -152,10 +153,10 @@ public class GuiMapartPanel extends GuiPagedSingleSelector {
             });
             if (land == null) {
                 MapartPlugin.MESSAGE_HELPER.sendMessage(this.player, I18n.of("mapart.land.notFound"));
-            } else if ((land.getOwnerUUID().equals(this.player) && land.getStatus().equals("A")) || this.isAdmin) {
+            } else if ((land.getOwnerUUID().equals(this.player.getUniqueId()) && land.getStatus().equals("A")) || this.isAdmin) {
                 GuiManager.singleton().setScreen(this.player, () -> new MapartLandGui(this.player, land.getLandId(),
                         this));
-            } else if (Arrays.asList(land.getCollaboratorsUUID()).contains(this.player)) {
+            } else if (Arrays.asList(land.getCollaboratorsUUID()).contains(this.player.getUniqueId())) {
                 final MapartManager mgr = MapartManager.singleton(land.getSize());
                 if (mgr.getWorld() == null) {
                     MapartPlugin.MESSAGE_HELPER.sendMessage(this.player, I18n.of("library.message.world.notFound"));

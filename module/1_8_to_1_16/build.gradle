@@ -3,9 +3,15 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":core"))
-    implementation(project(":module:1_13_to_1_20"))
-    implementation(project(":module:1_8_to_1_12"))
-    implementation(project(":module:1_15_to_1_16"))
-    implementation(project(":module:1_8_to_1_14"))
+    include(project(":core"))
+    include(project(":module:1_13_to_1_20"))
+    include(project(":module:1_8_to_1_12"))
+    include(project(":module:1_15_to_1_16"))
+    include(project(":module:1_8_to_1_14"))
 }
+
+jar.dependsOn(":core:jar")
+jar.dependsOn(":module:1_13_to_1_20:jar")
+jar.dependsOn(":module:1_8_to_1_12:jar")
+jar.dependsOn(":module:1_15_to_1_16:jar")
+jar.dependsOn(":module:1_8_to_1_14:jar")

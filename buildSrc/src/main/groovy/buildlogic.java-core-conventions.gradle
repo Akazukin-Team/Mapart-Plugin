@@ -13,11 +13,7 @@ application {
     mainClassName = "net.akazukin.mapart.Main"
 }
 
-jar {
-    archiveClassifier.set("src")
-    archiveBaseName = project.plugin_name
-    enabled = true
-}
+jar.enabled = true
 
 processResources {
     filesMatching("plugin.yml") {

@@ -14,6 +14,7 @@ import net.akazukin.mapart.doma.MapartSQLConfig;
 import net.akazukin.mapart.doma.utils.RepoUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -21,17 +22,17 @@ import org.bukkit.inventory.ItemStack;
 public class GuiMapartCollaboPanel extends GuiPagedSinglePlayerSelector {
     private final ItemStack myMapartsItem;
 
-    public GuiMapartCollaboPanel(final UUID player, final GuiBase prevGui) {
+    public GuiMapartCollaboPanel(final Player player, final GuiBase prevGui) {
         super(MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(player), I18n.of("mapart.panel.gui" +
                         ".collaboration")),
                 6, 6, player,
                 Arrays.stream(MapartSQLConfig.singleton().getTransactionManager().required(() ->
-                                RepoUtils.getMapartLandsByCollaborator(player)
+                                RepoUtils.getMapartLandsByCollaborator(player.getUniqueId())
                         )).parallel()
                         .map(land -> Bukkit.getOfflinePlayer(land.getOwnerUUID()))
                         .toArray(OfflinePlayer[]::new), prevGui);
 
-        final ItemStack myMapartsItem = ItemUtils.getSkullItem(Bukkit.getOfflinePlayer(player));
+        final ItemStack myMapartsItem = ItemUtils.getSkullItem(player);
         ItemUtils.setDisplayName(myMapartsItem, "§aYour Maparts");
         this.myMapartsItem = ItemUtils.setGuiItem(myMapartsItem);
     }

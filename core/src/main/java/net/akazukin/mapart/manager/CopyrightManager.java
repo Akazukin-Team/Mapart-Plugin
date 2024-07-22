@@ -12,7 +12,7 @@ import net.akazukin.library.utils.ItemUtils;
 import net.akazukin.library.utils.MessageHelper;
 import net.akazukin.library.utils.StringUtils;
 import net.akazukin.mapart.MapartPlugin;
-import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.enchantment.PrepareItemEnchantEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -21,9 +21,9 @@ import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.inventory.ItemStack;
 
 public class CopyrightManager implements Listenable {
-    public static ItemStack setCopyright(final ItemStack itemStack, final UUID player) {
-        final String lore = MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(player), I18n.of("mapart" +
-                ".copyright.lore"), Bukkit.getOfflinePlayer(player).getName());
+    public static ItemStack setCopyright(final ItemStack itemStack, final Player player) {
+        final String lore = MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(player),
+                I18n.of("mapart.copyright.lore"), player.getName());
         ItemStack item = LibraryPlugin.COMPAT.setPlData(itemStack, "AKZ_MAPART_COPYRIGHT_OWNER",
                 String.valueOf(player));
         item = LibraryPlugin.COMPAT.setPlData(item, "AKZ_MAPART_COPYRIGHT_LORE", lore);
