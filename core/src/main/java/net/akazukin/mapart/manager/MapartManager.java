@@ -423,10 +423,7 @@ public class MapartManager implements Listenable {
         session.complete();
     }
 
-    public boolean teleportLand(final long locId, final UUID player, final boolean isForce) {
-        final Player p = Bukkit.getPlayer(player);
-        if (p == null) return false;
-
+    public boolean teleportLand(final long locId, final Player player, final boolean isForce) {
         if (!isForce) {
             final long lastDmg = PlayerManager.SINGLETON.getLastDamageTick(player);
             final long lastMoved = PlayerManager.SINGLETON.getLastMovedTick(player);
@@ -453,7 +450,7 @@ public class MapartManager implements Listenable {
         MapartPlugin.MESSAGE_HELPER.sendMessage(player, I18n.of("library.message.teleporting"));
 
         final int[] loc = MapartManager.getLocation(locId);
-        p.teleport(
+        player.teleport(
                 new Location(
                         w,
                         ((loc[0] * (this.size * MapartManager.MAP_SIZE)) - 4) * 16 - 0.5,

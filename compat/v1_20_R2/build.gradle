@@ -3,7 +3,9 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":core"))
-    implementation(project(":doma"))
-    implementation(project(":module:1_17_to_1_20"))
+    include(project(":core"))
+    include(project(":module:1_17_to_1_20"))
 }
+
+jar.dependsOn(":core:jar")
+jar.dependsOn(":module:1_17_to_1_20:jar")

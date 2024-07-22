@@ -91,7 +91,11 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
+java {
+    withSourcesJar()
+}
 
+jar.dependsOn(sourcesJar)
 jar.enabled = true
 
 jar.dependsOn(processResources)

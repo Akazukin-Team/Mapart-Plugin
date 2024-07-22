@@ -1,7 +1,6 @@
 package net.akazukin.mapart.gui;
 
 import java.util.Arrays;
-import java.util.UUID;
 import net.akazukin.library.gui.GuiManager;
 import net.akazukin.library.gui.screens.chest.ChestGuiBase;
 import net.akazukin.library.gui.screens.chest.GuiBase;
@@ -39,7 +38,7 @@ public class GuiMapartCreate extends ChestGuiBase {
     private final SignStringSelectorGui nameSelector = new SignStringSelectorGui(this.player, this);
     private String name;
 
-    public GuiMapartCreate(final UUID player, final GuiBase prevGui) {
+    public GuiMapartCreate(final Player player, final GuiBase prevGui) {
         super(MapartPlugin.MESSAGE_HELPER.get(
                         MessageHelper.getLocale(player),
                         I18n.of("mapart.panel.gui.create.main")
@@ -64,7 +63,7 @@ public class GuiMapartCreate extends ChestGuiBase {
         this.name = MapartPlugin.MESSAGE_HELPER.get(
                 MessageHelper.getLocale(player),
                 I18n.of("mapart.panel.defaultName"),
-                Bukkit.getPlayer(player).getName()
+                player.getName()
         );
 
 
@@ -144,18 +143,16 @@ public class GuiMapartCreate extends ChestGuiBase {
         } else if (this.borrowItem.equals(event.getCurrentItem())) {
             event.getWhoClicked().closeInventory();
             if (MapartSQLConfig.singleton().getTransactionManager().required(() -> {
-                final MMapartUser e = MMapartUserRepo.selectByPlayer(this.player);
+                final MMapartUser e = MMapartUserRepo.selectByPlayer(this.player.getUniqueId());
                 if (e == null || e.getMaxLand() == null)
                     return MapartPlugin.CONFIG_UTILS.getConfig("config.yaml").getInt("limit.land.default");
                 return e.getMaxLand();
             }) <=
                     MapartSQLConfig.singleton().getTransactionManager().required(() ->
-                            MMapartLandRepo.selectByOwner(this.player)).size()) {
+                            MMapartLandRepo.selectByOwner(this.player.getUniqueId())).size()) {
                 MapartPlugin.MESSAGE_HELPER.sendMessage(event.getWhoClicked(), I18n.of("mapart.land.limitReached"));
             } else {
-                final Player p = Bukkit.getPlayer(this.player);
-                if (p == null) return true;
-                p.closeInventory();
+                this.player.closeInventory();
 
                 Bukkit.getScheduler().runTask(MapartPlugin.getPlugin(), () -> {
                     final MapartManager mgr = MapartManager.singleton(Math.max(
@@ -171,9 +168,10 @@ public class GuiMapartCreate extends ChestGuiBase {
                         return;
                     }
 
-                    final MMapartLand landData = mgr.lent(this.player, this.name,
+                    final MMapartLand landData = mgr.lent(this.player.getUniqueId(), this.name,
                             this.heightSelector.getResult(), this.widthSelector.getResult());
-                    MapartPlugin.MESSAGE_HELPER.sendMessage(p, I18n.of("mapart.land.borrowed"), landData.getLandId());
+                    MapartPlugin.MESSAGE_HELPER.sendMessage(this.player, I18n.of("mapart.land.borrowed"),
+                            landData.getLandId());
                     mgr.teleportLand(landData.getLocationId(), this.player, false);
                 });
             }

@@ -12,10 +12,11 @@ import net.akazukin.mapart.doma.MapartSQLConfig;
 import net.akazukin.mapart.doma.repo.MapartUserRepo;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
 public class GuiManageMapartUsers extends GuiPagedSinglePlayerSelector {
-    public GuiManageMapartUsers(final UUID player, final GuiBase prevGui) {
+    public GuiManageMapartUsers(final Player player, final GuiBase prevGui) {
         super(MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(player), I18n.of("mapart.panel.manage.users" +
                         ".gui")),
                 6, 6, player,

@@ -12,7 +12,10 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-@CommandInfo(name = "copyright", description = "Toggle flight at mapart world", permission = "akazukin.mapart.command.mapart.copyright", executor = CommandExecutor.PLAYER)
+@CommandInfo(
+        name = "copyright", description = "Toggle flight at mapart world",
+        permission = "akazukin.mapart.command.mapart.copyright", executor = CommandExecutor.PLAYER
+)
 public class CopyrightSubCommand extends SubCommand {
     @Override
     public void run(final CommandSender sender, final String... args) {
@@ -34,7 +37,7 @@ public class CopyrightSubCommand extends SubCommand {
         } else if (!ItemUtils.getLore(handItem).isEmpty()) {
             MapartPlugin.MESSAGE_HELPER.sendMessage(sender, I18n.of("mapart.command.copyright.invalid"));
         } else {
-            final ItemStack item = CopyrightManager.setCopyright(handItem, ((Player) sender).getUniqueId());
+            final ItemStack item = CopyrightManager.setCopyright(handItem, ((Player) sender));
             ((Player) sender).getInventory().setItemInMainHand(item);
             MapartPlugin.MESSAGE_HELPER.sendMessage(sender, I18n.of("mapart.command.copyright.added"));
         }

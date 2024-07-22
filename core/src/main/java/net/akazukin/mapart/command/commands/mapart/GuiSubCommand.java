@@ -15,7 +15,7 @@ import org.bukkit.entity.Player;
 public class GuiSubCommand extends SubCommand {
     @Override
     public void run(final CommandSender sender, final String... args) {
-        GuiManager.singleton().setScreen(((Player) sender).getUniqueId(),
-                () -> new GuiMapartPanel(((Player) sender).getUniqueId(), null));
+        GuiManager.singleton().setScreen((Player) sender,
+                () -> new GuiMapartPanel((Player) sender, null));
     }
 }
