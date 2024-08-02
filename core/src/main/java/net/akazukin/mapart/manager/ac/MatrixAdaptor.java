@@ -12,7 +12,7 @@ import org.bukkit.event.player.PlayerChangedWorldEvent;
 public class MatrixAdaptor implements Listenable {
 
     @EventTarget(bktPriority = EventPriority.NORMAL)
-    public void onGrimACFlagEvent(final PlayerChangedWorldEvent event) {
+    public void onPlayerChangedWorld(final PlayerChangedWorldEvent event) {
         if (!MapartManager.isMapartWorld(Bukkit.getPlayer(event.getPlayer().getUniqueId()).getWorld()))
             return;
 
