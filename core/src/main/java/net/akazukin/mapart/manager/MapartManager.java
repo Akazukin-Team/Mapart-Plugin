@@ -418,7 +418,7 @@ public class MapartManager implements Listenable {
                 w);
         session.setBlock(
                 new Region<>(new Vec3i(maxLoc_), new Vec3i(minLoc_)),
-                LibraryPlugin.COMPAT.getNMSNewBlockDate(Material.AIR, (byte) 0)
+                LibraryPlugin.COMPAT.getNMSNewBlockData(Material.AIR, (byte) 0)
         );
         session.complete();
     }

@@ -24,3 +24,5 @@ run
 core/.bin
 
 *.log
+
+gradle/libs/*

@@ -52,6 +52,10 @@ repositories {
         name = 'glaremasters repo'
         url = 'https://repo.glaremasters.me/repository/towny/'
     }
+    maven {
+        name = 'legacy NCP repo'
+        url = 'https://repo.md-5.net/content/repositories/snapshots/'
+    }
     exclusiveContent {
         forRepository {
             maven {
