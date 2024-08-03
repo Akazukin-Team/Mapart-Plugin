@@ -11,6 +11,8 @@ depend:
 softdepend:
   - FastAsyncWorldEdit
   - GrimAC
+  - NoCheatPlus
+  - Matrix
   - Towny
 
 database: false
