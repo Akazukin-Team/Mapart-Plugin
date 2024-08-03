@@ -41,9 +41,9 @@ runServer {
     minecraftVersion(project.minecraft_version)
     runDirectory.set(file(Paths.get(parent.parent.projectDir.path, "run/${project.minecraft_version}")))
     downloadPlugins {
-        url("https://github.com/TheBlackEntity/PlugManX/releases/download/2.3.7/PlugManX.jar")
-        url("https://download.luckperms.net/1534/bukkit/loader/LuckPerms-Bukkit-5.4.121.jar")
-        url("https://mediafilez.forgecdn.net/files/4978/992/Dynmap-3.7-beta-4-spigot.jar")
+        url("https://github.com/Test-Account666/PlugManX/releases/download/2.4.1/PlugManX-2.4.1.jar")
+        url("https://download.luckperms.net/1552/bukkit/loader/LuckPerms-Bukkit-5.4.137.jar")
+        url("https://cdn.modrinth.com/data/fRQREgAc/versions/QtTWJjW6/Dynmap-3.7-beta-6-spigot.jar")
         url("https://mediafilez.forgecdn.net/files/3635/984/Dynmap-WorldGuard-1.4-beta-1.jar")
     }
     jvmArgs = [
@@ -55,7 +55,6 @@ runServer {
             "-XX:MaxTenuringThreshold=16",
             "-XX:TargetSurvivorRatio=90",
             "-Dcom.mojang.eula.agree=true",
-            "-Xmn2G",
             "-Xms4G",
             "-Xmx4G",
             "-XX:+UseG1GC",

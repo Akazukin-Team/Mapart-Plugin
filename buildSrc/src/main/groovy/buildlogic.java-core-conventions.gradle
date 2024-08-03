@@ -5,7 +5,11 @@ plugins {
 }
 
 dependencies {
-    include libs.grimac
+    compileOnly libs.grimac
+    compileOnly libs.ncp
+    compileOnly files(new File(parent.projectDir, "gradle/libs/Matrix-API.jar").path)
+    compileOnly files(new File(parent.projectDir, "gradle/libs/Themis.jar").path)
+
     compileOnly libs.gson
 }
 

@@ -1,6 +1,6 @@
 package net.akazukin.mapart.event;
 
-import ac.grim.grimac.api.events.FlagEvent;
+import com.gmail.olexorus.themis.api.ViolationEvent;
 import lombok.Getter;
 import net.akazukin.mapart.MapartPlugin;
 import org.bukkit.event.EventHandler;
@@ -8,9 +8,9 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
 @Getter
-public class GrimACEvents implements Listener {
+public class ThemisEvents implements Listener {
     @EventHandler(priority = EventPriority.HIGH)
-    public void onFlag(final FlagEvent event) {
+    public void onViolation(final ViolationEvent event) {
         MapartPlugin.EVENT_MANAGER.callEvent(event, EventPriority.HIGH);
     }
 }

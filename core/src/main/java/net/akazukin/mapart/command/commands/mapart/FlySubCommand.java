@@ -12,7 +12,7 @@ import org.bukkit.entity.Player;
 @CommandInfo(name = "fly", description = "Toggle flight at mapart world", executor = CommandExecutor.PLAYER)
 public class FlySubCommand extends SubCommand {
     @Override
-    public void run(final CommandSender sender, final String... args) {
+    public void run(final CommandSender sender, final String[] args, final String[] args2) {
         if (MapartManager.isMapartWorld(((Player) sender).getWorld())) {
             ((Player) sender).setAllowFlight(((Player) sender).getAllowFlight());
             MapartPlugin.MESSAGE_HELPER.sendMessage(sender, I18n.of("mapart.command.fly.toggled"));

@@ -1,26 +1,20 @@
-package net.akazukin.mapart.manager;
+package net.akazukin.mapart.manager.ac;
 
-import ac.grim.grimac.api.events.FlagEvent;
+import com.gmail.olexorus.themis.api.ViolationEvent;
 import net.akazukin.library.event.EventTarget;
 import net.akazukin.library.event.Listenable;
+import net.akazukin.mapart.manager.MapartManager;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventPriority;
 
-public class GrimACAdaptor implements Listenable {
+public class ThemisAdaptor implements Listenable {
 
     @EventTarget(bktPriority = EventPriority.HIGH)
-    public void onGrimACFlagEvent(final FlagEvent event) {
+    public void onViolation(final ViolationEvent event) {
         if (!MapartManager.isMapartWorld(Bukkit.getPlayer(event.getPlayer().getUniqueId()).getWorld()))
             return;
 
-        switch (event.getCheck().getCheckName()) {
-            case "GroundSpoof":
-            case "Simulation":
-            case "PositionPlace":
-            case "Post": {
-                event.setCancelled(true);
-            }
-        }
+        event.setCancelled(true);
     }
 
     @Override

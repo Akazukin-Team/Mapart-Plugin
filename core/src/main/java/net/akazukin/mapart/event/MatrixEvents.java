@@ -1,16 +1,16 @@
 package net.akazukin.mapart.event;
 
-import ac.grim.grimac.api.events.FlagEvent;
 import lombok.Getter;
+import me.rerere.matrix.api.events.PlayerViolationEvent;
 import net.akazukin.mapart.MapartPlugin;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
 @Getter
-public class GrimACEvents implements Listener {
+public class MatrixEvents implements Listener {
     @EventHandler(priority = EventPriority.HIGH)
-    public void onFlag(final FlagEvent event) {
+    public void onPlayerViolation(final PlayerViolationEvent event) {
         MapartPlugin.EVENT_MANAGER.callEvent(event, EventPriority.HIGH);
     }
 }

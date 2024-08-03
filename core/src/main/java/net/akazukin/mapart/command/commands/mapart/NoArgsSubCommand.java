@@ -9,7 +9,7 @@ import org.bukkit.command.CommandSender;
 @CommandInfo(name = "", description = "Show information", permission = "", executor = CommandExecutor.PLAYER)
 public class NoArgsSubCommand extends SubCommand {
     @Override
-    public void run(final CommandSender sender, final String... args) {
+    public void run(final CommandSender sender, final String[] args, final String[] args2) {
         sender.sendMessage("§6§l" + MapartPlugin.getPlugin().getName());
         sender.sendMessage("");
         sender.sendMessage("§aDevelop: " + "Akazukin organizations");

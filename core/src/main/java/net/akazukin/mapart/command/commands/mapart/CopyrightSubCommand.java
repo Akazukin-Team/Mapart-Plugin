@@ -18,7 +18,7 @@ import org.bukkit.inventory.ItemStack;
 )
 public class CopyrightSubCommand extends SubCommand {
     @Override
-    public void run(final CommandSender sender, final String... args) {
+    public void run(final CommandSender sender, final String[] args, final String[] args2) {
         final ItemStack handItem = ((Player) sender).getInventory().getItemInMainHand();
         if (handItem.getType() == Material.AIR) {
             MapartPlugin.MESSAGE_HELPER.sendMessage(sender, I18n.of("mapart.command.copyright.mustHaveInHand"));
