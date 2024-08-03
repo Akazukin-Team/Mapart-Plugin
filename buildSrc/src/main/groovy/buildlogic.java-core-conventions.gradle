@@ -9,15 +9,11 @@ dependencies {
     compileOnly libs.ncp
     compileOnly files(new File(parent.projectDir, "gradle/libs/Matrix-API.jar").path)
     compileOnly files(new File(parent.projectDir, "gradle/libs/Themis.jar").path)
-
-    compileOnly libs.gson
 }
 
 application {
     mainClassName = "net.akazukin.mapart.Main"
 }
-
-jar.enabled = true
 
 processResources {
     filesMatching("plugin.yml") {
