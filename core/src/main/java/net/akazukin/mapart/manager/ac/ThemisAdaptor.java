@@ -11,7 +11,7 @@ public class ThemisAdaptor implements Listenable {
 
     @EventTarget(bktPriority = EventPriority.HIGH)
     public void onViolation(final ViolationEvent event) {
-        if (!MapartManager.isMapartWorld(Bukkit.getPlayer(event.getPlayer().getUniqueId()).getWorld()))
+        if (!MapartManager.isMapartWorld(event.getPlayer().getWorld()))
             return;
 
         event.setCancelled(true);
@@ -19,6 +19,6 @@ public class ThemisAdaptor implements Listenable {
 
     @Override
     public boolean handleEvents() {
-        return Bukkit.getPluginManager().isPluginEnabled("GrimAC");
+        return Bukkit.getPluginManager().isPluginEnabled("Themis");
     }
 }

@@ -23,6 +23,7 @@ import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
@@ -124,6 +125,11 @@ public class Events implements Listener {
 
     @EventHandler
     public void onPlayerQuit(final PlayerQuitEvent event) {
+        this.callEvent(event, EventPriority.NORMAL);
+    }
+
+    @EventHandler
+    public void onPlayerMove(final PlayerMoveEvent event) {
         this.callEvent(event, EventPriority.NORMAL);
     }
 

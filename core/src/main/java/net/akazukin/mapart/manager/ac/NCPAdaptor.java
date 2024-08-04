@@ -12,7 +12,7 @@ public class NCPAdaptor implements Listenable {
 
     @EventTarget(bktPriority = EventPriority.NORMAL)
     public void onPlayerChangedWorld(final PlayerChangedWorldEvent event) {
-        if (!MapartManager.isMapartWorld(Bukkit.getPlayer(event.getPlayer().getUniqueId()).getWorld()))
+        if (!MapartManager.isMapartWorld(event.getPlayer().getWorld()))
             return;
 
         if (MapartManager.isMapartWorld(event.getFrom())) {
