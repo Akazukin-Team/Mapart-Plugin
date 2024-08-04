@@ -142,20 +142,24 @@ public final class MapartPlugin extends JavaPlugin {
         MapartPlugin.getLogManager().info("Initializing event manager...");
         MapartPlugin.EVENT_MANAGER = new MapartEventManager();
         MapartPlugin.EVENT_MANAGER.registerListeners();
+        MapartPlugin.getLogManager().info("Successfully Initialized event manager");
+
+
+        MapartPlugin.getLogManager().info("Initializing event listeners...");
         Bukkit.getPluginManager().registerEvents(new Events(), this);
         if (Bukkit.getPluginManager().isPluginEnabled("GrimAC")) {
             Bukkit.getPluginManager().registerEvents(new GrimACEvents(), this);
         }
-        if (Bukkit.getPluginManager().isPluginEnabled("Matrix")) {
+        if (Bukkit.getPluginManager().getPlugin("Matrix") != null) {
             Bukkit.getPluginManager().registerEvents(new MatrixEvents(), this);
         }
-        if (Bukkit.getPluginManager().isPluginEnabled("Themis")) {
+        if (Bukkit.getPluginManager().getPlugin("Themis") != null) {
             Bukkit.getPluginManager().registerEvents(new ThemisEvents(), this);
         }
-        if (Bukkit.getPluginManager().isPluginEnabled("Towny")) {
+        if (Bukkit.getPluginManager().getPlugin("Towny") != null) {
             Bukkit.getPluginManager().registerEvents(new TownyEvents(), this);
         }
-        MapartPlugin.getLogManager().info("Successfully Initialized event manager");
+        MapartPlugin.getLogManager().info("Successfully Initialized event listeners");
 
 
         MapartPlugin.getLogManager().info("Initializing worlds for mapart...");

@@ -6,6 +6,7 @@ import net.akazukin.mapart.manager.TownyAdaptor;
 import net.akazukin.mapart.manager.ac.GrimACAdaptor;
 import net.akazukin.mapart.manager.ac.MatrixAdaptor;
 import net.akazukin.mapart.manager.ac.NCPAdaptor;
+import net.akazukin.mapart.manager.ac.ThemisAdaptor;
 import org.bukkit.Bukkit;
 
 public final class MapartEventManager extends EventManager {
@@ -14,13 +15,15 @@ public final class MapartEventManager extends EventManager {
         this.registerListeners(
                 new CopyrightManager()
         );
-        if (Bukkit.getPluginManager().isPluginEnabled("GrimAC"))
+        if (Bukkit.getPluginManager().getPlugin("GrimAC") != null)
             this.registerListeners(GrimACAdaptor.class);
-        if (Bukkit.getPluginManager().isPluginEnabled("NoCheatPlus"))
+        if (Bukkit.getPluginManager().getPlugin("NoCheatPlus") != null)
             this.registerListeners(NCPAdaptor.class);
-        if (Bukkit.getPluginManager().isPluginEnabled("Matrix"))
+        if (Bukkit.getPluginManager().getPlugin("Matrix") != null)
             this.registerListeners(MatrixAdaptor.class);
-        if (Bukkit.getPluginManager().isPluginEnabled("Towny"))
+        if (Bukkit.getPluginManager().getPlugin("Themis") != null)
+            this.registerListeners(ThemisAdaptor.class);
+        if (Bukkit.getPluginManager().getPlugin("Towny") != null)
             this.registerListeners(TownyAdaptor.class);
     }
 }
