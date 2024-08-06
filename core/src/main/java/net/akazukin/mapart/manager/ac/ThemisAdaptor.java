@@ -5,11 +5,10 @@ import net.akazukin.library.event.EventTarget;
 import net.akazukin.library.event.Listenable;
 import net.akazukin.mapart.manager.MapartManager;
 import org.bukkit.Bukkit;
-import org.bukkit.event.EventPriority;
 
 public class ThemisAdaptor implements Listenable {
 
-    @EventTarget(bktPriority = EventPriority.HIGH)
+    @EventTarget(bktPriority = net.akazukin.library.event.EventPriority.HIGH)
     public void onViolation(final ViolationEvent event) {
         if (!MapartManager.isMapartWorld(event.getPlayer().getWorld()))
             return;

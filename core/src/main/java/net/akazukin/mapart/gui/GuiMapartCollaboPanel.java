@@ -7,8 +7,8 @@ import net.akazukin.library.gui.GuiManager;
 import net.akazukin.library.gui.screens.chest.GuiBase;
 import net.akazukin.library.gui.screens.chest.paged.GuiPagedSinglePlayerSelector;
 import net.akazukin.library.i18n.I18n;
+import net.akazukin.library.manager.BukkitMessageHelper;
 import net.akazukin.library.utils.ItemUtils;
-import net.akazukin.library.utils.MessageHelper;
 import net.akazukin.mapart.MapartPlugin;
 import net.akazukin.mapart.doma.MapartSQLConfig;
 import net.akazukin.mapart.doma.utils.RepoUtils;
@@ -23,7 +23,7 @@ public class GuiMapartCollaboPanel extends GuiPagedSinglePlayerSelector {
     private final ItemStack myMapartsItem;
 
     public GuiMapartCollaboPanel(final Player player, final GuiBase prevGui) {
-        super(MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(player), I18n.of("mapart.panel.gui" +
+        super(MapartPlugin.MESSAGE_HELPER.get(BukkitMessageHelper.getLocale(player), I18n.of("mapart.panel.gui" +
                         ".collaboration")),
                 6, 6, player,
                 Arrays.stream(MapartSQLConfig.singleton().getTransactionManager().required(() ->

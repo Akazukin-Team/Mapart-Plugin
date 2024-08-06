@@ -2,14 +2,14 @@ package net.akazukin.mapart.command.commands.mapart;
 
 import net.akazukin.library.command.CommandExecutor;
 import net.akazukin.library.command.CommandInfo;
+import net.akazukin.library.command.ICmdSender;
 import net.akazukin.library.command.SubCommand;
 import net.akazukin.mapart.MapartPlugin;
-import org.bukkit.command.CommandSender;
 
 @CommandInfo(name = "", description = "Show information", permission = "", executor = CommandExecutor.PLAYER)
 public class NoArgsSubCommand extends SubCommand {
     @Override
-    public void run(final CommandSender sender, final String[] args, final String[] args2) {
+    public void run(final ICmdSender sender, final String[] args, final String[] args2) {
         sender.sendMessage("§6§l" + MapartPlugin.getPlugin().getName());
         sender.sendMessage("");
         sender.sendMessage("§aDevelop: " + "Akazukin organizations");

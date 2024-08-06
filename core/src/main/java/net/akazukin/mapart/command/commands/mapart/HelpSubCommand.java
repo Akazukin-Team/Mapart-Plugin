@@ -3,17 +3,17 @@ package net.akazukin.mapart.command.commands.mapart;
 import java.util.Arrays;
 import net.akazukin.library.command.Command;
 import net.akazukin.library.command.CommandInfo;
+import net.akazukin.library.command.ICmdSender;
 import net.akazukin.library.command.SubCommand;
 import net.akazukin.library.i18n.I18n;
 import net.akazukin.library.utils.ArrayUtils;
 import net.akazukin.library.utils.StringUtils;
 import net.akazukin.mapart.MapartPlugin;
-import org.bukkit.command.CommandSender;
 
 @CommandInfo(name = "help", description = "Show list of commands and descriptions")
 public class HelpSubCommand extends SubCommand {
     @Override
-    public String[] getCompletion(final CommandSender sender, final org.bukkit.command.Command cmd,
+    public String[] getCompletion(final ICmdSender sender, final String cmdName,
                                   final String[] args, final String[] args2) {
 
         if (args2.length <= 1) {
@@ -30,16 +30,16 @@ public class HelpSubCommand extends SubCommand {
             for (int i = 1; i < Math.min(args2.length - 1, 10); i++) {
                 cmD = cmD.getSubCommand(args2[i]);
                 lastIndex = i;
-                if (cmd == null) return null;
+                if (cmD == null) return null;
             }
 
-            return cmD.getCompletion(sender, cmd, args,
+            return cmD.getCompletion(sender, cmdName, args,
                     ArrayUtils.copy(Arrays.asList(args2), 1, args2.length - 2 - lastIndex).toArray(new String[0]));
         }
     }
 
     @Override
-    public void run(final CommandSender sender, final String[] args, final String[] args2) {
+    public void run(final ICmdSender sender, final String[] args, final String[] args2) {
         if (args.length == 1) {
             MapartPlugin.COMMAND_MANAGER.getCommands().forEach(cmd ->
                     MapartPlugin.MESSAGE_HELPER.sendMessage(sender,

@@ -2,10 +2,12 @@ package net.akazukin.mapart.command.commands.mapart;
 
 import net.akazukin.library.command.CommandExecutor;
 import net.akazukin.library.command.CommandInfo;
+import net.akazukin.library.command.ICmdSender;
+import net.akazukin.library.command.IPlayerCmdSender;
 import net.akazukin.library.command.SubCommand;
 import net.akazukin.library.gui.GuiManager;
 import net.akazukin.mapart.gui.GuiMapartPanel;
-import org.bukkit.command.CommandSender;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 @CommandInfo(
@@ -14,8 +16,8 @@ import org.bukkit.entity.Player;
 )
 public class GuiSubCommand extends SubCommand {
     @Override
-    public void run(final CommandSender sender, final String[] args, final String[] args2) {
-        GuiManager.singleton().setScreen((Player) sender,
-                () -> new GuiMapartPanel((Player) sender, null));
+    public void run(final ICmdSender sender, final String[] args, final String[] args2) {
+        final Player p = Bukkit.getPlayer(((IPlayerCmdSender) sender).getUniqueId());
+        GuiManager.singleton().setScreen(p, () -> new GuiMapartPanel(p, null));
     }
 }
