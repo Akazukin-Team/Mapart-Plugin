@@ -6,7 +6,7 @@ import net.akazukin.library.gui.GuiManager;
 import net.akazukin.library.gui.screens.chest.GuiBase;
 import net.akazukin.library.gui.screens.chest.paged.GuiPagedSinglePlayerSelector;
 import net.akazukin.library.i18n.I18n;
-import net.akazukin.library.utils.MessageHelper;
+import net.akazukin.library.manager.BukkitMessageHelper;
 import net.akazukin.mapart.MapartPlugin;
 import net.akazukin.mapart.doma.MapartSQLConfig;
 import net.akazukin.mapart.doma.repo.MapartUserRepo;
@@ -17,7 +17,8 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 
 public class GuiManageMapartUsers extends GuiPagedSinglePlayerSelector {
     public GuiManageMapartUsers(final Player player, final GuiBase prevGui) {
-        super(MapartPlugin.MESSAGE_HELPER.get(MessageHelper.getLocale(player), I18n.of("mapart.panel.manage.users" +
+        super(MapartPlugin.MESSAGE_HELPER.get(BukkitMessageHelper.getLocale(player), I18n.of("mapart.panel.manage" +
+                        ".users" +
                         ".gui")),
                 6, 6, player,
                 MapartSQLConfig.singleton().getTransactionManager().required(MapartUserRepo::selectAll)

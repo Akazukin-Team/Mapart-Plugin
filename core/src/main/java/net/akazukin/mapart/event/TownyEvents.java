@@ -11,6 +11,6 @@ import org.bukkit.event.Listener;
 public class TownyEvents implements Listener {
     @EventHandler(priority = EventPriority.HIGH)
     public void onTownClaim(final TownPreClaimEvent event) {
-        MapartPlugin.EVENT_MANAGER.callEvent(event, EventPriority.HIGH);
+        MapartPlugin.EVENT_MANAGER.callEvent(event, net.akazukin.library.event.EventPriority.HIGH);
     }
 }
