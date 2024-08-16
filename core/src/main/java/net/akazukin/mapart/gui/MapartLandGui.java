@@ -58,8 +58,8 @@ public class MapartLandGui extends ChestGuiBase {
     private boolean isWaiting;
 
     public MapartLandGui(final Player player, final long landId, final GuiBase prevGui) {
-        super(MapartPlugin.MESSAGE_HELPER.get(BukkitMessageHelper.getLocale(player), I18n.of("mapart.panel.gui" +
-                        ".manage.main")),
+        super(MapartPlugin.MESSAGE_HELPER.get(BukkitMessageHelper.getLocale(player),
+                        I18n.of("mapart.panel.gui.manage.main")),
                 5, player, false, prevGui);
         this.landId = landId;
         final MMapartLand land = MapartSQLConfig.singleton().getTransactionManager().required(() ->
