@@ -31,13 +31,14 @@ import net.akazukin.mapart.event.ThemisEvents;
 import net.akazukin.mapart.event.TownyEvents;
 import net.akazukin.mapart.manager.MapartManager;
 import org.bukkit.Bukkit;
+import org.bukkit.event.Event;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class MapartPlugin extends JavaPlugin {
     public static String PLUGIN_NAME;
     public static MapartCommandManager COMMAND_MANAGER;
-    public static MapartEventManager EVENT_MANAGER;
+    public static MapartEventManager<Event> EVENT_MANAGER;
     public static ConfigUtils CONFIG_UTILS;
     public static I18nUtils I18N_UTILS;
     public static Compat COMPAT;

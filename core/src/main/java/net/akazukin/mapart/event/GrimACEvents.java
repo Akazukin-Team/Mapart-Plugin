@@ -11,6 +11,6 @@ import org.bukkit.event.Listener;
 public class GrimACEvents implements Listener {
     @EventHandler(priority = EventPriority.HIGH)
     public void onFlag(final FlagEvent event) {
-        MapartPlugin.EVENT_MANAGER.callEvent(event, net.akazukin.library.event.EventPriority.HIGH);
+        MapartPlugin.EVENT_MANAGER.callEvent(FlagEvent.class, event, net.akazukin.library.event.EventPriority.HIGH);
     }
 }
