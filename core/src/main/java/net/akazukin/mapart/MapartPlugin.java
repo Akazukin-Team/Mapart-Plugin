@@ -31,14 +31,13 @@ import net.akazukin.mapart.event.ThemisEvents;
 import net.akazukin.mapart.event.TownyEvents;
 import net.akazukin.mapart.manager.MapartManager;
 import org.bukkit.Bukkit;
-import org.bukkit.event.Event;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class MapartPlugin extends JavaPlugin {
     public static String PLUGIN_NAME;
     public static MapartCommandManager COMMAND_MANAGER;
-    public static MapartEventManager<Event> EVENT_MANAGER;
+    public static MapartEventManager EVENT_MANAGER;
     public static ConfigUtils CONFIG_UTILS;
     public static I18nUtils I18N_UTILS;
     public static Compat COMPAT;
@@ -52,23 +51,25 @@ public final class MapartPlugin extends JavaPlugin {
     public void onLoad() {
         MapartPlugin.PLUGIN_NAME = this.getName();
 
-        MapartPlugin.getPlugin().getLogger().addHandler(new Handler() {
-            private final File file = new File(MapartPlugin.getPlugin().getDataFolder(), "error.log");
+        getLogManager().addHandler(new Handler() {
+            private final File file = new File(getDataFolder(), "error.log");
 
             @Override
             public void publish(final LogRecord record) {
-                if (record.getLevel() == Level.SEVERE || record.getThrown() != null) {
-                    try (final FileWriter file = new FileWriter(this.file, true)) {
-                        try (final PrintWriter pw = new PrintWriter(new BufferedWriter(file))) {
+                if (record.getLevel() != Level.SEVERE && record.getThrown() == null) return;
+
+                try (final FileWriter file = new FileWriter(this.file, true)) {
+                    try (BufferedWriter bw = new BufferedWriter(file)) {
+                        try (final PrintWriter pw = new PrintWriter(bw)) {
                             pw.println("[" + record.getLevel() + "] " + record.getMessage());
-                            //pw.println(pw);
                             if (record.getThrown() != null) {
                                 record.getThrown().printStackTrace(pw);
                             }
+                            pw.println("\n");
                         }
-                    } catch (final IOException e) {
-                        e.printStackTrace();
                     }
+                } catch (final IOException e) {
+                    e.printStackTrace();
                 }
             }
 
@@ -99,10 +100,6 @@ public final class MapartPlugin extends JavaPlugin {
             new MMapartWorldDaoImpl(sqlCfg).create();
         });
         MapartPlugin.getLogManager().info("Successfully Initialized database");
-    }
-
-    public static MapartPlugin getPlugin() {
-        return JavaPlugin.getPlugin(MapartPlugin.class);
     }
 
     @Override
@@ -182,5 +179,9 @@ public final class MapartPlugin extends JavaPlugin {
 
     public static Logger getLogManager() {
         return MapartPlugin.getPlugin().getLogger();
+    }
+
+    public static MapartPlugin getPlugin() {
+        return JavaPlugin.getPlugin(MapartPlugin.class);
     }
 }
