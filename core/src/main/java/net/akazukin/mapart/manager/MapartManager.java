@@ -312,9 +312,7 @@ public class MapartManager implements Listenable {
 
             WorldGuardCompat.addFlag(this.getWorld(), "mapart-" + j, Flags.INTERACT, StateFlag.State.DENY);
             WorldGuardCompat.addFlag(this.getWorld(), "mapart-" + j, Flags.USE, StateFlag.State.DENY);
-            WorldGuardCompat.addFlag(this.getWorld(), "mapart-" + j, Flags.ITEM_FRAME_ROTATE, StateFlag.State.DENY);
             WorldGuardCompat.addFlag(this.getWorld(), "mapart-" + j, Flags.ENTRY, StateFlag.State.DENY);
-            WorldGuardCompat.addFlag(this.getWorld(), "mapart-" + j, Flags.ITEM_PICKUP, StateFlag.State.DENY);
 
             WorldGuardCompat.getRegion(this.getWorld(), "mapart-" + j).setPriority(10);
         }
@@ -371,10 +369,11 @@ public class MapartManager implements Listenable {
         WorldGuardCompat.removeAllMembers(this.getWorld(), "mapart-" + locId);
 
         MapartSQLConfig.singleton().getTransactionManager().required(() -> {
-            final MMapartLand land = MMapartLandRepo.selectByLand(locId);
-            if (land != null) MMapartLandRepo.delete(land);
+            final MMapartLand land = MMapartLandRepo.selectBySizeAndLocation(size, locId);
+            if (land == null) return;
 
-            final List<DMapartLandCollaborator> collabos = DMapartLandCollaboratorRepo.selectByLand(locId);
+            MMapartLandRepo.delete(land);
+            final List<DMapartLandCollaborator> collabos = DMapartLandCollaboratorRepo.selectByLand(land.getLandId());
             for (final DMapartLandCollaborator collabo : collabos) {
                 DMapartLandCollaboratorRepo.delete(collabo);
             }
@@ -527,7 +526,8 @@ public class MapartManager implements Listenable {
     @EventTarget(bktPriority = net.akazukin.library.event.EventPriority.HIGH)
     public void onEntityDamage(final EntityDamageEvent event) {
         if (this.getWorld() == null || event.getEntity().getWorld().getUID() != this.getWorld().getUID()) return;
-        event.setCancelled(true);
+        if (event.getEntity() instanceof Player)
+            event.setCancelled(true);
     }
 
     @EventTarget(bktPriority = net.akazukin.library.event.EventPriority.HIGH)
@@ -739,6 +739,10 @@ public class MapartManager implements Listenable {
             }
 
         switch (event.getMaterial().name()) {
+            case "ANVIL":
+            case "CHIPPED_ANVIL":
+            case "DAMAGED_ANVIL":
+
             case "BEACON":
             case "LAVA":
             case "WATER":
