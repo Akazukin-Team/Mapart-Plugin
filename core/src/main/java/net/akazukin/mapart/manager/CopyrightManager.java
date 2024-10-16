@@ -10,7 +10,7 @@ import net.akazukin.library.event.Listenable;
 import net.akazukin.library.i18n.I18n;
 import net.akazukin.library.manager.BukkitMessageHelper;
 import net.akazukin.library.utils.ItemUtils;
-import net.akazukin.library.utils.StringUtils;
+import net.akazukin.library.utils.UUIDUtils;
 import net.akazukin.mapart.MapartPlugin;
 import org.bukkit.entity.Player;
 import org.bukkit.event.enchantment.PrepareItemEnchantEvent;
@@ -24,7 +24,7 @@ public class CopyrightManager implements Listenable {
         final String lore = MapartPlugin.MESSAGE_HELPER.get(BukkitMessageHelper.getLocale(player),
                 I18n.of("mapart.copyright.lore"), player.getName());
         ItemStack item = LibraryPlugin.COMPAT.setPlData(itemStack, "AKZ_MAPART_COPYRIGHT_OWNER",
-                String.valueOf(player));
+                String.valueOf(player.getUniqueId()));
         item = LibraryPlugin.COMPAT.setPlData(item, "AKZ_MAPART_COPYRIGHT_LORE", lore);
         final List<String> lores = ItemUtils.getLore(itemStack);
         lores.add(lore);
@@ -59,11 +59,12 @@ public class CopyrightManager implements Listenable {
     }
 
     public static boolean hasCopyright(final ItemStack itemStack) {
-        return LibraryPlugin.COMPAT.containsPlData(itemStack, "AKZ_MAPART_COPYRIGHT_OWNER") && LibraryPlugin.COMPAT.containsPlData(itemStack, "AKZ_MAPART_COPYRIGHT_LORE");
+        return LibraryPlugin.COMPAT.containsPlData(itemStack, "AKZ_MAPART_COPYRIGHT_OWNER") && LibraryPlugin.COMPAT.containsPlData(itemStack, "AKZ_MAPART_COPYRIGHT_LORE") &&
+                UUIDUtils.isUUID(LibraryPlugin.COMPAT.getPlDataString(itemStack, "AKZ_MAPART_COPYRIGHT_OWNER"));
     }
 
     public static boolean isOwner(final ItemStack itemStack, @Nonnull final UUID player) {
-        return player.equals(StringUtils.toUuid(LibraryPlugin.COMPAT.getPlDataString(itemStack,
+        return player.equals(UUIDUtils.toUuid(LibraryPlugin.COMPAT.getPlDataString(itemStack,
                 "AKZ_MAPART_COPYRIGHT_OWNER")));
     }
 
