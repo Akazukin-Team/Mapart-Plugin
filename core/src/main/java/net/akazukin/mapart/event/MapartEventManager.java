@@ -9,7 +9,7 @@ import net.akazukin.mapart.manager.ac.NCPAdaptor;
 import net.akazukin.mapart.manager.ac.ThemisAdaptor;
 import org.bukkit.Bukkit;
 
-public final class MapartEventManager extends EventManager {
+public final class MapartEventManager<E> extends EventManager<E> {
     @Override
     public void registerListeners() {
         this.registerListeners(

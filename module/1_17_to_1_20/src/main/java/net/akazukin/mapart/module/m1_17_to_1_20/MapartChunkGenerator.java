@@ -44,7 +44,7 @@ public class MapartChunkGenerator extends ChunkGenerator {
                         chunkData.setBlock(x, chunkData.getMinHeight(), z, Material.WHITE_WOOL);
                     }
                 } else {
-                    chunkData.setBlock(x, chunkData.getMinHeight(), z, Material.STONE);
+                    chunkData.setBlock(x, chunkData.getMinHeight(), z, Material.BLACK_CONCRETE);
                 }
             }
         }

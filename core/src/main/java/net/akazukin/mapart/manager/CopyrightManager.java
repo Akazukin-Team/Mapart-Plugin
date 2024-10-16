@@ -48,7 +48,7 @@ public class CopyrightManager implements Listenable {
         return null;
     }
 
-    @EventTarget(bktPriority = net.akazukin.library.event.EventPriority.HIGH)
+    @EventTarget(bktPriority = net.akazukin.library.event.EventPriority.HIGH, ignoreSuperClasses = false)
     public void onInventoryClick(final InventoryClickEvent event) {
         if (event.getClickedInventory() instanceof org.bukkit.inventory.CartographyInventory) {
             final ItemStack result = event.getInventory().getItem(2);

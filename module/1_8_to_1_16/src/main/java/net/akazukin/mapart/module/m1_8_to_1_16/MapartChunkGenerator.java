@@ -29,7 +29,7 @@ public class MapartChunkGenerator extends ChunkGenerator {
 
         final ChunkData chunkData = super.generateChunkData(world, random, chunkX, chunkZ, biome);
 
-        chunkData.setRegion(0, 0, 0, 15, 0, 15, Material.STONE);
+        chunkData.setRegion(0, 0, 0, 15, 0, 15, Material.BLACK_CONCRETE);
         chunkData.setRegion(1, 0, 1, 14, 0, 14, Material.WHITE_WOOL);
 
         return chunkData;
