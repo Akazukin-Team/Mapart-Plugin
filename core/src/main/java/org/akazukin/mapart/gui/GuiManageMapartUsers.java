@@ -1,12 +1,12 @@
 package org.akazukin.mapart.gui;
 
 import java.util.UUID;
-import net.akazukin.library.LibraryPlugin;
-import net.akazukin.library.gui.GuiManager;
-import net.akazukin.library.gui.screens.chest.GuiBase;
-import net.akazukin.library.gui.screens.chest.paged.GuiPagedSinglePlayerSelector;
-import net.akazukin.library.i18n.I18n;
-import net.akazukin.library.manager.BukkitMessageHelper;
+import org.akazukin.library.LibraryPlugin;
+import org.akazukin.library.gui.GuiManager;
+import org.akazukin.library.gui.screens.chest.GuiBase;
+import org.akazukin.library.gui.screens.chest.paged.GuiPagedSinglePlayerSelector;
+import org.akazukin.i18n.I18n;
+import org.akazukin.library.manager.BukkitMessageHelper;
 import org.akazukin.mapart.MapartPlugin;
 import org.akazukin.mapart.doma.MapartSQLConfig;
 import org.akazukin.mapart.doma.repo.MapartUserRepo;
@@ -17,9 +17,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 
 public class GuiManageMapartUsers extends GuiPagedSinglePlayerSelector {
     public GuiManageMapartUsers(final Player player, final GuiBase prevGui) {
-        super(MapartPlugin.MESSAGE_HELPER.get(BukkitMessageHelper.getLocale(player), I18n.of("mapart.panel.manage" +
-                        ".users" +
-                        ".gui")),
+        super(MapartPlugin.MESSAGE_HELPER.get(BukkitMessageHelper.getLocale(player), I18n.of("mapart.panel.manage.users.gui")),
                 6, 6, player,
                 MapartSQLConfig.singleton().getTransactionManager().required(MapartUserRepo::selectAll)
                         .parallelStream()

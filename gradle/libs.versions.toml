@@ -3,7 +3,7 @@
 lombok = "1.18.34"
 gson = "2.11.0"
 doma = "2.60.1"
-akz-libs = "1.5.0"
+akz-libs = "2.0.0"
 slf4j = "1.7.36"
 towny = "0.100.2.0"
 grimac = "9f5aaef74b"
@@ -26,7 +26,7 @@ lombok = { module = "org.projectlombok:lombok", version.ref = "lombok" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 doma-core = { module = "org.seasar.doma:doma-core", version.ref = "doma" }
 doma-processor = { module = "org.seasar.doma:doma-processor", version.ref = "doma" }
-akz-libs = { module = "net.akazukin:plugin-library", version.ref = "akz-libs" }
+akz-libs = { module = "org.akazukin:plugin-library", version.ref = "akz-libs" }
 slf4j = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
 towny = { module = "com.palmergames.bukkit.towny:towny", version.ref = "towny" }
 grimac = { module = "com.github.MWHunter:GrimAPI", version.ref = "grimac" }

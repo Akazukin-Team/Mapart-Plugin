@@ -4,13 +4,13 @@ import java.util.List;
 import java.util.UUID;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import net.akazukin.library.LibraryPlugin;
-import net.akazukin.library.event.EventTarget;
-import net.akazukin.library.event.Listenable;
-import net.akazukin.library.i18n.I18n;
-import net.akazukin.library.manager.BukkitMessageHelper;
-import net.akazukin.library.utils.ItemUtils;
-import net.akazukin.library.utils.UUIDUtils;
+import org.akazukin.library.LibraryPlugin;
+import org.akazukin.library.event.EventTarget;
+import org.akazukin.library.event.Listenable;
+import org.akazukin.i18n.I18n;
+import org.akazukin.library.manager.BukkitMessageHelper;
+import org.akazukin.library.utils.ItemUtils;
+import org.akazukin.library.utils.UUIDUtils;
 import org.akazukin.mapart.MapartPlugin;
 import org.bukkit.entity.Player;
 import org.bukkit.event.enchantment.PrepareItemEnchantEvent;
@@ -22,7 +22,7 @@ import org.bukkit.inventory.ItemStack;
 public class CopyrightManager implements Listenable {
     public static ItemStack setCopyright(final ItemStack itemStack, final Player player) {
         final String lore = MapartPlugin.MESSAGE_HELPER.get(BukkitMessageHelper.getLocale(player),
-                I18n.of("mapart.copyright.lore"), player.getName());
+                I18n.of("mapart.copyright.lore", player.getName()));
         ItemStack item = LibraryPlugin.COMPAT.setPlData(itemStack, "AKZ_MAPART_COPYRIGHT_OWNER",
                 String.valueOf(player.getUniqueId()));
         item = LibraryPlugin.COMPAT.setPlData(item, "AKZ_MAPART_COPYRIGHT_LORE", lore);
@@ -48,7 +48,7 @@ public class CopyrightManager implements Listenable {
         return null;
     }
 
-    @EventTarget(bktPriority = net.akazukin.library.event.EventPriority.HIGH, ignoreSuperClasses = false)
+    @EventTarget(bktPriority = org.akazukin.library.event.EventPriority.HIGH, ignoreSuperClasses = false)
     public void onInventoryClick(final InventoryClickEvent event) {
         if (event.getClickedInventory() instanceof org.bukkit.inventory.CartographyInventory) {
             final ItemStack result = event.getInventory().getItem(2);
@@ -68,14 +68,14 @@ public class CopyrightManager implements Listenable {
                 "AKZ_MAPART_COPYRIGHT_OWNER")));
     }
 
-    @EventTarget(bktPriority = net.akazukin.library.event.EventPriority.HIGH)
+    @EventTarget(bktPriority = org.akazukin.library.event.EventPriority.HIGH)
     public void onPrepareItemCraft(final PrepareItemCraftEvent event) {
         if (event.getInventory().getResult() != null && hasCopyright(event.getInventory().getResult()) && isOwner(event.getInventory().getResult(), event.getView().getPlayer().getUniqueId())) {
             event.getInventory().setResult(null);
         }
     }
 
-    @EventTarget(bktPriority = net.akazukin.library.event.EventPriority.HIGH)
+    @EventTarget(bktPriority = org.akazukin.library.event.EventPriority.HIGH)
     public void onPrepareAnvil(final PrepareAnvilEvent event) {
         if (event.getResult() != null && hasCopyright(event.getResult()) && isOwner(event.getResult(),
                 event.getView().getPlayer().getUniqueId())) {
@@ -83,7 +83,7 @@ public class CopyrightManager implements Listenable {
         }
     }
 
-    @EventTarget(bktPriority = net.akazukin.library.event.EventPriority.HIGH)
+    @EventTarget(bktPriority = org.akazukin.library.event.EventPriority.HIGH)
     public void onPrepareEnch(final PrepareItemEnchantEvent event) {
         if (event.isCancelled()) return;
         if (hasCopyright(event.getItem()) && isOwner(event.getItem(), event.getView().getPlayer().getUniqueId())) {

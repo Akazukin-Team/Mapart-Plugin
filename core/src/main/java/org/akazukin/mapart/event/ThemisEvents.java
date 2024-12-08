@@ -12,6 +12,6 @@ public class ThemisEvents implements Listener {
     @EventHandler(priority = EventPriority.HIGH)
     public void onViolation(final ViolationEvent event) {
         MapartPlugin.EVENT_MANAGER.callEvent(ViolationEvent.class, event,
-                net.akazukin.library.event.EventPriority.HIGH);
+                org.akazukin.library.event.EventPriority.HIGH);
     }
 }

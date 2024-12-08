@@ -1,9 +1,9 @@
 package org.akazukin.mapart.command.commands.mapart;
 
-import net.akazukin.library.command.CommandExecutor;
-import net.akazukin.library.command.CommandInfo;
-import net.akazukin.library.command.ICmdSender;
-import net.akazukin.library.command.SubCommand;
+import org.akazukin.library.command.CommandExecutor;
+import org.akazukin.library.command.CommandInfo;
+import org.akazukin.library.command.ICmdSender;
+import org.akazukin.library.command.SubCommand;
 import org.akazukin.mapart.MapartPlugin;
 
 @CommandInfo(name = "", description = "Show information", permission = "", executor = CommandExecutor.PLAYER)

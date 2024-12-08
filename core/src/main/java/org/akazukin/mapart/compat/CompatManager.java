@@ -8,7 +8,7 @@ import org.akazukin.mapart.MapartPlugin;
 @Getter
 public class CompatManager {
     public static Compat initCompat() {
-        return getCompat("org.akazukin.mapart.compat.compats.Compat_" + net.akazukin.library.compat.minecraft.CompatManager.getMappingVersion());
+        return getCompat("org.akazukin.mapart.compat.compats.Compat_" + org.akazukin.library.compat.minecraft.CompatManager.getMappingVersion());
     }
 
     public static Compat getCompat(final String clazzName) {

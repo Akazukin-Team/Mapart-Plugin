@@ -1,11 +1,11 @@
 package org.akazukin.mapart.command.commands.mapart;
 
-import net.akazukin.library.command.CommandExecutor;
-import net.akazukin.library.command.CommandInfo;
-import net.akazukin.library.command.ICmdSender;
-import net.akazukin.library.command.IPlayerCmdSender;
-import net.akazukin.library.command.SubCommand;
-import net.akazukin.library.gui.GuiManager;
+import org.akazukin.library.command.CommandExecutor;
+import org.akazukin.library.command.CommandInfo;
+import org.akazukin.library.command.ICmdSender;
+import org.akazukin.library.command.IPlayerCmdSender;
+import org.akazukin.library.command.SubCommand;
+import org.akazukin.library.gui.GuiManager;
 import org.akazukin.mapart.gui.GuiManageMapartUsers;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;

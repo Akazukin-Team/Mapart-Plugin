@@ -1,6 +1,6 @@
 package org.akazukin.mapart.event.events;
 
-import net.akazukin.library.event.Event;
+import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 public class CreateMapartEvent extends Event {
