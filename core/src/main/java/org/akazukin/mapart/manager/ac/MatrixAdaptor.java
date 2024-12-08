@@ -13,8 +13,9 @@ public class MatrixAdaptor implements Listenable {
 
     @EventTarget(bktPriority = org.akazukin.library.event.EventPriority.HIGH)
     public void onPlayerViolation(final PlayerViolationEvent event) {
-        if (!MapartManager.isMapartWorld(event.getPlayer().getWorld()))
+        if (!MapartManager.isMapartWorld(event.getPlayer().getWorld())) {
             return;
+        }
 
         MatrixAPIProvider.getAPI().tempBypass(event.getPlayer(), HackType.SCAFFOLD, 1000L);
         MatrixAPIProvider.getAPI().tempBypass(event.getPlayer(), HackType.CLICK, 1000L);
@@ -27,8 +28,9 @@ public class MatrixAdaptor implements Listenable {
 
     @EventTarget
     public void onPlayerMove(final PlayerMoveEvent event) {
-        if (!MapartManager.isMapartWorld(event.getPlayer().getWorld()))
+        if (!MapartManager.isMapartWorld(event.getPlayer().getWorld())) {
             return;
+        }
 
         MatrixAPIProvider.getAPI().tempBypass(event.getPlayer(), HackType.SCAFFOLD, 1000L);
         MatrixAPIProvider.getAPI().tempBypass(event.getPlayer(), HackType.CLICK, 1000L);

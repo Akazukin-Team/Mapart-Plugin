@@ -53,14 +53,16 @@ public final class MapartPlugin extends JavaPlugin {
         MapartPlugin.PLUGIN_NAME = this.getName();
 
         getLogManager().addHandler(new Handler() {
-            private final File file = new File(getDataFolder(), "error.log");
+            private final File file = new File(MapartPlugin.this.getDataFolder(), "error.log");
 
             @Override
             public void publish(final LogRecord record) {
-                if (record.getLevel() != Level.SEVERE && record.getThrown() == null) return;
+                if (record.getLevel() != Level.SEVERE && record.getThrown() == null) {
+                    return;
+                }
 
                 try (final FileWriter file = new FileWriter(this.file, true)) {
-                    try (BufferedWriter bw = new BufferedWriter(file)) {
+                    try (final BufferedWriter bw = new BufferedWriter(file)) {
                         try (final PrintWriter pw = new PrintWriter(bw)) {
                             pw.println("[" + record.getLevel() + "] " + record.getMessage());
                             if (record.getThrown() != null) {
@@ -131,7 +133,7 @@ public final class MapartPlugin extends JavaPlugin {
         MapartPlugin.CONFIG_UTILS.loadConfigFiles("config.yaml");
         MapartPlugin.getLogManager().info("Successfully Initialized configurations");
 
-        YamlConfiguration config = MapartPlugin.CONFIG_UTILS.getConfig("config.yaml");
+        final YamlConfiguration config = MapartPlugin.CONFIG_UTILS.getConfig("config.yaml");
         MapartPlugin.getLogManager().info("Initializing i18n manager...");
         MapartPlugin.I18N_UTILS = new I18nUtils(this.getClassLoader(), "org.akazukin", "mapart", this.getDataFolder(), config.getString("locale"));
         MapartPlugin.I18N_UTILS.build(config.getStringList("locales").toArray(new String[0]));

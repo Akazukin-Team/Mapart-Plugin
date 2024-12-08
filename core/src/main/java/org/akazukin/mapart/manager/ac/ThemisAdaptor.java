@@ -10,8 +10,9 @@ public class ThemisAdaptor implements Listenable {
 
     @EventTarget(bktPriority = org.akazukin.library.event.EventPriority.HIGH)
     public void onViolation(final ViolationEvent event) {
-        if (!MapartManager.isMapartWorld(event.getPlayer().getWorld()))
+        if (!MapartManager.isMapartWorld(event.getPlayer().getWorld())) {
             return;
+        }
 
         event.setCancelled(true);
     }

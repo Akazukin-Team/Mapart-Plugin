@@ -1,3 +1,3 @@
-select
+SELECT
     /*%expand*/*
-from M_MAPART_WORLD
+FROM M_MAPART_WORLD

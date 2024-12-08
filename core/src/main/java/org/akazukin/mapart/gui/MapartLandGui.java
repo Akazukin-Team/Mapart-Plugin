@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import org.akazukin.i18n.I18n;
 import org.akazukin.library.compat.worldguard.WorldGuardCompat;
 import org.akazukin.library.gui.GuiManager;
 import org.akazukin.library.gui.screens.chest.ChestGuiBase;
@@ -15,7 +16,6 @@ import org.akazukin.library.gui.screens.chest.GuiSizeSelector;
 import org.akazukin.library.gui.screens.chest.YesOrNoGui;
 import org.akazukin.library.gui.screens.chest.paged.GuiPagedMultiPlayerSelector;
 import org.akazukin.library.gui.screens.sign.SignStringSelectorGui;
-import org.akazukin.i18n.I18n;
 import org.akazukin.library.manager.BukkitMessageHelper;
 import org.akazukin.library.utils.ArrayUtils;
 import org.akazukin.library.utils.InventoryUtils;
@@ -216,7 +216,9 @@ public class MapartLandGui extends ChestGuiBase {
         if (this.removeLandGui.getResult() != null && this.removeLandGui.getResult()) {
             this.removeLandGui.reset();
             if (!isOwner || MapartManager.canRemove(this.player.getUniqueId())) {
-                if (isOwner) MapartManager.CLEANING.add(this.player.getUniqueId());
+                if (isOwner) {
+                    MapartManager.CLEANING.add(this.player.getUniqueId());
+                }
 
                 MapartPlugin.MESSAGE_HELPER.sendMessage(this.player, I18n.of("mapart.land.removing"));
 
@@ -226,16 +228,21 @@ public class MapartLandGui extends ChestGuiBase {
                                 player.getLocation()
                                         .getBlockZ())).forEach(player -> {
                     if (!MapartManager.teleportLastPos(player)) {
-                        if (player.getBedSpawnLocation() != null)
+                        if (player.getBedSpawnLocation() != null) {
                             player.teleport(player.getBedSpawnLocation());
-                        else
+                        } else {
                             player.damage(Double.MAX_VALUE);
+                        }
                     }
                 });
 
                 mgr.deleteLand(land.getLocationId(), () -> {
-                    if (isOwner) MapartManager.CLEANING.remove(this.player.getUniqueId());
-                    if (isOwner) MapartManager.LAST_DELETED.put(this.player.getUniqueId(), System.currentTimeMillis());
+                    if (isOwner) {
+                        MapartManager.CLEANING.remove(this.player.getUniqueId());
+                    }
+                    if (isOwner) {
+                        MapartManager.LAST_DELETED.put(this.player.getUniqueId(), System.currentTimeMillis());
+                    }
                     MapartPlugin.MESSAGE_HELPER.sendMessage(this.player, I18n.of("mapart.land.removed"));
                 });
 
@@ -247,12 +254,18 @@ public class MapartLandGui extends ChestGuiBase {
         if (this.cleanLandGui.getResult() != null && this.cleanLandGui.getResult()) {
             this.cleanLandGui.reset();
             if (!isOwner || MapartManager.canRemove(this.player.getUniqueId())) {
-                if (isOwner) MapartManager.CLEANING.add(this.player.getUniqueId());
+                if (isOwner) {
+                    MapartManager.CLEANING.add(this.player.getUniqueId());
+                }
 
                 MapartPlugin.MESSAGE_HELPER.sendMessage(this.player, I18n.of("mapart.land.cleaning"));
                 mgr.cleanLand(land.getLocationId(), () -> {
-                    if (isOwner) MapartManager.CLEANING.remove(this.player.getUniqueId());
-                    if (isOwner) MapartManager.LAST_DELETED.put(this.player.getUniqueId(), System.currentTimeMillis());
+                    if (isOwner) {
+                        MapartManager.CLEANING.remove(this.player.getUniqueId());
+                    }
+                    if (isOwner) {
+                        MapartManager.LAST_DELETED.put(this.player.getUniqueId(), System.currentTimeMillis());
+                    }
                     MapartPlugin.MESSAGE_HELPER.sendMessage(this.player, I18n.of("mapart.land.cleaned"));
                 });
 
@@ -295,8 +308,9 @@ public class MapartLandGui extends ChestGuiBase {
                 )
         ));
 
-        if (land.getCollaboratorsUUID().length != 0)
+        if (land.getCollaboratorsUUID().length != 0) {
             lore.add("");
+        }
         lore.add(MapartPlugin.MESSAGE_HELPER.get(BukkitMessageHelper.getLocale(this.player), I18n.of("mapart.panel.lands.info.collaborators", land.getCollaboratorsUUID().length)));
         lore.addAll(Arrays.stream(land.getCollaboratorsUUID()).parallel()
                 .map(uuid -> {
@@ -304,8 +318,9 @@ public class MapartLandGui extends ChestGuiBase {
                     return MapartPlugin.MESSAGE_HELPER.get(BukkitMessageHelper.getLocale(this.player),
                             I18n.of("mapart.panel.lands.info.collaborator", collabo.getName()));
                 }).collect(Collectors.toList()));
-        if (land.getCollaboratorsUUID().length != 0)
+        if (land.getCollaboratorsUUID().length != 0) {
             lore.add("");
+        }
 
         final LocalDateTime date = land.getCreatedDate().toLocalDateTime();
         final int milliSec = date.getNano() / 1000000;
@@ -313,15 +328,15 @@ public class MapartLandGui extends ChestGuiBase {
                 MapartPlugin.MESSAGE_HELPER.get(
                         BukkitMessageHelper.getLocale(this.player),
                         I18n.of("mapart.panel.lands.info.createdAt",
-                        date.getYear(),
-                        (date.getMonthValue() >= 10 ? "" : "0") + date.getMonthValue(),
-                        (date.getDayOfMonth() >= 10 ? "" : "0") + date.getDayOfMonth(),
+                                date.getYear(),
+                                (date.getMonthValue() >= 10 ? "" : "0") + date.getMonthValue(),
+                                (date.getDayOfMonth() >= 10 ? "" : "0") + date.getDayOfMonth(),
 
-                        (date.getHour() >= 10 ? "" : "0") + date.getHour(),
-                        (date.getMinute() >= 10 ? "" : "0") + date.getMinute(),
-                        (date.getSecond() >= 10 ? "" : "0") + date.getSecond(),
-                        (milliSec >= 100 ? "" : (milliSec >= 10 ? "0" : "00")) + milliSec
-                )));
+                                (date.getHour() >= 10 ? "" : "0") + date.getHour(),
+                                (date.getMinute() >= 10 ? "" : "0") + date.getMinute(),
+                                (date.getSecond() >= 10 ? "" : "0") + date.getSecond(),
+                                (milliSec >= 100 ? "" : (milliSec >= 10 ? "0" : "00")) + milliSec
+                        )));
         ItemUtils.setLore(landItem, lore);
         inv.setItem(4, landItem);
 
@@ -333,7 +348,9 @@ public class MapartLandGui extends ChestGuiBase {
         final MapartLandDto land = MapartManager.getLandData(this.landId);
         final MapartManager mgr = MapartManager.singleton(land.getSize());
 
-        if (event.getCurrentItem() == null) return false;
+        if (event.getCurrentItem() == null) {
+            return false;
+        }
         if (this.nameSelectorItem.equals(event.getCurrentItem())) {
             MapartPlugin.MESSAGE_HELPER.sendMessage(this.player, I18n.of("mapart.panel.name.message"));
             this.isWaiting = true;

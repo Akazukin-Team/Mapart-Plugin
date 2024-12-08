@@ -18,7 +18,9 @@ public class Module_1_7_to_1_16 {
         wc.generator(new MapartChunkGenerator());
         final World world = Bukkit.createWorld(wc);
 
-        if (world == null) return null;
+        if (world == null) {
+            return null;
+        }
 
         world.setAutoSave(true);
         world.setDifficulty(Difficulty.EASY);
