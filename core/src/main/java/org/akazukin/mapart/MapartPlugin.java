@@ -133,7 +133,7 @@ public final class MapartPlugin extends JavaPlugin {
         MapartPlugin.CONFIG_UTILS.loadConfigFiles("config.yaml");
         MapartPlugin.getLogManager().info("Successfully Initialized configurations");
 
-        final YamlConfiguration config = MapartPlugin.CONFIG_UTILS.getConfig("config.yaml");
+        final YamlConfiguration config = LibraryPlugin.getPlugin().getConfigUtils().getConfig("config.yaml");
         MapartPlugin.getLogManager().info("Initializing i18n manager...");
         MapartPlugin.I18N_UTILS = new I18nUtils(this.getClassLoader(), "org.akazukin", "mapart", this.getDataFolder(), config.getString("locale"));
         MapartPlugin.I18N_UTILS.build(config.getStringList("locales").toArray(new String[0]));
