@@ -1,14 +1,15 @@
 package org.akazukin.mapart.command.commands.mapart;
 
 import java.util.Arrays;
-import net.akazukin.library.command.Command;
-import net.akazukin.library.command.CommandInfo;
-import net.akazukin.library.command.ICmdSender;
-import net.akazukin.library.command.SubCommand;
-import net.akazukin.library.i18n.I18n;
-import net.akazukin.library.utils.ArrayUtils;
-import net.akazukin.library.utils.StringUtils;
+import org.akazukin.library.command.Command;
+import org.akazukin.library.command.CommandInfo;
+import org.akazukin.library.command.ICmdSender;
+import org.akazukin.library.command.SubCommand;
+import org.akazukin.i18n.I18n;
+import org.akazukin.library.utils.ArrayUtils;
+import org.akazukin.library.utils.StringUtils;
 import org.akazukin.mapart.MapartPlugin;
+import org.akazukin.util.utils.ListUtils;
 
 @CommandInfo(name = "help", description = "Show list of commands and descriptions")
 public class HelpSubCommand extends SubCommand {
@@ -34,7 +35,7 @@ public class HelpSubCommand extends SubCommand {
             }
 
             return cmD.getCompletion(sender, cmdName, args,
-                    ArrayUtils.copy(Arrays.asList(args2), 1, args2.length - 2 - lastIndex).toArray(new String[0]));
+                    ListUtils.copy(Arrays.asList(args2), 1, args2.length - 2 - lastIndex).toArray(new String[0]));
         }
     }
 
@@ -65,7 +66,7 @@ public class HelpSubCommand extends SubCommand {
             final SubCommand[] subCmds = cmd.getSubCommands();
             Arrays.stream(subCmds).forEach(cmd_ ->
                     MapartPlugin.MESSAGE_HELPER.sendMessage(sender,
-                            I18n.of((id + ((StringUtils.getLength(cmd_.getName()) > 0) ? "." + cmd_.getName() : "")))));
+                            I18n.of((id + ((org.akazukin.util.utils.StringUtils.getLength(cmd_.getName()) > 0) ? "." + cmd_.getName() : "")))));
         }
     }
 }

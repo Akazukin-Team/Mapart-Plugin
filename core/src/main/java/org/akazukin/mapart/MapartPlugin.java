@@ -10,10 +10,10 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
-import net.akazukin.library.LibraryPlugin;
-import net.akazukin.library.i18n.I18nUtils;
-import net.akazukin.library.manager.BukkitMessageHelper;
-import net.akazukin.library.utils.ConfigUtils;
+import org.akazukin.library.LibraryPlugin;
+import org.akazukin.library.i18n.I18nUtils;
+import org.akazukin.library.manager.BukkitMessageHelper;
+import org.akazukin.library.utils.ConfigUtils;
 import org.akazukin.mapart.command.MapartCommandManager;
 import org.akazukin.mapart.compat.Compat;
 import org.akazukin.mapart.compat.CompatManager;
@@ -31,6 +31,7 @@ import org.akazukin.mapart.event.ThemisEvents;
 import org.akazukin.mapart.event.TownyEvents;
 import org.akazukin.mapart.manager.MapartManager;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -130,11 +131,10 @@ public final class MapartPlugin extends JavaPlugin {
         MapartPlugin.CONFIG_UTILS.loadConfigFiles("config.yaml");
         MapartPlugin.getLogManager().info("Successfully Initialized configurations");
 
-
+        YamlConfiguration config = MapartPlugin.CONFIG_UTILS.getConfig("config.yaml");
         MapartPlugin.getLogManager().info("Initializing i18n manager...");
-        MapartPlugin.I18N_UTILS = new I18nUtils(this, "mapart", new File(this.getDataFolder(), "locales"));
-        MapartPlugin.I18N_UTILS.build(LibraryPlugin.getPlugin().getConfigUtils().getConfig("config.yaml")
-                .getStringList("locales").toArray(new String[0]));
+        MapartPlugin.I18N_UTILS = new I18nUtils(this.getClassLoader(), "org.akazukin", "mapart", this.getDataFolder(), config.getString("locale"));
+        MapartPlugin.I18N_UTILS.build(config.getStringList("locales").toArray(new String[0]));
         MapartPlugin.MESSAGE_HELPER = new BukkitMessageHelper(LibraryPlugin.I18N_UTILS, MapartPlugin.I18N_UTILS);
         MapartPlugin.getLogManager().info("Successfully Initialized i18n manager");
 

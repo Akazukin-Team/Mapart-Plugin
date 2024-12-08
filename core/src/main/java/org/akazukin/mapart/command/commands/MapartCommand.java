@@ -1,9 +1,9 @@
 package org.akazukin.mapart.command.commands;
 
-import net.akazukin.library.command.Command;
-import net.akazukin.library.command.CommandInfo;
-import net.akazukin.library.command.ICmdSender;
-import net.akazukin.library.i18n.I18n;
+import org.akazukin.library.command.Command;
+import org.akazukin.library.command.CommandInfo;
+import org.akazukin.library.command.ICmdSender;
+import org.akazukin.i18n.I18n;
 import org.akazukin.mapart.MapartPlugin;
 import org.akazukin.mapart.command.commands.mapart.CopyrightSubCommand;
 import org.akazukin.mapart.command.commands.mapart.FlySubCommand;

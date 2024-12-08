@@ -16,17 +16,17 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.Nullable;
 import lombok.Getter;
-import net.akazukin.library.LibraryPlugin;
-import net.akazukin.library.compat.worldguard.WorldGuardCompat;
-import net.akazukin.library.event.EventTarget;
-import net.akazukin.library.event.Listenable;
-import net.akazukin.library.i18n.I18n;
-import net.akazukin.library.manager.PlayerManager;
-import net.akazukin.library.utils.WorldUtils;
-import net.akazukin.library.world.WorldData;
-import net.akazukin.library.worldedit.EditSession;
-import net.akazukin.library.worldedit.Region;
-import net.akazukin.library.worldedit.Vec3i;
+import org.akazukin.library.LibraryPlugin;
+import org.akazukin.library.compat.worldguard.WorldGuardCompat;
+import org.akazukin.library.event.EventTarget;
+import org.akazukin.library.event.Listenable;
+import org.akazukin.i18n.I18n;
+import org.akazukin.library.manager.PlayerManager;
+import org.akazukin.library.utils.WorldUtils;
+import org.akazukin.library.world.WorldData;
+import org.akazukin.library.worldedit.EditSession;
+import org.akazukin.library.worldedit.Region;
+import org.akazukin.library.worldedit.Vec3i;
 import org.akazukin.mapart.MapartPlugin;
 import org.akazukin.mapart.doma.MapartSQLConfig;
 import org.akazukin.mapart.doma.dto.MapartLandDto;
@@ -256,7 +256,7 @@ public class MapartManager implements Listenable {
         final long ct = MapartPlugin.CONFIG_UTILS.getConfig("config.yaml").getLong("cooltime.clean");
         if (MapartManager.LAST_DELETED.containsKey(player) &&
                 System.currentTimeMillis() - MapartManager.LAST_DELETED.get(player) <= ct * 1000) {
-            MapartPlugin.MESSAGE_HELPER.sendMessage(player, I18n.of("mapart.land.cleanCooltime"), ct);
+            MapartPlugin.MESSAGE_HELPER.sendMessage(player, I18n.of("mapart.land.cleanCooltime", ct));
             return false;
         }
         return true;
@@ -427,7 +427,8 @@ public class MapartManager implements Listenable {
                         min + MapartPlugin.CONFIG_UTILS.getConfig("config.yaml").getInt("land.height")),
                 ((loc[1] * (this.size * MapartManager.MAP_SIZE)) - 4) * 16
         );
-        final Vec3i minLoc_ = maxLoc_.clone().add(
+        final Vec3i minLoc_ = maxLoc_.clone();
+        minLoc_.add(
                 -(this.size * MapartManager.MAP_SIZE) * 16,
                 0,
                 -(this.size * MapartManager.MAP_SIZE) * 16
@@ -454,11 +455,11 @@ public class MapartManager implements Listenable {
             final int sec = MapartPlugin.CONFIG_UTILS.getConfig("config.yaml").getInt("cooltime.teleport");
 
             if (lastDmg != -1 && lastDmg <= sec * 20L) {
-                MapartPlugin.MESSAGE_HELPER.sendMessage(player, I18n.of("library.message.teleport.combating"), sec);
+                MapartPlugin.MESSAGE_HELPER.sendMessage(player, I18n.of("library.message.teleport.combating", sec));
                 return false;
             } else if ((lastPos != -1 && lastPos <= sec * 20L) ||
                     (lastInteract != -1 && lastInteract <= sec * 20L)) {
-                MapartPlugin.MESSAGE_HELPER.sendMessage(player, I18n.of("library.message.teleport.dontMove"), sec);
+                MapartPlugin.MESSAGE_HELPER.sendMessage(player, I18n.of("library.message.teleport.dontMove", sec));
                 return false;
             }
         }
@@ -492,7 +493,7 @@ public class MapartManager implements Listenable {
         event.getPlayer().setAllowFlight(true);
     }
 
-    @EventTarget(bktPriority = net.akazukin.library.event.EventPriority.HIGH)
+    @EventTarget(bktPriority = org.akazukin.library.event.EventPriority.HIGH)
     public void onVehicleEnter(final VehicleEnterEvent event) {
         if (this.getWorld() == null || event.getEntered().getWorld().getUID() != this.getWorld().getUID()) {
             return;
@@ -534,7 +535,7 @@ public class MapartManager implements Listenable {
         }
     }
 
-    @EventTarget(bktPriority = net.akazukin.library.event.EventPriority.HIGH)
+    @EventTarget(bktPriority = org.akazukin.library.event.EventPriority.HIGH)
     public void onBlockBreak(final BlockBreakEvent event) {
         if (this.getWorld() == null || event.getBlock().getWorld().getUID() != this.getWorld().getUID()) {
             return;
@@ -544,7 +545,7 @@ public class MapartManager implements Listenable {
         }
     }
 
-    @EventTarget(bktPriority = net.akazukin.library.event.EventPriority.HIGH)
+    @EventTarget(bktPriority = org.akazukin.library.event.EventPriority.HIGH)
     public void onBlockExplode(final ExplosionPrimeEvent event) {
         if (this.getWorld() == null || event.getEntity().getWorld().getUID() != this.getWorld().getUID()) {
             return;
@@ -552,7 +553,7 @@ public class MapartManager implements Listenable {
         event.setCancelled(true);
     }
 
-    @EventTarget(bktPriority = net.akazukin.library.event.EventPriority.HIGH)
+    @EventTarget(bktPriority = org.akazukin.library.event.EventPriority.HIGH)
     public void onEntityRegainHealth(final EntityRegainHealthEvent event) {
         if (this.getWorld() == null || event.getEntity().getWorld().getUID() != this.getWorld().getUID()) {
             return;
@@ -560,7 +561,7 @@ public class MapartManager implements Listenable {
         event.setCancelled(true);
     }
 
-    @EventTarget(bktPriority = net.akazukin.library.event.EventPriority.HIGH)
+    @EventTarget(bktPriority = org.akazukin.library.event.EventPriority.HIGH)
     public void onEntityDamage(final EntityDamageEvent event) {
         if (this.getWorld() == null || event.getEntity().getWorld().getUID() != this.getWorld().getUID()) {
             return;
@@ -570,7 +571,7 @@ public class MapartManager implements Listenable {
         }
     }
 
-    @EventTarget(bktPriority = net.akazukin.library.event.EventPriority.HIGH)
+    @EventTarget(bktPriority = org.akazukin.library.event.EventPriority.HIGH)
     public void onEntitySpawn(final EntitySpawnEvent event) {
         if (this.getWorld() == null || event.getEntity().getWorld().getUID() != this.getWorld().getUID()) {
             return;
@@ -581,21 +582,21 @@ public class MapartManager implements Listenable {
         event.setCancelled(true);
     }
 
-    /*@EventTarget(bktPriority = net.akazukin.library.event.EventPriority.HIGH)
+    /*@EventTarget(bktPriority = org.akazukin.library.event.EventPriority.HIGH)
     public void onBlockRedstone(final BlockRedstoneEvent event) {
         if (event.getBlock().getWorld().getUID() != getWorld().getUID()) return;
 
         event.setNewCurrent(event.getOldCurrent());
     }
 
-    @EventTarget(bktPriority = net.akazukin.library.event.EventPriority.HIGH)
+    @EventTarget(bktPriority = org.akazukin.library.event.EventPriority.HIGH)
     public void onBlockPiston(final BlockPistonEvent event) {
         if (event.getBlock().getWorld().getUID() != getWorld().getUID()) return;
 
         event.setCancelled(true);
     }*/
 
-    @EventTarget(bktPriority = net.akazukin.library.event.EventPriority.HIGH)
+    @EventTarget(bktPriority = org.akazukin.library.event.EventPriority.HIGH)
     public void onBlockPhysics(final BlockPhysicsEvent event) {
         if (this.getWorld() == null || event.getBlock().getWorld().getUID() != this.getWorld().getUID()) {
             return;
@@ -603,7 +604,7 @@ public class MapartManager implements Listenable {
         event.setCancelled(true);
     }
 
-    @EventTarget(bktPriority = net.akazukin.library.event.EventPriority.HIGH)
+    @EventTarget(bktPriority = org.akazukin.library.event.EventPriority.HIGH)
     public void onBlockIgnite(final BlockIgniteEvent event) {
         if (this.getWorld() == null || event.getBlock().getWorld().getUID() != this.getWorld().getUID()) {
             return;
@@ -611,7 +612,7 @@ public class MapartManager implements Listenable {
         event.setCancelled(true);
     }
 
-    @EventTarget(bktPriority = net.akazukin.library.event.EventPriority.HIGH)
+    @EventTarget(bktPriority = org.akazukin.library.event.EventPriority.HIGH)
     public void onBlockFrom(final BlockFormEvent event) {
         if (this.getWorld() == null || event.getBlock().getWorld().getUID() != this.getWorld().getUID()) {
             return;
@@ -619,7 +620,7 @@ public class MapartManager implements Listenable {
         event.setCancelled(true);
     }
 
-    @EventTarget(bktPriority = net.akazukin.library.event.EventPriority.HIGH)
+    @EventTarget(bktPriority = org.akazukin.library.event.EventPriority.HIGH)
     public void onEntityPlace(final EntityPlaceEvent event) {
         if (this.getWorld() == null || event.getBlock().getWorld().getUID() != this.getWorld().getUID()) {
             return;
@@ -627,7 +628,7 @@ public class MapartManager implements Listenable {
         event.setCancelled(true);
     }
 
-    @EventTarget(bktPriority = net.akazukin.library.event.EventPriority.HIGH)
+    @EventTarget(bktPriority = org.akazukin.library.event.EventPriority.HIGH)
     public void onEntityBlockForm(final EntityBlockFormEvent event) {
         if (this.getWorld() == null || event.getBlock().getWorld().getUID() != this.getWorld().getUID()) {
             return;
@@ -635,7 +636,7 @@ public class MapartManager implements Listenable {
         event.setCancelled(true);
     }
 
-    @EventTarget(bktPriority = net.akazukin.library.event.EventPriority.HIGH)
+    @EventTarget(bktPriority = org.akazukin.library.event.EventPriority.HIGH)
     public void onPlayerInteract(final PlayerInteractEvent event) {
         if (this.getWorld() == null || event.getClickedBlock() == null || event.getClickedBlock().getWorld().getUID() != this.getWorld().getUID()) {
             return;
@@ -672,7 +673,7 @@ public class MapartManager implements Listenable {
         }
     }
 
-    @EventTarget(bktPriority = net.akazukin.library.event.EventPriority.HIGH)
+    @EventTarget(bktPriority = org.akazukin.library.event.EventPriority.HIGH)
     public void onBlockCanBuild(final BlockCanBuildEvent event) {
         if (this.getWorld() == null || event.getBlock().getWorld().getUID() != this.getWorld().getUID()) {
             return;

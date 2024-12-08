@@ -1,6 +1,6 @@
 package org.akazukin.mapart.event;
 
-import net.akazukin.library.event.EventManager;
+import org.akazukin.library.event.EventManager;
 import org.akazukin.mapart.manager.CopyrightManager;
 import org.akazukin.mapart.manager.TownyAdaptor;
 import org.akazukin.mapart.manager.ac.GrimACAdaptor;

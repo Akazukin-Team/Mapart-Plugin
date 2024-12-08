@@ -12,6 +12,6 @@ public class TownyEvents implements Listener {
     @EventHandler(priority = EventPriority.HIGH)
     public void onTownClaim(final TownPreClaimEvent event) {
         MapartPlugin.EVENT_MANAGER.callEvent(TownPreClaimEvent.class, event,
-                net.akazukin.library.event.EventPriority.HIGH);
+                org.akazukin.library.event.EventPriority.HIGH);
     }
 }

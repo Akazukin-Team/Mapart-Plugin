@@ -3,14 +3,14 @@ package org.akazukin.mapart.gui;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
-import net.akazukin.library.gui.GuiManager;
-import net.akazukin.library.gui.screens.chest.ChestGuiBase;
-import net.akazukin.library.gui.screens.chest.GuiBase;
-import net.akazukin.library.gui.screens.chest.GuiSizeSelector;
-import net.akazukin.library.i18n.I18n;
-import net.akazukin.library.manager.BukkitMessageHelper;
-import net.akazukin.library.utils.InventoryUtils;
-import net.akazukin.library.utils.ItemUtils;
+import org.akazukin.library.gui.GuiManager;
+import org.akazukin.library.gui.screens.chest.ChestGuiBase;
+import org.akazukin.library.gui.screens.chest.GuiBase;
+import org.akazukin.library.gui.screens.chest.GuiSizeSelector;
+import org.akazukin.i18n.I18n;
+import org.akazukin.library.manager.BukkitMessageHelper;
+import org.akazukin.library.utils.InventoryUtils;
+import org.akazukin.library.utils.ItemUtils;
 import org.akazukin.mapart.MapartPlugin;
 import org.akazukin.mapart.doma.MapartSQLConfig;
 import org.akazukin.mapart.doma.dto.MapartUserDto;
@@ -37,7 +37,7 @@ public class GuiMapartManageUser extends ChestGuiBase {
 
     public GuiMapartManageUser(final Player player, final UUID member, final GuiBase prevGui) {
         super(MapartPlugin.MESSAGE_HELPER.get(BukkitMessageHelper.getLocale(player),
-                        I18n.of("mapart.panel.manage.user.gui"), player.getName()),
+                        I18n.of("mapart.panel.manage.user.gui", player.getName())),
                 4, player, false, prevGui);
 
         this.member = member;
@@ -46,7 +46,7 @@ public class GuiMapartManageUser extends ChestGuiBase {
 
         this.maxLandSelector =
                 new GuiSizeSelector(MapartPlugin.MESSAGE_HELPER.get(BukkitMessageHelper.getLocale(player),
-                        I18n.of("mapart.panel.manage.maxLand.gui"), player.getName()),
+                        I18n.of("mapart.panel.manage.maxLand.gui", player.getName())),
                         player, 1, 2, 1, this);
 
         final ItemStack headItem = ItemUtils.getSkullItem(membeR);
@@ -55,13 +55,13 @@ public class GuiMapartManageUser extends ChestGuiBase {
 
         final ItemStack maxLandItem = new ItemStack(Material.getMaterial("ARROW"));
         ItemUtils.setDisplayName(maxLandItem, MapartPlugin.MESSAGE_HELPER.get(BukkitMessageHelper.getLocale(player),
-                I18n.of("mapart.panel.manage.maxLand.item"), player.getName()));
+                I18n.of("mapart.panel.manage.maxLand.item", player.getName())));
         this.maxLandItem = ItemUtils.setGuiItem(maxLandItem);
 
         final ItemStack manageMapartsItem = new ItemStack(Material.getMaterial("PAPER"));
         ItemUtils.setDisplayName(manageMapartsItem,
                 MapartPlugin.MESSAGE_HELPER.get(BukkitMessageHelper.getLocale(player),
-                        I18n.of("mapart.panel.manage.maparts.item"), player.getName()));
+                        I18n.of("mapart.panel.manage.maparts.item", player.getName())));
         this.manageMapartsItem = ItemUtils.setGuiItem(manageMapartsItem);
 
         final MapartUserDto entity = MapartSQLConfig.singleton().getTransactionManager().required(() ->
@@ -98,9 +98,9 @@ public class GuiMapartManageUser extends ChestGuiBase {
 
         ItemUtils.setLore(this.headItem, Arrays.asList(
                 MapartPlugin.MESSAGE_HELPER.get(BukkitMessageHelper.getLocale(this.player),
-                        I18n.of("mapart.panel.manage.user.head.lore.maxLand"), this.maxLandSelector.getResult()),
+                        I18n.of("mapart.panel.manage.user.head.lore.maxLand", this.maxLandSelector.getResult())),
                 MapartPlugin.MESSAGE_HELPER.get(BukkitMessageHelper.getLocale(this.player),
-                        I18n.of("mapart.panel.manage.user.head.lore.countLand"), landsEntity.size())
+                        I18n.of("mapart.panel.manage.user.head.lore.countLand", landsEntity.size()))
         ));
         inv.setItem(4, this.headItem);
         inv.setItem(10, this.maxLandItem);

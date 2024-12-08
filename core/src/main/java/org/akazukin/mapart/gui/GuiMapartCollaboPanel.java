@@ -2,13 +2,13 @@ package org.akazukin.mapart.gui;
 
 import java.util.Arrays;
 import java.util.UUID;
-import net.akazukin.library.LibraryPlugin;
-import net.akazukin.library.gui.GuiManager;
-import net.akazukin.library.gui.screens.chest.GuiBase;
-import net.akazukin.library.gui.screens.chest.paged.GuiPagedSinglePlayerSelector;
-import net.akazukin.library.i18n.I18n;
-import net.akazukin.library.manager.BukkitMessageHelper;
-import net.akazukin.library.utils.ItemUtils;
+import org.akazukin.library.LibraryPlugin;
+import org.akazukin.library.gui.GuiManager;
+import org.akazukin.library.gui.screens.chest.GuiBase;
+import org.akazukin.library.gui.screens.chest.paged.GuiPagedSinglePlayerSelector;
+import org.akazukin.i18n.I18n;
+import org.akazukin.library.manager.BukkitMessageHelper;
+import org.akazukin.library.utils.ItemUtils;
 import org.akazukin.mapart.MapartPlugin;
 import org.akazukin.mapart.doma.MapartSQLConfig;
 import org.akazukin.mapart.doma.utils.RepoUtils;
@@ -23,8 +23,7 @@ public class GuiMapartCollaboPanel extends GuiPagedSinglePlayerSelector {
     private final ItemStack myMapartsItem;
 
     public GuiMapartCollaboPanel(final Player player, final GuiBase prevGui) {
-        super(MapartPlugin.MESSAGE_HELPER.get(BukkitMessageHelper.getLocale(player), I18n.of("mapart.panel.gui" +
-                        ".collaboration")),
+        super(MapartPlugin.MESSAGE_HELPER.get(BukkitMessageHelper.getLocale(player), I18n.of("mapart.panel.gui.collaboration")),
                 6, 6, player,
                 Arrays.stream(MapartSQLConfig.singleton().getTransactionManager().required(() ->
                                 RepoUtils.getMapartLandsByCollaborator(player.getUniqueId())

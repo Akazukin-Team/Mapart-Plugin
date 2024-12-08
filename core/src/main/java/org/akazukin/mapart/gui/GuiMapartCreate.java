@@ -1,17 +1,17 @@
 package org.akazukin.mapart.gui;
 
 import java.util.Arrays;
-import net.akazukin.library.gui.GuiManager;
-import net.akazukin.library.gui.screens.chest.ChestGuiBase;
-import net.akazukin.library.gui.screens.chest.GuiBase;
-import net.akazukin.library.gui.screens.chest.GuiSizeSelector;
-import net.akazukin.library.gui.screens.sign.SignStringSelectorGui;
-import net.akazukin.library.i18n.I18n;
-import net.akazukin.library.manager.BukkitMessageHelper;
-import net.akazukin.library.utils.ArrayUtils;
-import net.akazukin.library.utils.InventoryUtils;
-import net.akazukin.library.utils.ItemUtils;
-import net.akazukin.library.utils.StringUtils;
+import org.akazukin.library.gui.GuiManager;
+import org.akazukin.library.gui.screens.chest.ChestGuiBase;
+import org.akazukin.library.gui.screens.chest.GuiBase;
+import org.akazukin.library.gui.screens.chest.GuiSizeSelector;
+import org.akazukin.library.gui.screens.sign.SignStringSelectorGui;
+import org.akazukin.i18n.I18n;
+import org.akazukin.library.manager.BukkitMessageHelper;
+import org.akazukin.library.utils.ArrayUtils;
+import org.akazukin.library.utils.InventoryUtils;
+import org.akazukin.library.utils.ItemUtils;
+import org.akazukin.library.utils.StringUtils;
 import org.akazukin.mapart.MapartPlugin;
 import org.akazukin.mapart.doma.MapartSQLConfig;
 import org.akazukin.mapart.doma.entity.MMapartLand;
@@ -64,8 +64,7 @@ public class GuiMapartCreate extends ChestGuiBase {
                 this);
         this.name = MapartPlugin.MESSAGE_HELPER.get(
                 BukkitMessageHelper.getLocale(player),
-                I18n.of("mapart.panel.defaultName"),
-                player.getName()
+                I18n.of("mapart.panel.defaultName", player.getName())
         );
 
 
@@ -102,7 +101,7 @@ public class GuiMapartCreate extends ChestGuiBase {
     @Override
     protected Inventory getInventory() {
         final String lines = ArrayUtils.join("", this.nameSelector.getResult());
-        if (0 < StringUtils.getLength(lines) && StringUtils.getLength(lines) < 30) {
+        if (0 < org.akazukin.util.utils.StringUtils.getLength(lines) && org.akazukin.util.utils.StringUtils.getLength(lines) < 30) {
             this.name = lines;
         }
 
@@ -120,12 +119,10 @@ public class GuiMapartCreate extends ChestGuiBase {
         ItemUtils.setLore(this.borrowItem, Arrays.asList(
                 MapartPlugin.MESSAGE_HELPER.get(
                         BukkitMessageHelper.getLocale(this.player),
-                        I18n.of("mapart.panel.gui.land.borrow.name"),
-                        StringUtils.getColoredString(this.name)),
+                        I18n.of("mapart.panel.gui.land.borrow.name", StringUtils.getColoredString(this.name))),
                 MapartPlugin.MESSAGE_HELPER.get(
                         BukkitMessageHelper.getLocale(this.player),
-                        I18n.of("mapart.panel.gui.land.borrow.size"),
-                        this.heightSelector.getResult(), this.widthSelector.getResult())
+                        I18n.of("mapart.panel.gui.land.borrow.size", this.heightSelector.getResult(), this.widthSelector.getResult()))
         ));
         inv.setItem(15, this.borrowItem);
 
@@ -176,8 +173,7 @@ public class GuiMapartCreate extends ChestGuiBase {
                     final MMapartLand landData = mgr.lent(this.player.getUniqueId(), this.name,
                             this.heightSelector.getResult(), this.widthSelector.getResult());
                     MapartPlugin.MESSAGE_HELPER.sendMessage(this.player,
-                            I18n.of("mapart.land.borrowed"),
-                            landData.getLandId());
+                            I18n.of("mapart.land.borrowed", landData.getLandId()));
                     mgr.teleportLand(landData.getLocationId(), this.player, false);
                 });
             }

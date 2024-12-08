@@ -12,6 +12,6 @@ public class MatrixEvents implements Listener {
     @EventHandler(priority = EventPriority.HIGH)
     public void onPlayerViolation(final PlayerViolationEvent event) {
         MapartPlugin.EVENT_MANAGER.callEvent(PlayerViolationEvent.class, event,
-                net.akazukin.library.event.EventPriority.HIGH);
+                org.akazukin.library.event.EventPriority.HIGH);
     }
 }

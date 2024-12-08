@@ -1,6 +1,6 @@
 package org.akazukin.mapart.command;
 
-import net.akazukin.library.command.BukkitCommandManager;
+import org.akazukin.library.command.BukkitCommandManager;
 import org.akazukin.mapart.command.commands.MapartCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 

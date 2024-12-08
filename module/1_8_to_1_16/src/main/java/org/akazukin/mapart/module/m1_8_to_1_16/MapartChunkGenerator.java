@@ -2,7 +2,7 @@ package org.akazukin.mapart.module.m1_8_to_1_16;
 
 import java.util.Random;
 import javax.annotation.Nonnull;
-import net.akazukin.library.utils.ServerUtils;
+import org.akazukin.library.utils.ServerUtils;
 import org.akazukin.mapart.module.m1_15_to_1_16.Module_1_15_to_1_16;
 import org.akazukin.mapart.module.m1_8_to_1_14.Module_1_8_to_1_14;
 import org.bukkit.Location;

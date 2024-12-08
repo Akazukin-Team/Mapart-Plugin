@@ -7,20 +7,20 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import net.akazukin.library.compat.worldguard.WorldGuardCompat;
-import net.akazukin.library.gui.GuiManager;
-import net.akazukin.library.gui.screens.chest.ChestGuiBase;
-import net.akazukin.library.gui.screens.chest.GuiBase;
-import net.akazukin.library.gui.screens.chest.GuiSizeSelector;
-import net.akazukin.library.gui.screens.chest.YesOrNoGui;
-import net.akazukin.library.gui.screens.chest.paged.GuiPagedMultiPlayerSelector;
-import net.akazukin.library.gui.screens.sign.SignStringSelectorGui;
-import net.akazukin.library.i18n.I18n;
-import net.akazukin.library.manager.BukkitMessageHelper;
-import net.akazukin.library.utils.ArrayUtils;
-import net.akazukin.library.utils.InventoryUtils;
-import net.akazukin.library.utils.ItemUtils;
-import net.akazukin.library.utils.StringUtils;
+import org.akazukin.library.compat.worldguard.WorldGuardCompat;
+import org.akazukin.library.gui.GuiManager;
+import org.akazukin.library.gui.screens.chest.ChestGuiBase;
+import org.akazukin.library.gui.screens.chest.GuiBase;
+import org.akazukin.library.gui.screens.chest.GuiSizeSelector;
+import org.akazukin.library.gui.screens.chest.YesOrNoGui;
+import org.akazukin.library.gui.screens.chest.paged.GuiPagedMultiPlayerSelector;
+import org.akazukin.library.gui.screens.sign.SignStringSelectorGui;
+import org.akazukin.i18n.I18n;
+import org.akazukin.library.manager.BukkitMessageHelper;
+import org.akazukin.library.utils.ArrayUtils;
+import org.akazukin.library.utils.InventoryUtils;
+import org.akazukin.library.utils.ItemUtils;
+import org.akazukin.library.utils.StringUtils;
 import org.akazukin.mapart.MapartPlugin;
 import org.akazukin.mapart.doma.MapartSQLConfig;
 import org.akazukin.mapart.doma.dto.MapartLandDto;
@@ -28,6 +28,7 @@ import org.akazukin.mapart.doma.entity.MMapartLand;
 import org.akazukin.mapart.doma.repo.MMapartLandRepo;
 import org.akazukin.mapart.doma.repo.MapartLandRepo;
 import org.akazukin.mapart.manager.MapartManager;
+import org.akazukin.util.utils.ListUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -142,7 +143,7 @@ public class MapartLandGui extends ChestGuiBase {
         final MapartManager mgr = MapartManager.singleton(land.getSize());
 
         final String lines = ArrayUtils.join("", this.nameSelector.getResult());
-        if (0 < StringUtils.getLength(lines) && StringUtils.getLength(lines) < 30) {
+        if (0 < org.akazukin.util.utils.StringUtils.getLength(lines) && org.akazukin.util.utils.StringUtils.getLength(lines) < 30) {
             MapartSQLConfig.singleton().getTransactionManager().required(() -> {
                 final MMapartLand land_ = MMapartLandRepo.selectByLand(this.landId);
 
@@ -152,9 +153,9 @@ public class MapartLandGui extends ChestGuiBase {
         }
 
         if (this.addCollaboGui != null && this.addCollaboGui.isDone() && this.addCollaboGui.getSelectedPlayers().length != 0) {
-            MapartPlugin.MESSAGE_HELPER.sendMessage(this.player, I18n.of("mapart.land.collaborators.added"),
-                    ArrayUtils.join(", ",
-                            Arrays.stream(this.addCollaboGui.getSelectedPlayers()).map(OfflinePlayer::getName).collect(Collectors.toList())));
+            MapartPlugin.MESSAGE_HELPER.sendMessage(this.player, I18n.of("mapart.land.collaborators.added",
+                    ListUtils.join(", ",
+                            Arrays.stream(this.addCollaboGui.getSelectedPlayers()).map(OfflinePlayer::getName).collect(Collectors.toList()))));
 
             MapartManager.addCollaborator(this.landId,
                     Arrays.stream(this.addCollaboGui.getSelectedPlayers())
@@ -163,9 +164,9 @@ public class MapartLandGui extends ChestGuiBase {
             this.addCollaboGui = null;
         }
         if (this.removeCollaboGui != null && this.removeCollaboGui.isDone() && this.removeCollaboGui.getSelectedPlayers().length != 0) {
-            MapartPlugin.MESSAGE_HELPER.sendMessage(this.player, I18n.of("mapart.land.collaborators.removed"),
-                    ArrayUtils.join(", ",
-                            Arrays.stream(this.removeCollaboGui.getSelectedPlayers()).map(OfflinePlayer::getName).collect(Collectors.toList())));
+            MapartPlugin.MESSAGE_HELPER.sendMessage(this.player, I18n.of("mapart.land.collaborators.removed",
+                    ListUtils.join(", ",
+                            Arrays.stream(this.removeCollaboGui.getSelectedPlayers()).map(OfflinePlayer::getName).collect(Collectors.toList()))));
 
             MapartManager.removeCollaborator(this.landId,
                     Arrays.stream(this.removeCollaboGui.getSelectedPlayers())
@@ -174,8 +175,8 @@ public class MapartLandGui extends ChestGuiBase {
             this.removeCollaboGui = null;
         }
         if (this.widthSelector.isDone() && this.widthSelector.getResult() != land.getWidth()) {
-            MapartPlugin.MESSAGE_HELPER.sendMessage(this.player, I18n.of("mapart.land.width.set"),
-                    this.widthSelector.getResult());
+            MapartPlugin.MESSAGE_HELPER.sendMessage(this.player, I18n.of("mapart.land.width.set",
+                    this.widthSelector.getResult()));
             MapartSQLConfig.singleton().getTransactionManager().required(() -> {
                 final MMapartLand entity = MMapartLandRepo.selectByLand(this.landId);
 
@@ -195,8 +196,8 @@ public class MapartLandGui extends ChestGuiBase {
                     .forEach(player -> mgr.teleportLand(land.getLocationId(), player, true));
         }
         if (this.heightSelector.isDone() && this.heightSelector.getResult() != land.getHeight()) {
-            MapartPlugin.MESSAGE_HELPER.sendMessage(this.player, I18n.of("mapart.land.height.set"),
-                    this.heightSelector.getResult());
+            MapartPlugin.MESSAGE_HELPER.sendMessage(this.player, I18n.of("mapart.land.height.set",
+                    this.heightSelector.getResult()));
             MapartSQLConfig.singleton().getTransactionManager().required(() -> {
                 final MMapartLand entity = MMapartLandRepo.selectByLand(this.landId);
 
@@ -282,32 +283,26 @@ public class MapartLandGui extends ChestGuiBase {
         final ItemStack landItem = new ItemStack(Material.getMaterial("PAPER"));
         ItemUtils.setDisplayName(landItem,
                 StringUtils.getColoredString(MapartPlugin.MESSAGE_HELPER.get(BukkitMessageHelper.getLocale(this.player),
-                        I18n.of("mapart.panel.lands.info.name"), land.getName())));
+                        I18n.of("mapart.panel.lands.info.name", land.getName()))));
         final List<String> lore = new ArrayList<>(Arrays.asList(
                 MapartPlugin.MESSAGE_HELPER.get(
                         BukkitMessageHelper.getLocale(this.player),
-                        I18n.of("mapart.panel.lands.info.owner"),
-                        owner.getName()
+                        I18n.of("mapart.panel.lands.info.owner", owner.getName())
                 ),
                 MapartPlugin.MESSAGE_HELPER.get(
                         BukkitMessageHelper.getLocale(this.player),
-                        I18n.of("mapart.panel.lands.info.landId"),
-                        land.getLandId()
+                        I18n.of("mapart.panel.lands.info.landId", land.getLandId())
                 )
         ));
 
         if (land.getCollaboratorsUUID().length != 0)
             lore.add("");
-        lore.add(MapartPlugin.MESSAGE_HELPER.get(BukkitMessageHelper.getLocale(this.player), I18n.of("mapart.panel" +
-                ".lands" +
-                ".info.collaborators"), land.getCollaboratorsUUID().length));
+        lore.add(MapartPlugin.MESSAGE_HELPER.get(BukkitMessageHelper.getLocale(this.player), I18n.of("mapart.panel.lands.info.collaborators", land.getCollaboratorsUUID().length)));
         lore.addAll(Arrays.stream(land.getCollaboratorsUUID()).parallel()
                 .map(uuid -> {
                     final OfflinePlayer collabo = Bukkit.getOfflinePlayer(uuid);
-                    return MapartPlugin.MESSAGE_HELPER.get(BukkitMessageHelper.getLocale(this.player), I18n.of(
-                            "mapart" +
-                                    ".panel.lands" +
-                                    ".info.collaborator"), collabo.getName());
+                    return MapartPlugin.MESSAGE_HELPER.get(BukkitMessageHelper.getLocale(this.player),
+                            I18n.of("mapart.panel.lands.info.collaborator", collabo.getName()));
                 }).collect(Collectors.toList()));
         if (land.getCollaboratorsUUID().length != 0)
             lore.add("");
@@ -317,7 +312,7 @@ public class MapartLandGui extends ChestGuiBase {
         lore.add(
                 MapartPlugin.MESSAGE_HELPER.get(
                         BukkitMessageHelper.getLocale(this.player),
-                        I18n.of("mapart.panel.lands.info.createdAt"),
+                        I18n.of("mapart.panel.lands.info.createdAt",
                         date.getYear(),
                         (date.getMonthValue() >= 10 ? "" : "0") + date.getMonthValue(),
                         (date.getDayOfMonth() >= 10 ? "" : "0") + date.getDayOfMonth(),
@@ -326,7 +321,7 @@ public class MapartLandGui extends ChestGuiBase {
                         (date.getMinute() >= 10 ? "" : "0") + date.getMinute(),
                         (date.getSecond() >= 10 ? "" : "0") + date.getSecond(),
                         (milliSec >= 100 ? "" : (milliSec >= 10 ? "0" : "00")) + milliSec
-                ));
+                )));
         ItemUtils.setLore(landItem, lore);
         inv.setItem(4, landItem);
 
@@ -385,7 +380,7 @@ public class MapartLandGui extends ChestGuiBase {
     @Override
     protected void onGuiOpen(final InventoryOpenEvent event) {
         if (this.isWaiting &&
-                (StringUtils.getLength(ArrayUtils.getIndex(this.nameSelector.getResult(), 0)) <= 0 || ArrayUtils.getIndex(this.nameSelector.getResult(), 0).equalsIgnoreCase("cancel rename!"))) {
+                (org.akazukin.util.utils.StringUtils.getLength(ArrayUtils.getIndex(this.nameSelector.getResult(), 0)) <= 0 || ArrayUtils.getIndex(this.nameSelector.getResult(), 0).equalsIgnoreCase("cancel rename!"))) {
             MapartPlugin.MESSAGE_HELPER.sendMessage(event.getPlayer(), I18n.of("mapart.panel.name.cancel"));
         }
         this.isWaiting = false;

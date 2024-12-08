@@ -7,14 +7,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import net.akazukin.library.LibraryPlugin;
-import net.akazukin.library.gui.GuiManager;
-import net.akazukin.library.gui.screens.chest.GuiBase;
-import net.akazukin.library.gui.screens.chest.paged.GuiPagedSingleSelector;
-import net.akazukin.library.i18n.I18n;
-import net.akazukin.library.manager.BukkitMessageHelper;
-import net.akazukin.library.utils.ItemUtils;
-import net.akazukin.library.utils.StringUtils;
+import org.akazukin.library.LibraryPlugin;
+import org.akazukin.library.gui.GuiManager;
+import org.akazukin.library.gui.screens.chest.GuiBase;
+import org.akazukin.library.gui.screens.chest.paged.GuiPagedSingleSelector;
+import org.akazukin.i18n.I18n;
+import org.akazukin.library.manager.BukkitMessageHelper;
+import org.akazukin.library.utils.ItemUtils;
+import org.akazukin.library.utils.StringUtils;
 import org.akazukin.mapart.MapartPlugin;
 import org.akazukin.mapart.doma.MapartSQLConfig;
 import org.akazukin.mapart.doma.dto.MapartLandDto;
@@ -44,8 +44,8 @@ public class GuiMapartPanel extends GuiPagedSingleSelector {
     public GuiMapartPanel(final Player player, final UUID guiUserUuid, final boolean isAdmin, final GuiBase prevGui) {
         super(
                 MapartPlugin.MESSAGE_HELPER.get(BukkitMessageHelper.getLocale(player),
-                        I18n.of("mapart.panel.gui.list." + (player.getUniqueId() == guiUserUuid ? "own" : "others")),
-                        (player.getUniqueId() == guiUserUuid ? null : Bukkit.getOfflinePlayer(guiUserUuid).getName())),
+                        I18n.of("mapart.panel.gui.list." + (player.getUniqueId() == guiUserUuid ? "own" : "others"),
+                        (player.getUniqueId() == guiUserUuid ? null : Bukkit.getOfflinePlayer(guiUserUuid).getName()))),
                 6, 6, player, MapartSQLConfig.singleton().getTransactionManager().required(() ->
                                 MapartLandRepo.selectByPlayer(guiUserUuid))
                         .parallelStream()
@@ -56,25 +56,22 @@ public class GuiMapartPanel extends GuiPagedSingleSelector {
 
                             final ItemStack landItem = new ItemStack(Material.getMaterial("PAPER"));
                             ItemUtils.setDisplayName(landItem,
-                                    StringUtils.getColoredString(MapartPlugin.MESSAGE_HELPER.get(BukkitMessageHelper.getLocale(player), I18n.of("mapart.panel.lands.info.name"), land.getName())));
+                                    StringUtils.getColoredString(MapartPlugin.MESSAGE_HELPER.get(BukkitMessageHelper.getLocale(player), I18n.of("mapart.panel.lands.info.name", land.getName()))));
                             final List<String> lore = new ArrayList<>(Arrays.asList(
                                     MapartPlugin.MESSAGE_HELPER.get(BukkitMessageHelper.getLocale(player), I18n.of(
-                                            "mapart" +
-                                                    ".panel.lands.info.owner"), owner.getName()),
+                                            "mapart.panel.lands.info.owner", owner.getName())),
                                     MapartPlugin.MESSAGE_HELPER.get(BukkitMessageHelper.getLocale(player), I18n.of(
-                                            "mapart" +
-                                                    ".panel.lands.info.landId"), land.getLandId())
+                                            "mapart.panel.lands.info.landId", land.getLandId()))
                             ));
 
                             if (land.getCollaboratorsUUID().length != 0)
                                 lore.add("");
                             lore.add(MapartPlugin.MESSAGE_HELPER.get(BukkitMessageHelper.getLocale(player), I18n.of(
-                                    "mapart" +
-                                            ".panel.lands.info.collaborators"), land.getCollaboratorsUUID().length));
+                                    "mapart.panel.lands.info.collaborators", land.getCollaboratorsUUID().length)));
                             lore.addAll(Arrays.stream(land.getCollaboratorsUUID()).parallel().map(uuid -> {
                                 final OfflinePlayer collabo = Bukkit.getOfflinePlayer(uuid);
-                                return MapartPlugin.MESSAGE_HELPER.get(BukkitMessageHelper.getLocale(player), I18n.of(
-                                        "mapart.panel.lands.info.collaborator"), collabo.getName());
+                                return MapartPlugin.MESSAGE_HELPER.get(BukkitMessageHelper.getLocale(player),
+                                        I18n.of("mapart.panel.lands.info.collaborator", collabo.getName()));
                             }).collect(Collectors.toList()));
                             if (land.getCollaboratorsUUID().length != 0)
                                 lore.add("");
@@ -84,7 +81,7 @@ public class GuiMapartPanel extends GuiPagedSingleSelector {
                             lore.add(
                                     MapartPlugin.MESSAGE_HELPER.get(
                                             BukkitMessageHelper.getLocale(player),
-                                            I18n.of("mapart.panel.lands.info.createdAt"),
+                                            I18n.of("mapart.panel.lands.info.createdAt",
                                             date.getYear(),
                                             (date.getMonthValue() >= 10 ? "" : "0") + date.getMonthValue(),
                                             (date.getDayOfMonth() >= 10 ? "" : "0") + date.getDayOfMonth(),
@@ -93,7 +90,7 @@ public class GuiMapartPanel extends GuiPagedSingleSelector {
                                             (date.getMinute() >= 10 ? "" : "0") + date.getMinute(),
                                             (date.getSecond() >= 10 ? "" : "0") + date.getSecond(),
                                             (milliSec >= 100 ? "" : (milliSec >= 10 ? "0" : "00")) + milliSec
-                                    ));
+                                    )));
                             ItemUtils.setLore(landItem, lore);
                             return LibraryPlugin.COMPAT.setPlData(landItem, "landId", land.getLandId());
                         }).toArray(ItemStack[]::new),
