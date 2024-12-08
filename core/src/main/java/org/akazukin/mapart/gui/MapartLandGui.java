@@ -142,7 +142,7 @@ public class MapartLandGui extends ChestGuiBase {
 
         final MapartManager mgr = MapartManager.singleton(land.getSize());
 
-        final String lines = ArrayUtils.join("", this.nameSelector.getResult());
+        final String lines = ListUtils.join("", this.nameSelector.getResult());
         if (0 < org.akazukin.util.utils.StringUtils.getLength(lines) && org.akazukin.util.utils.StringUtils.getLength(lines) < 30) {
             MapartSQLConfig.singleton().getTransactionManager().required(() -> {
                 final MMapartLand land_ = MMapartLandRepo.selectByLand(this.landId);
