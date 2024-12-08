@@ -1,0 +1,49 @@
+package org.akazukin.mapart.command.commands.mapart;
+
+import net.akazukin.library.command.CommandExecutor;
+import net.akazukin.library.command.CommandInfo;
+import net.akazukin.library.command.ICmdSender;
+import net.akazukin.library.command.IPlayerCmdSender;
+import net.akazukin.library.command.SubCommand;
+import net.akazukin.library.i18n.I18n;
+import net.akazukin.library.utils.ItemUtils;
+import org.akazukin.mapart.MapartPlugin;
+import org.akazukin.mapart.manager.CopyrightManager;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+
+@CommandInfo(
+        name = "copyright", description = "Toggle flight at mapart world",
+        permission = "akazukin.mapart.command.mapart.copyright", executor = CommandExecutor.PLAYER
+)
+public class CopyrightSubCommand extends SubCommand {
+    @Override
+    public void run(final ICmdSender sender, final String[] args, final String[] args2) {
+        final Player p = Bukkit.getPlayer(((IPlayerCmdSender) sender).getUniqueId());
+
+        final ItemStack handItem = p.getInventory().getItemInMainHand();
+        if (handItem.getType() == Material.AIR) {
+            MapartPlugin.MESSAGE_HELPER.sendMessage(sender, I18n.of("mapart.command.copyright.mustHaveInHand"));
+        } else if (CopyrightManager.hasCopyright(handItem)) {
+            if (!CopyrightManager.isOwner(handItem, p.getUniqueId())) {
+                MapartPlugin.MESSAGE_HELPER.sendMessage(sender, I18n.of("mapart.command.copyright.mustBeOwner"));
+            } else {
+                final ItemStack item = CopyrightManager.removeCopyright(handItem);
+                if (item == null) {
+                    MapartPlugin.MESSAGE_HELPER.sendMessage(sender, I18n.of("mapart.command.copyright.failedRemoving"));
+                } else {
+                    p.getInventory().setItemInMainHand(item);
+                    MapartPlugin.MESSAGE_HELPER.sendMessage(sender, I18n.of("mapart.command.copyright.removed"));
+                }
+            }
+        } else if (!ItemUtils.getLore(handItem).isEmpty()) {
+            MapartPlugin.MESSAGE_HELPER.sendMessage(sender, I18n.of("mapart.command.copyright.invalid"));
+        } else {
+            final ItemStack item = CopyrightManager.setCopyright(handItem, p);
+            p.getInventory().setItemInMainHand(item);
+            MapartPlugin.MESSAGE_HELPER.sendMessage(sender, I18n.of("mapart.command.copyright.added"));
+        }
+    }
+}

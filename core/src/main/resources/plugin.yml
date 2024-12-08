@@ -17,7 +17,7 @@ softdepend:
 
 database: false
 
-main: net.akazukin.mapart.MapartPlugin
+main: org.akazukin.mapart.MapartPlugin
 api-version: 1.19
 
 commands:
