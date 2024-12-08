@@ -87,7 +87,9 @@ public class MapartManager implements Listenable {
     }
 
     public static MapartManager singleton(final int size) {
-        if (!MapartManager.singletons.containsKey(size)) MapartManager.singletons.put(size, new MapartManager(size));
+        if (!MapartManager.singletons.containsKey(size)) {
+            MapartManager.singletons.put(size, new MapartManager(size));
+        }
         return MapartManager.singletons.get(size);
     }
 
@@ -103,13 +105,17 @@ public class MapartManager implements Listenable {
 
         final World w = WorldUtils.getWorld(this.worldData);
         if (w != null) {
-            if (worldData.equalsBkt(w)) return w;
+            if (worldData.equalsBkt(w)) {
+                return w;
+            }
             this.removeWorld();
         }
 
         final World w3 = WorldUtils.getOrLoadWorld(worldData, this::generateWorld);
 
-        if (w3 != null) this.worldData = new WorldData(w3.getUID(), w3.getName());
+        if (w3 != null) {
+            this.worldData = new WorldData(w3.getUID(), w3.getName());
+        }
         return w3;
     }
 
@@ -134,17 +140,22 @@ public class MapartManager implements Listenable {
     }
 
     public WorldData getWorldData() {
-        if (this.worldData == null) this.worldData = getWorldDataFromSQL(this.size);
-        if (this.worldData == null)
+        if (this.worldData == null) {
+            this.worldData = getWorldDataFromSQL(this.size);
+        }
+        if (this.worldData == null) {
             this.worldData = new WorldData(null,
                     MapartPlugin.CONFIG_UTILS.getConfig("config.yaml").getString("world") + "-x" + this.size);
+        }
         return this.worldData;
     }
 
     public static WorldData getWorldDataFromSQL(final long size) {
         final MMapartWorld w = MapartSQLConfig.singleton().getTransactionManager().required(() ->
                 MMapartWorldRepo.select(size));
-        if (w == null) return null;
+        if (w == null) {
+            return null;
+        }
 
         return new WorldData(w.getUuid(), w.getWorldName());
     }
@@ -158,7 +169,9 @@ public class MapartManager implements Listenable {
         } else {
             MapartSQLConfig.singleton().getTransactionManager().required(() -> {
                 final MMapartWorld e = MMapartWorldRepo.select(this.size);
-                if (e != null) MMapartWorldRepo.delete(e);
+                if (e != null) {
+                    MMapartWorldRepo.delete(e);
+                }
 
                 final MMapartWorld e2 = new MMapartWorld();
                 e2.setLandSize(this.size);
@@ -286,11 +299,17 @@ public class MapartManager implements Listenable {
         final int maxY = this.getWorld().getMaxHeight();
 
         int i2 = (int) Math.sqrt(landData.getLandId());
-        if (i2 != 0 && i2 % 2 == 0) i2--;
-        if (i2 == 0) i2 = 1;
+        if (i2 != 0 && i2 % 2 == 0) {
+            i2--;
+        }
+        if (i2 == 0) {
+            i2 = 1;
+        }
         i2 += 4;
         for (long j = landData.getLocationId(); j < ((long) i2 * i2); j++) {
-            if (WorldGuardCompat.getRegion(this.getWorld(), "mapart-" + j) != null) continue;
+            if (WorldGuardCompat.getRegion(this.getWorld(), "mapart-" + j) != null) {
+                continue;
+            }
 
             final int[] loc2 = MapartManager.getLocation((int) j);
             final Location maxLoc = new Location(this.getWorld(),
@@ -342,7 +361,9 @@ public class MapartManager implements Listenable {
 
     public static int[] getLocation(final long locId) {
         long i2 = (int) Math.floor(Math.sqrt(locId));
-        if (i2 != 0 && i2 % 2 == 0) i2--;
+        if (i2 != 0 && i2 % 2 == 0) {
+            i2--;
+        }
         final long i3 = locId - (i2 * i2);
         final long pos = (i2 + 1) / 2;
         long x = pos;
@@ -369,8 +390,10 @@ public class MapartManager implements Listenable {
         WorldGuardCompat.removeAllMembers(this.getWorld(), "mapart-" + locId);
 
         MapartSQLConfig.singleton().getTransactionManager().required(() -> {
-            final MMapartLand land = MMapartLandRepo.selectBySizeAndLocation(size, locId);
-            if (land == null) return;
+            final MMapartLand land = MMapartLandRepo.selectBySizeAndLocation(this.size, locId);
+            if (land == null) {
+                return;
+            }
 
             MMapartLandRepo.delete(land);
             final List<DMapartLandCollaborator> collabos = DMapartLandCollaboratorRepo.selectByLand(land.getLandId());
@@ -401,7 +424,7 @@ public class MapartManager implements Listenable {
         final Vec3i maxLoc_ = new Vec3i(
                 ((loc[0] * (this.size * MapartManager.MAP_SIZE)) - 4) * 16,
                 Math.min(w.getMaxHeight() - 1,
-                        min + MapartPlugin.CONFIG_UTILS.getConfig("config.yaml").getInt("limit.land.height")),
+                        min + MapartPlugin.CONFIG_UTILS.getConfig("config.yaml").getInt("land.height")),
                 ((loc[1] * (this.size * MapartManager.MAP_SIZE)) - 4) * 16
         );
         final Vec3i minLoc_ = maxLoc_.clone().add(
@@ -463,19 +486,25 @@ public class MapartManager implements Listenable {
 
     @EventTarget
     public void onPlayerJoin(final PlayerJoinEvent event) {
-        if (this.getWorld() == null || event.getPlayer().getWorld().getUID() != this.getWorld().getUID()) return;
+        if (this.getWorld() == null || event.getPlayer().getWorld().getUID() != this.getWorld().getUID()) {
+            return;
+        }
         event.getPlayer().setAllowFlight(true);
     }
 
     @EventTarget(bktPriority = net.akazukin.library.event.EventPriority.HIGH)
     public void onVehicleEnter(final VehicleEnterEvent event) {
-        if (this.getWorld() == null || event.getEntered().getWorld().getUID() != this.getWorld().getUID()) return;
+        if (this.getWorld() == null || event.getEntered().getWorld().getUID() != this.getWorld().getUID()) {
+            return;
+        }
         event.setCancelled(true);
     }
 
     @EventTarget
     public void onPlayerTeleport(final PlayerTeleportEvent event) {
-        if (this.getWorld() == null) return;
+        if (this.getWorld() == null) {
+            return;
+        }
 
         if (event.getPlayer().getWorld().getUID() == this.getWorld().getUID()) {
             if (event.getCause() == PlayerTeleportEvent.TeleportCause.CHORUS_FRUIT ||
@@ -491,7 +520,9 @@ public class MapartManager implements Listenable {
 
     @EventTarget
     public void onWorldChange(final PlayerChangedWorldEvent event) {
-        if (this.getWorld() == null) return;
+        if (this.getWorld() == null) {
+            return;
+        }
 
         if (event.getFrom().getUID() == this.getWorld().getUID()) {
             if (event.getPlayer().getGameMode() == GameMode.SURVIVAL || event.getPlayer().getGameMode() == GameMode.ADVENTURE) {
@@ -505,7 +536,9 @@ public class MapartManager implements Listenable {
 
     @EventTarget(bktPriority = net.akazukin.library.event.EventPriority.HIGH)
     public void onBlockBreak(final BlockBreakEvent event) {
-        if (this.getWorld() == null || event.getBlock().getWorld().getUID() != this.getWorld().getUID()) return;
+        if (this.getWorld() == null || event.getBlock().getWorld().getUID() != this.getWorld().getUID()) {
+            return;
+        }
         if (event.getBlock().getY() == LibraryPlugin.COMPAT.getMinHeight(this.getWorld())) {
             event.setCancelled(true);
         }
@@ -513,27 +546,38 @@ public class MapartManager implements Listenable {
 
     @EventTarget(bktPriority = net.akazukin.library.event.EventPriority.HIGH)
     public void onBlockExplode(final ExplosionPrimeEvent event) {
-        if (this.getWorld() == null || event.getEntity().getWorld().getUID() != this.getWorld().getUID()) return;
+        if (this.getWorld() == null || event.getEntity().getWorld().getUID() != this.getWorld().getUID()) {
+            return;
+        }
         event.setCancelled(true);
     }
 
     @EventTarget(bktPriority = net.akazukin.library.event.EventPriority.HIGH)
     public void onEntityRegainHealth(final EntityRegainHealthEvent event) {
-        if (this.getWorld() == null || event.getEntity().getWorld().getUID() != this.getWorld().getUID()) return;
+        if (this.getWorld() == null || event.getEntity().getWorld().getUID() != this.getWorld().getUID()) {
+            return;
+        }
         event.setCancelled(true);
     }
 
     @EventTarget(bktPriority = net.akazukin.library.event.EventPriority.HIGH)
     public void onEntityDamage(final EntityDamageEvent event) {
-        if (this.getWorld() == null || event.getEntity().getWorld().getUID() != this.getWorld().getUID()) return;
-        if (event.getEntity() instanceof Player)
+        if (this.getWorld() == null || event.getEntity().getWorld().getUID() != this.getWorld().getUID()) {
+            return;
+        }
+        if (event.getEntity() instanceof Player) {
             event.setCancelled(true);
+        }
     }
 
     @EventTarget(bktPriority = net.akazukin.library.event.EventPriority.HIGH)
     public void onEntitySpawn(final EntitySpawnEvent event) {
-        if (this.getWorld() == null || event.getEntity().getWorld().getUID() != this.getWorld().getUID()) return;
-        if (event.getEntity() instanceof Item) return;
+        if (this.getWorld() == null || event.getEntity().getWorld().getUID() != this.getWorld().getUID()) {
+            return;
+        }
+        if (event.getEntity() instanceof Item) {
+            return;
+        }
         event.setCancelled(true);
     }
 
@@ -553,39 +597,52 @@ public class MapartManager implements Listenable {
 
     @EventTarget(bktPriority = net.akazukin.library.event.EventPriority.HIGH)
     public void onBlockPhysics(final BlockPhysicsEvent event) {
-        if (this.getWorld() == null || event.getBlock().getWorld().getUID() != this.getWorld().getUID()) return;
+        if (this.getWorld() == null || event.getBlock().getWorld().getUID() != this.getWorld().getUID()) {
+            return;
+        }
         event.setCancelled(true);
     }
 
     @EventTarget(bktPriority = net.akazukin.library.event.EventPriority.HIGH)
     public void onBlockIgnite(final BlockIgniteEvent event) {
-        if (this.getWorld() == null || event.getBlock().getWorld().getUID() != this.getWorld().getUID()) return;
+        if (this.getWorld() == null || event.getBlock().getWorld().getUID() != this.getWorld().getUID()) {
+            return;
+        }
         event.setCancelled(true);
     }
 
     @EventTarget(bktPriority = net.akazukin.library.event.EventPriority.HIGH)
     public void onBlockFrom(final BlockFormEvent event) {
-        if (this.getWorld() == null || event.getBlock().getWorld().getUID() != this.getWorld().getUID()) return;
+        if (this.getWorld() == null || event.getBlock().getWorld().getUID() != this.getWorld().getUID()) {
+            return;
+        }
         event.setCancelled(true);
     }
 
     @EventTarget(bktPriority = net.akazukin.library.event.EventPriority.HIGH)
     public void onEntityPlace(final EntityPlaceEvent event) {
-        if (this.getWorld() == null || event.getBlock().getWorld().getUID() != this.getWorld().getUID()) return;
+        if (this.getWorld() == null || event.getBlock().getWorld().getUID() != this.getWorld().getUID()) {
+            return;
+        }
         event.setCancelled(true);
     }
 
     @EventTarget(bktPriority = net.akazukin.library.event.EventPriority.HIGH)
     public void onEntityBlockForm(final EntityBlockFormEvent event) {
-        if (this.getWorld() == null || event.getBlock().getWorld().getUID() != this.getWorld().getUID()) return;
+        if (this.getWorld() == null || event.getBlock().getWorld().getUID() != this.getWorld().getUID()) {
+            return;
+        }
         event.setCancelled(true);
     }
 
     @EventTarget(bktPriority = net.akazukin.library.event.EventPriority.HIGH)
     public void onPlayerInteract(final PlayerInteractEvent event) {
-        if (this.getWorld() == null || event.getClickedBlock() == null || event.getClickedBlock().getWorld().getUID() != this.getWorld().getUID())
+        if (this.getWorld() == null || event.getClickedBlock() == null || event.getClickedBlock().getWorld().getUID() != this.getWorld().getUID()) {
             return;
-        if (!event.isCancelled()) return;
+        }
+        if (!event.isCancelled()) {
+            return;
+        }
         MapartManager.onPlayerInteract_(event);
     }
 
@@ -617,15 +674,19 @@ public class MapartManager implements Listenable {
 
     @EventTarget(bktPriority = net.akazukin.library.event.EventPriority.HIGH)
     public void onBlockCanBuild(final BlockCanBuildEvent event) {
-        if (this.getWorld() == null || event.getBlock().getWorld().getUID() != this.getWorld().getUID()) return;
+        if (this.getWorld() == null || event.getBlock().getWorld().getUID() != this.getWorld().getUID()) {
+            return;
+        }
         MapartManager.onBlockCanBuild_(event);
     }
 
     private static void onBlockCanBuild_(final BlockCanBuildEvent event) {
-        if (!event.isBuildable()) return;
+        if (!event.isBuildable()) {
+            return;
+        }
 
         if (event.getBlock().getY() >
-                MapartPlugin.CONFIG_UTILS.getConfig("config.yaml").getInt("limit.land.height") +
+                MapartPlugin.CONFIG_UTILS.getConfig("config.yaml").getInt("land.height") +
                         LibraryPlugin.COMPAT.getMinHeight(event.getBlock().getWorld())
         ) {
             event.setBuildable(false);
@@ -639,7 +700,7 @@ public class MapartManager implements Listenable {
             data = event.getMaterial().data;
         }
 
-        if (data != null)
+        if (data != null) {
             switch (data.getName()) {
                 case "org.bukkit.material.Sign":
                 case "org.bukkit.block.data.type.Sign":
@@ -737,6 +798,7 @@ public class MapartManager implements Listenable {
                     return;
                 }
             }
+        }
 
         switch (event.getMaterial().name()) {
             case "ANVIL":
@@ -801,7 +863,9 @@ public class MapartManager implements Listenable {
 
     @EventTarget
     public void onPlayerQuit(final PlayerQuitEvent event) {
-        if (this.getWorld() == null || event.getPlayer().getWorld().getUID() != this.getWorld().getUID()) return;
+        if (this.getWorld() == null || event.getPlayer().getWorld().getUID() != this.getWorld().getUID()) {
+            return;
+        }
         MapartManager.teleportLastPos(event.getPlayer());
     }
 

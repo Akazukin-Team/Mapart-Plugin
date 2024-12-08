@@ -67,7 +67,7 @@ public class GuiMapartManageUser extends ChestGuiBase {
         final MapartUserDto entity = MapartSQLConfig.singleton().getTransactionManager().required(() ->
                 MapartUserRepo.selectByPlayer(member));
         this.maxLandSelector.setDefaultSize(entity.getMaxLand() == null ? MapartPlugin.CONFIG_UTILS.getConfig("config" +
-                ".yaml").getInt("limit.land.default") : entity.getMaxLand());
+                ".yaml").getInt("limit.borrow.default") : entity.getMaxLand());
     }
 
     @Override
@@ -92,8 +92,9 @@ public class GuiMapartManageUser extends ChestGuiBase {
         final Inventory inv = super.getInventory();
         InventoryUtils.fillBlankItems(inv, BukkitMessageHelper.getLocale(this.player));
         InventoryUtils.fillCloseItem(inv, BukkitMessageHelper.getLocale(this.player));
-        if (this.prevGui != null)
+        if (this.prevGui != null) {
             InventoryUtils.fillBackItem(inv, BukkitMessageHelper.getLocale(this.player));
+        }
 
         ItemUtils.setLore(this.headItem, Arrays.asList(
                 MapartPlugin.MESSAGE_HELPER.get(BukkitMessageHelper.getLocale(this.player),

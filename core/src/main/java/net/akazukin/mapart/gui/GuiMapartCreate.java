@@ -44,22 +44,24 @@ public class GuiMapartCreate extends ChestGuiBase {
                         I18n.of("mapart.panel.gui.create.main")
                 ),
                 4, player, false, prevGui);
+        final int minLandSize = MapartPlugin.CONFIG_UTILS.getConfig("config.yaml").getInt("land.size.min");
+        final int maxLandSize = MapartPlugin.CONFIG_UTILS.getConfig("config.yaml").getInt("land.size.max");
         this.heightSelector = new GuiSizeSelector(
                 MapartPlugin.MESSAGE_HELPER.get(
                         BukkitMessageHelper.getLocale(player),
                         I18n.of("mapart.panel.gui.select.height")
                 ),
-                player, 1,
-                MapartPlugin.CONFIG_UTILS.getConfig("config.yaml").getInt("limit.land.size"),
-                1, this);
+                player,
+                minLandSize, maxLandSize, minLandSize,
+                this);
         this.widthSelector = new GuiSizeSelector(
                 MapartPlugin.MESSAGE_HELPER.get(
                         BukkitMessageHelper.getLocale(player),
                         I18n.of("mapart.panel.gui.select.width")
                 ),
-                player, 1,
-                MapartPlugin.CONFIG_UTILS.getConfig("config.yaml").getInt("limit.land.size"),
-                1, this);
+                player,
+                minLandSize, maxLandSize, minLandSize,
+                this);
         this.name = MapartPlugin.MESSAGE_HELPER.get(
                 BukkitMessageHelper.getLocale(player),
                 I18n.of("mapart.panel.defaultName"),
@@ -100,14 +102,16 @@ public class GuiMapartCreate extends ChestGuiBase {
     @Override
     protected Inventory getInventory() {
         final String lines = ArrayUtils.join("", this.nameSelector.getResult());
-        if (0 < StringUtils.getLength(lines) && StringUtils.getLength(lines) < 30)
+        if (0 < StringUtils.getLength(lines) && StringUtils.getLength(lines) < 30) {
             this.name = lines;
+        }
 
         final Inventory inv = super.getInventory();
         InventoryUtils.fillBlankItems(inv, BukkitMessageHelper.getLocale(this.player));
         InventoryUtils.fillCloseItem(inv, BukkitMessageHelper.getLocale(this.player));
-        if (this.prevGui != null)
+        if (this.prevGui != null) {
             InventoryUtils.fillBackItem(inv, BukkitMessageHelper.getLocale(this.player));
+        }
 
         inv.setItem(10, this.nameItem);
         inv.setItem(12, this.heightItem);
@@ -144,8 +148,9 @@ public class GuiMapartCreate extends ChestGuiBase {
             event.getWhoClicked().closeInventory();
             if (MapartSQLConfig.singleton().getTransactionManager().required(() -> {
                 final MMapartUser e = MMapartUserRepo.selectByPlayer(this.player.getUniqueId());
-                if (e == null || e.getMaxLand() == null)
-                    return MapartPlugin.CONFIG_UTILS.getConfig("config.yaml").getInt("limit.land.default");
+                if (e == null || e.getMaxLand() == null) {
+                    return MapartPlugin.CONFIG_UTILS.getConfig("config.yaml").getInt("limit.borrow.default");
+                }
                 return e.getMaxLand();
             }) <=
                     MapartSQLConfig.singleton().getTransactionManager().required(() ->

@@ -4,11 +4,15 @@ world: mapart
 
 limit:
   collaborator: 10
-  land:
+  borrow:
     default: 20
     max: 50
-    size: 4
-    height: 150
+
+land:
+  size:
+    min: 1
+    max: 4
+  height: 150
 
 cooltime:
   teleport: 10 #Seconds
