@@ -12,7 +12,7 @@ dependencies {
 }
 
 application {
-    mainClassName = "net.akazukin.mapart.Main"
+    mainClassName = "org.akazukin.mapart.Main"
 }
 
 processResources {
