@@ -4,10 +4,10 @@ import java.util.List;
 import java.util.UUID;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import org.akazukin.i18n.I18n;
 import org.akazukin.library.LibraryPlugin;
 import org.akazukin.library.event.EventTarget;
 import org.akazukin.library.event.Listenable;
-import org.akazukin.i18n.I18n;
 import org.akazukin.library.manager.BukkitMessageHelper;
 import org.akazukin.library.utils.ItemUtils;
 import org.akazukin.library.utils.UUIDUtils;
@@ -35,7 +35,9 @@ public class CopyrightManager implements Listenable {
     @Nullable
     public static ItemStack removeCopyright(final ItemStack itemStack) {
         if (!LibraryPlugin.COMPAT.containsPlData(itemStack, "AKZ_MAPART_COPYRIGHT_LORE") ||
-                !LibraryPlugin.COMPAT.containsPlData(itemStack, "AKZ_MAPART_COPYRIGHT_OWNER")) return null;
+                !LibraryPlugin.COMPAT.containsPlData(itemStack, "AKZ_MAPART_COPYRIGHT_OWNER")) {
+            return null;
+        }
 
         final List<String> lores = ItemUtils.getLore(itemStack);
         if (lores.contains(LibraryPlugin.COMPAT.getPlDataString(itemStack, "AKZ_MAPART_COPYRIGHT_LORE"))) {
@@ -85,7 +87,9 @@ public class CopyrightManager implements Listenable {
 
     @EventTarget(bktPriority = org.akazukin.library.event.EventPriority.HIGH)
     public void onPrepareEnch(final PrepareItemEnchantEvent event) {
-        if (event.isCancelled()) return;
+        if (event.isCancelled()) {
+            return;
+        }
         if (hasCopyright(event.getItem()) && isOwner(event.getItem(), event.getView().getPlayer().getUniqueId())) {
             event.setCancelled(true);
         }

@@ -11,8 +11,9 @@ public class NCPAdaptor implements Listenable {
 
     @EventTarget(bktPriority = org.akazukin.library.event.EventPriority.NORMAL)
     public void onPlayerChangedWorld(final PlayerChangedWorldEvent event) {
-        if (!MapartManager.isMapartWorld(event.getPlayer().getWorld()))
+        if (!MapartManager.isMapartWorld(event.getPlayer().getWorld())) {
             return;
+        }
 
         if (MapartManager.isMapartWorld(event.getFrom())) {
             NCPExemptionManager.unexempt(event.getPlayer());

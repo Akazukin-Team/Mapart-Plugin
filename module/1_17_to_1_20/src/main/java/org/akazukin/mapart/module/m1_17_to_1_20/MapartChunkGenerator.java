@@ -21,7 +21,9 @@ public class MapartChunkGenerator extends ChunkGenerator {
                                 final int chunkX, final int chunkZ, @Nonnull final ChunkData chunkData) {
         if (this.size == null) {
             final MapartManager mgr = MapartManager.singleton(worldInfo.getUID());
-            if (mgr != null) this.size = mgr.getSize();
+            if (mgr != null) {
+                this.size = mgr.getSize();
+            }
         }
 
         final long chuOffX = (chunkX + 4) % ((long) this.size * (long) MapartManager.MAP_SIZE);

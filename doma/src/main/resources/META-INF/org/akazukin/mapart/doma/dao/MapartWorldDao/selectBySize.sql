@@ -6,4 +6,4 @@ SELECT --/*%expand*/*,
 FROM M_MAPART_WORLD
          LEFT OUTER JOIN M_MAPART_LAND
                          ON M_MAPART_WORLD.LAND_SIZE = M_MAPART_LAND.SIZE
-where LAND_SIZE = /* mapSize */0
+WHERE LAND_SIZE = /* mapSize */0

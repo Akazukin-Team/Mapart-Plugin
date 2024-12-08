@@ -7,11 +7,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import org.akazukin.i18n.I18n;
 import org.akazukin.library.LibraryPlugin;
 import org.akazukin.library.gui.GuiManager;
 import org.akazukin.library.gui.screens.chest.GuiBase;
 import org.akazukin.library.gui.screens.chest.paged.GuiPagedSingleSelector;
-import org.akazukin.i18n.I18n;
 import org.akazukin.library.manager.BukkitMessageHelper;
 import org.akazukin.library.utils.ItemUtils;
 import org.akazukin.library.utils.StringUtils;
@@ -45,7 +45,7 @@ public class GuiMapartPanel extends GuiPagedSingleSelector {
         super(
                 MapartPlugin.MESSAGE_HELPER.get(BukkitMessageHelper.getLocale(player),
                         I18n.of("mapart.panel.gui.list." + (player.getUniqueId() == guiUserUuid ? "own" : "others"),
-                        (player.getUniqueId() == guiUserUuid ? null : Bukkit.getOfflinePlayer(guiUserUuid).getName()))),
+                                (player.getUniqueId() == guiUserUuid ? null : Bukkit.getOfflinePlayer(guiUserUuid).getName()))),
                 6, 6, player, MapartSQLConfig.singleton().getTransactionManager().required(() ->
                                 MapartLandRepo.selectByPlayer(guiUserUuid))
                         .parallelStream()
@@ -64,8 +64,9 @@ public class GuiMapartPanel extends GuiPagedSingleSelector {
                                             "mapart.panel.lands.info.landId", land.getLandId()))
                             ));
 
-                            if (land.getCollaboratorsUUID().length != 0)
+                            if (land.getCollaboratorsUUID().length != 0) {
                                 lore.add("");
+                            }
                             lore.add(MapartPlugin.MESSAGE_HELPER.get(BukkitMessageHelper.getLocale(player), I18n.of(
                                     "mapart.panel.lands.info.collaborators", land.getCollaboratorsUUID().length)));
                             lore.addAll(Arrays.stream(land.getCollaboratorsUUID()).parallel().map(uuid -> {
@@ -73,8 +74,9 @@ public class GuiMapartPanel extends GuiPagedSingleSelector {
                                 return MapartPlugin.MESSAGE_HELPER.get(BukkitMessageHelper.getLocale(player),
                                         I18n.of("mapart.panel.lands.info.collaborator", collabo.getName()));
                             }).collect(Collectors.toList()));
-                            if (land.getCollaboratorsUUID().length != 0)
+                            if (land.getCollaboratorsUUID().length != 0) {
                                 lore.add("");
+                            }
 
                             final LocalDateTime date = land.getCreatedDate().toLocalDateTime();
                             final int milliSec = date.getNano() / 1000000;
@@ -82,15 +84,15 @@ public class GuiMapartPanel extends GuiPagedSingleSelector {
                                     MapartPlugin.MESSAGE_HELPER.get(
                                             BukkitMessageHelper.getLocale(player),
                                             I18n.of("mapart.panel.lands.info.createdAt",
-                                            date.getYear(),
-                                            (date.getMonthValue() >= 10 ? "" : "0") + date.getMonthValue(),
-                                            (date.getDayOfMonth() >= 10 ? "" : "0") + date.getDayOfMonth(),
+                                                    date.getYear(),
+                                                    (date.getMonthValue() >= 10 ? "" : "0") + date.getMonthValue(),
+                                                    (date.getDayOfMonth() >= 10 ? "" : "0") + date.getDayOfMonth(),
 
-                                            (date.getHour() >= 10 ? "" : "0") + date.getHour(),
-                                            (date.getMinute() >= 10 ? "" : "0") + date.getMinute(),
-                                            (date.getSecond() >= 10 ? "" : "0") + date.getSecond(),
-                                            (milliSec >= 100 ? "" : (milliSec >= 10 ? "0" : "00")) + milliSec
-                                    )));
+                                                    (date.getHour() >= 10 ? "" : "0") + date.getHour(),
+                                                    (date.getMinute() >= 10 ? "" : "0") + date.getMinute(),
+                                                    (date.getSecond() >= 10 ? "" : "0") + date.getSecond(),
+                                                    (milliSec >= 100 ? "" : (milliSec >= 10 ? "0" : "00")) + milliSec
+                                            )));
                             ItemUtils.setLore(landItem, lore);
                             return LibraryPlugin.COMPAT.setPlData(landItem, "landId", land.getLandId());
                         }).toArray(ItemStack[]::new),
@@ -134,7 +136,9 @@ public class GuiMapartPanel extends GuiPagedSingleSelector {
 
         if (this.player.getUniqueId().equals(this.guiUserUuid)) {
             inv.setItem(48, this.createItem);
-            if (!this.player.getUniqueId().equals(this.guiUserUuid)) inv.setItem(51, this.myMapartsItem);
+            if (!this.player.getUniqueId().equals(this.guiUserUuid)) {
+                inv.setItem(51, this.myMapartsItem);
+            }
             inv.setItem(52, this.collaboMapartsItem);
         }
 
@@ -143,7 +147,9 @@ public class GuiMapartPanel extends GuiPagedSingleSelector {
 
     @Override
     public boolean onGuiClick(final InventoryClickEvent event) {
-        if (event.getCurrentItem() == null) return false;
+        if (event.getCurrentItem() == null) {
+            return false;
+        }
 
         if (event.getCurrentItem().getType() == Material.getMaterial("PAPER") &&
                 LibraryPlugin.COMPAT.containsPlData(event.getCurrentItem(), "landId")

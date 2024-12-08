@@ -13,7 +13,9 @@ public class UUIDConverter implements DomainConverter<UUID, String> {
 
     @Override
     public UUID fromValueToDomain(final String s) {
-        if (s == null) return null;
+        if (s == null) {
+            return null;
+        }
         return UUID.fromString(s);
     }
 }

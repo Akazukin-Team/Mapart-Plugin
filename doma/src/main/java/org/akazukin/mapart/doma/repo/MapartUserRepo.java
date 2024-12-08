@@ -15,7 +15,9 @@ public class MapartUserRepo {
 
     public static MapartUserDto selectByPlayer(final UUID player) {
         final List<MapartUser> entities = MAPART_USER_DAO.selectByPlayer(player);
-        if (entities.isEmpty()) return null;
+        if (entities.isEmpty()) {
+            return null;
+        }
 
         final MapartUserDto dto = new MapartUserDto();
         dto.setPlayerUuid(entities.get(0).getPlayerUuid());

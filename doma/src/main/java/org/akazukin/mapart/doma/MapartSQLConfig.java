@@ -17,7 +17,9 @@ public class MapartSQLConfig extends SQLConfig {
     }
 
     public static MapartSQLConfig singleton() {
-        if (CONFIG == null) CONFIG = new MapartSQLConfig(FILE);
+        if (CONFIG == null) {
+            CONFIG = new MapartSQLConfig(FILE);
+        }
         return CONFIG;
     }
 }

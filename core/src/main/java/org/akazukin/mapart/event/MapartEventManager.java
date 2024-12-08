@@ -16,15 +16,20 @@ public final class MapartEventManager extends EventManager<Event> {
         this.registerListeners(
                 new CopyrightManager()
         );
-        if (Bukkit.getPluginManager().getPlugin("GrimAC") != null)
+        if (Bukkit.getPluginManager().getPlugin("GrimAC") != null) {
             this.registerListeners(GrimACAdaptor.class);
-        if (Bukkit.getPluginManager().getPlugin("NoCheatPlus") != null)
+        }
+        if (Bukkit.getPluginManager().getPlugin("NoCheatPlus") != null) {
             this.registerListeners(NCPAdaptor.class);
-        if (Bukkit.getPluginManager().getPlugin("Matrix") != null)
+        }
+        if (Bukkit.getPluginManager().getPlugin("Matrix") != null) {
             this.registerListeners(MatrixAdaptor.class);
-        if (Bukkit.getPluginManager().getPlugin("Themis") != null)
+        }
+        if (Bukkit.getPluginManager().getPlugin("Themis") != null) {
             this.registerListeners(ThemisAdaptor.class);
-        if (Bukkit.getPluginManager().getPlugin("Towny") != null)
+        }
+        if (Bukkit.getPluginManager().getPlugin("Towny") != null) {
             this.registerListeners(TownyAdaptor.class);
+        }
     }
 }

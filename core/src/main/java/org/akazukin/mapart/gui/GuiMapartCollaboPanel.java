@@ -2,11 +2,11 @@ package org.akazukin.mapart.gui;
 
 import java.util.Arrays;
 import java.util.UUID;
+import org.akazukin.i18n.I18n;
 import org.akazukin.library.LibraryPlugin;
 import org.akazukin.library.gui.GuiManager;
 import org.akazukin.library.gui.screens.chest.GuiBase;
 import org.akazukin.library.gui.screens.chest.paged.GuiPagedSinglePlayerSelector;
-import org.akazukin.i18n.I18n;
 import org.akazukin.library.manager.BukkitMessageHelper;
 import org.akazukin.library.utils.ItemUtils;
 import org.akazukin.mapart.MapartPlugin;
@@ -47,7 +47,9 @@ public class GuiMapartCollaboPanel extends GuiPagedSinglePlayerSelector {
     protected boolean onGuiClick(final InventoryClickEvent event) {
         final boolean result = super.onGuiClick(event);
 
-        if (event.getCurrentItem() == null) return false;
+        if (event.getCurrentItem() == null) {
+            return false;
+        }
 
         if (!result && this.myMapartsItem.equals(event.getCurrentItem())) {
             GuiManager.singleton().setScreen(this.player, () -> this.prevGui);

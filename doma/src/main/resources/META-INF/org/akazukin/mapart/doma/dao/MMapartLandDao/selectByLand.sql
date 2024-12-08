@@ -1,4 +1,4 @@
-select
+SELECT
     /*%expand*/*
-from M_MAPART_LAND
-where LAND_ID = /* land */0
+FROM M_MAPART_LAND
+WHERE LAND_ID = /* land */0

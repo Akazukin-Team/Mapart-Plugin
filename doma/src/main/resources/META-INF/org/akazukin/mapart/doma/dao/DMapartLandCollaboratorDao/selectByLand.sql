@@ -1,4 +1,4 @@
-select
+SELECT
     /*%expand*/*
-from D_MAPART_LAND_COLLABORATOR
-where LAND_ID = /* land */0
+FROM D_MAPART_LAND_COLLABORATOR
+WHERE LAND_ID = /* land */0

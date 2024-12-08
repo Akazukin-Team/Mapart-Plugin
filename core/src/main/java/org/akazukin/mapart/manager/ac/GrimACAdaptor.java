@@ -10,8 +10,9 @@ public class GrimACAdaptor implements Listenable {
 
     @EventTarget(bktPriority = org.akazukin.library.event.EventPriority.HIGH)
     public void onFlag(final FlagEvent event) {
-        if (!MapartManager.isMapartWorld(Bukkit.getPlayer(event.getPlayer().getUniqueId()).getWorld()))
+        if (!MapartManager.isMapartWorld(Bukkit.getPlayer(event.getPlayer().getUniqueId()).getWorld())) {
             return;
+        }
 
         event.setCancelled(true);
     }

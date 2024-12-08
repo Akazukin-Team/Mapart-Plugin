@@ -1,11 +1,11 @@
 package org.akazukin.mapart.command.commands.mapart;
 
+import org.akazukin.i18n.I18n;
 import org.akazukin.library.command.CommandExecutor;
 import org.akazukin.library.command.CommandInfo;
 import org.akazukin.library.command.ICmdSender;
 import org.akazukin.library.command.IPlayerCmdSender;
 import org.akazukin.library.command.SubCommand;
-import org.akazukin.i18n.I18n;
 import org.akazukin.library.utils.ItemUtils;
 import org.akazukin.mapart.MapartPlugin;
 import org.akazukin.mapart.manager.CopyrightManager;

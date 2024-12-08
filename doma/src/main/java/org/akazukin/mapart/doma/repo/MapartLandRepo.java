@@ -23,7 +23,9 @@ public class MapartLandRepo {
     }
 
     public static MapartLandDto get(final List<MapartLand> entities) {
-        if (entities.isEmpty()) return null;
+        if (entities.isEmpty()) {
+            return null;
+        }
 
         final MapartLandDto dto = new MapartLandDto();
         dto.setLandId(entities.get(0).getLandId());
