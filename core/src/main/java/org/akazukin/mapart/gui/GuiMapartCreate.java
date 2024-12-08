@@ -1,14 +1,13 @@
 package org.akazukin.mapart.gui;
 
 import java.util.Arrays;
+import org.akazukin.i18n.I18n;
 import org.akazukin.library.gui.GuiManager;
 import org.akazukin.library.gui.screens.chest.ChestGuiBase;
 import org.akazukin.library.gui.screens.chest.GuiBase;
 import org.akazukin.library.gui.screens.chest.GuiSizeSelector;
 import org.akazukin.library.gui.screens.sign.SignStringSelectorGui;
-import org.akazukin.i18n.I18n;
 import org.akazukin.library.manager.BukkitMessageHelper;
-import org.akazukin.library.utils.ArrayUtils;
 import org.akazukin.library.utils.InventoryUtils;
 import org.akazukin.library.utils.ItemUtils;
 import org.akazukin.library.utils.StringUtils;
@@ -19,6 +18,7 @@ import org.akazukin.mapart.doma.entity.MMapartUser;
 import org.akazukin.mapart.doma.repo.MMapartLandRepo;
 import org.akazukin.mapart.doma.repo.MMapartUserRepo;
 import org.akazukin.mapart.manager.MapartManager;
+import org.akazukin.util.utils.ListUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -100,7 +100,7 @@ public class GuiMapartCreate extends ChestGuiBase {
 
     @Override
     protected Inventory getInventory() {
-        final String lines = ArrayUtils.join("", this.nameSelector.getResult());
+        final String lines = ListUtils.join("", this.nameSelector.getResult());
         if (0 < org.akazukin.util.utils.StringUtils.getLength(lines) && org.akazukin.util.utils.StringUtils.getLength(lines) < 30) {
             this.name = lines;
         }
