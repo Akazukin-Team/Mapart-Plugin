@@ -4,6 +4,6 @@ plugins {
 }
 
 application {
-    mainClassName = "net.akazukin.mapart.doma.TestMain"
+    mainClassName = "org.akazukin.mapart.doma.TestMain"
 }
 
