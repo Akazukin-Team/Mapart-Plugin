@@ -36,7 +36,7 @@ public class Events implements Listener {
 
     private <T extends Event> void callEvent(final Class<T> clazz, final T event,
                                              final org.akazukin.library.event.EventPriority priority) {
-        MapartPlugin.EVENT_MANAGER.callEvent(clazz, event, priority);
+        MapartPlugin.getPlugin().getEventManager().callEvent(clazz, event, priority);
     }
 
     @EventHandler(priority = EventPriority.HIGH)

@@ -83,7 +83,7 @@ public class MapartManager implements Listenable {
     private MapartManager(final int size) {
         this.size = size;
 
-        MapartPlugin.EVENT_MANAGER.registerListener(this);
+        MapartPlugin.getPlugin().getEventManager().registerListener(this);
     }
 
     public static MapartManager singleton(final int size) {
@@ -124,17 +124,17 @@ public class MapartManager implements Listenable {
             WorldUtils.deleteWorld(this.worldData);
             this.worldData = null;
 
-            MapartPlugin.MESSAGE_HELPER.broadcast(I18n.of("library.message.world.removing"));
+            MapartPlugin.getPlugin().getMessageHelper().broadcast(I18n.of("library.message.world.removing"));
             MapartSQLConfig.singleton().getTransactionManager().required(() ->
                     MMapartLandRepo.selectBySize(this.size).forEach(e -> {
                         MMapartLandRepo.delete(e);
                         DMapartLandCollaboratorRepo.selectByLand(e.getLandId()).forEach(DMapartLandCollaboratorRepo::delete);
                     })
             );
-            MapartPlugin.MESSAGE_HELPER.broadcast(I18n.of("library.message.world.removed"));
+            MapartPlugin.getPlugin().getMessageHelper().broadcast(I18n.of("library.message.world.removed"));
             return true;
         } else {
-            MapartPlugin.MESSAGE_HELPER.broadcast(I18n.of("library.message.world.notFound"));
+            MapartPlugin.getPlugin().getMessageHelper().broadcast(I18n.of("library.message.world.notFound"));
         }
         return false;
     }
@@ -145,7 +145,7 @@ public class MapartManager implements Listenable {
         }
         if (this.worldData == null) {
             this.worldData = new WorldData(null,
-                    MapartPlugin.CONFIG_UTILS.getConfig("config.yaml").getString("world") + "-x" + this.size);
+                    MapartPlugin.getPlugin().getConfigUtils().getConfig("config.yaml").getString("world") + "-x" + this.size);
         }
         return this.worldData;
     }
@@ -161,10 +161,10 @@ public class MapartManager implements Listenable {
     }
 
     public World generateWorld() {
-        MapartPlugin.MESSAGE_HELPER.broadcast(I18n.of("library.message.world.generating"));
-        final World w = MapartPlugin.COMPAT.createMapartWorld(this);
+        MapartPlugin.getPlugin().getMessageHelper().broadcast(I18n.of("library.message.world.generating"));
+        final World w = MapartPlugin.getPlugin().getCompat().createMapartWorld(this);
         if (w == null) {
-            MapartPlugin.MESSAGE_HELPER.broadcast(I18n.of("library.message.world.generate.failed"));
+            MapartPlugin.getPlugin().getMessageHelper().broadcast(I18n.of("library.message.world.generate.failed"));
             return null;
         } else {
             MapartSQLConfig.singleton().getTransactionManager().required(() -> {
@@ -180,7 +180,7 @@ public class MapartManager implements Listenable {
                 MMapartWorldRepo.save(e2);
             });
             w.setAutoSave(true);
-            MapartPlugin.MESSAGE_HELPER.broadcast(I18n.of("library.message.world.generate.success"));
+            MapartPlugin.getPlugin().getMessageHelper().broadcast(I18n.of("library.message.world.generate.success"));
             return w;
         }
     }
@@ -250,13 +250,13 @@ public class MapartManager implements Listenable {
 
     public static boolean canRemove(final UUID player) {
         if (MapartManager.CLEANING.contains(player)) {
-            MapartPlugin.MESSAGE_HELPER.sendMessage(player, I18n.of("mapart.land.cleaningNow"));
+            MapartPlugin.getPlugin().getMessageHelper().sendMessage(player, I18n.of("mapart.land.cleaningNow"));
             return false;
         }
-        final long ct = MapartPlugin.CONFIG_UTILS.getConfig("config.yaml").getLong("cooltime.clean");
+        final long ct = MapartPlugin.getPlugin().getConfigUtils().getConfig("config.yaml").getLong("cooltime.clean");
         if (MapartManager.LAST_DELETED.containsKey(player) &&
                 System.currentTimeMillis() - MapartManager.LAST_DELETED.get(player) <= ct * 1000) {
-            MapartPlugin.MESSAGE_HELPER.sendMessage(player, I18n.of("mapart.land.cleanCooltime", ct));
+            MapartPlugin.getPlugin().getMessageHelper().sendMessage(player, I18n.of("mapart.land.cleanCooltime", ct));
             return false;
         }
         return true;
@@ -424,7 +424,7 @@ public class MapartManager implements Listenable {
         final Vec3i maxLoc_ = new Vec3i(
                 ((loc[0] * (this.size * MapartManager.MAP_SIZE)) - 4) * 16,
                 Math.min(w.getMaxHeight() - 1,
-                        min + MapartPlugin.CONFIG_UTILS.getConfig("config.yaml").getInt("land.height")),
+                        min + MapartPlugin.getPlugin().getConfigUtils().getConfig("config.yaml").getInt("land.height")),
                 ((loc[1] * (this.size * MapartManager.MAP_SIZE)) - 4) * 16
         );
         final Vec3i minLoc_ = maxLoc_.clone();
@@ -437,7 +437,7 @@ public class MapartManager implements Listenable {
         minLoc_.setY(min + 1);
 
         final EditSession session = new EditSession(
-                MapartPlugin.CONFIG_UTILS.getConfig("config.yaml").getInt("thread"),
+                MapartPlugin.getPlugin().getConfigUtils().getConfig("config.yaml").getInt("thread"),
                 w);
         session.setBlock(
                 new Region<>(new Vec3i(maxLoc_), new Vec3i(minLoc_)),
@@ -452,25 +452,25 @@ public class MapartManager implements Listenable {
             final long lastPos = PlayerManager.SINGLETON.getLastPosTick(player);
             final long lastInteract = PlayerManager.SINGLETON.getLastInteractTick(player);
 
-            final int sec = MapartPlugin.CONFIG_UTILS.getConfig("config.yaml").getInt("cooltime.teleport");
+            final int sec = MapartPlugin.getPlugin().getConfigUtils().getConfig("config.yaml").getInt("cooltime.teleport");
 
             if (lastDmg != -1 && lastDmg <= sec * 20L) {
-                MapartPlugin.MESSAGE_HELPER.sendMessage(player, I18n.of("library.message.teleport.combating", sec));
+                MapartPlugin.getPlugin().getMessageHelper().sendMessage(player, I18n.of("library.message.teleport.combating", sec));
                 return false;
             } else if ((lastPos != -1 && lastPos <= sec * 20L) ||
                     (lastInteract != -1 && lastInteract <= sec * 20L)) {
-                MapartPlugin.MESSAGE_HELPER.sendMessage(player, I18n.of("library.message.teleport.dontMove", sec));
+                MapartPlugin.getPlugin().getMessageHelper().sendMessage(player, I18n.of("library.message.teleport.dontMove", sec));
                 return false;
             }
         }
 
         final World w = this.getWorld();
         if (w == null) {
-            MapartPlugin.MESSAGE_HELPER.sendMessage(player, I18n.of("library.message.world.notFound"));
+            MapartPlugin.getPlugin().getMessageHelper().sendMessage(player, I18n.of("library.message.world.notFound"));
             return false;
         }
 
-        MapartPlugin.MESSAGE_HELPER.sendMessage(player, I18n.of("library.message.teleporting"));
+        MapartPlugin.getPlugin().getMessageHelper().sendMessage(player, I18n.of("library.message.teleporting"));
 
         final int[] loc = MapartManager.getLocation(locId);
         player.teleport(
@@ -687,7 +687,7 @@ public class MapartManager implements Listenable {
         }
 
         if (event.getBlock().getY() >
-                MapartPlugin.CONFIG_UTILS.getConfig("config.yaml").getInt("land.height") +
+                MapartPlugin.getPlugin().getConfigUtils().getConfig("config.yaml").getInt("land.height") +
                         LibraryPlugin.COMPAT.getMinHeight(event.getBlock().getWorld())
         ) {
             event.setBuildable(false);

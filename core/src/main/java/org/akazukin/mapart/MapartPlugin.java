@@ -10,6 +10,9 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.experimental.FieldDefaults;
 import org.akazukin.library.LibraryPlugin;
 import org.akazukin.library.i18n.I18nUtils;
 import org.akazukin.library.manager.BukkitMessageHelper;
@@ -35,14 +38,16 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
+@Getter
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public final class MapartPlugin extends JavaPlugin {
-    public static String PLUGIN_NAME;
-    public static MapartCommandManager COMMAND_MANAGER;
-    public static MapartEventManager EVENT_MANAGER;
-    public static ConfigUtils CONFIG_UTILS;
-    public static I18nUtils I18N_UTILS;
-    public static Compat COMPAT;
-    public static BukkitMessageHelper MESSAGE_HELPER;
+    BukkitMessageHelper messageHelper;
+    String pluginName;
+    MapartCommandManager commandManager;
+    ConfigUtils configUtils;
+    I18nUtils i18nUtils;
+    Compat compat;
+    MapartEventManager eventManager;
 
     public static void main(final String[] args) {
         System.out.println("Main is running!");
@@ -50,7 +55,7 @@ public final class MapartPlugin extends JavaPlugin {
 
     @Override
     public void onLoad() {
-        MapartPlugin.PLUGIN_NAME = this.getName();
+        this.pluginName = this.getName();
 
         getLogManager().addHandler(new Handler() {
             private final File file = new File(MapartPlugin.this.getDataFolder(), "error.log");
@@ -123,27 +128,26 @@ public final class MapartPlugin extends JavaPlugin {
         }
 
         MapartPlugin.getLogManager().info("Initializing version manager...");
-        MapartPlugin.COMPAT = CompatManager.initCompat();
+        this.compat = CompatManager.initCompat();
         MapartPlugin.getLogManager().info("Successfully Initialized version manager");
 
 
         MapartPlugin.getLogManager().info("Initializing configurations...");
-        //MapartPlugin.CONFIG_UTILS = new ConfigUtils(this, new File(this.getDataFolder(), "locales"), "mapart");
-        MapartPlugin.CONFIG_UTILS = new ConfigUtils(this, "mapart");
-        MapartPlugin.CONFIG_UTILS.loadConfigFiles("config.yaml");
+        //MapartPlugin.getPlugin().getConfigUtils() = new ConfigUtils(this, new File(this.getDataFolder(), "locales"), "mapart");
+        this.configUtils = new ConfigUtils(this, "mapart");
+        this.configUtils.loadConfigFiles("config.yaml");
         MapartPlugin.getLogManager().info("Successfully Initialized configurations");
 
         final YamlConfiguration config = LibraryPlugin.getPlugin().getConfigUtils().getConfig("config.yaml");
         MapartPlugin.getLogManager().info("Initializing i18n manager...");
-        MapartPlugin.I18N_UTILS = new I18nUtils(this.getClassLoader(), "org.akazukin", "mapart", this.getDataFolder(), config.getString("locale"));
-        MapartPlugin.I18N_UTILS.build(config.getStringList("locales").toArray(new String[0]));
-        MapartPlugin.MESSAGE_HELPER = new BukkitMessageHelper(LibraryPlugin.I18N_UTILS, MapartPlugin.I18N_UTILS);
+        this.i18nUtils = new I18nUtils(this.getClassLoader(), "org.akazukin", "mapart", this.getDataFolder(), config.getString("locale"), config.getStringList("locales").toArray(new String[0]));
+        this.messageHelper = new BukkitMessageHelper(LibraryPlugin.I18N_UTILS, MapartPlugin.getPlugin().getI18nUtils());
         MapartPlugin.getLogManager().info("Successfully Initialized i18n manager");
 
 
         MapartPlugin.getLogManager().info("Initializing event manager...");
-        MapartPlugin.EVENT_MANAGER = new MapartEventManager();
-        MapartPlugin.EVENT_MANAGER.registerListeners();
+        this.eventManager = new MapartEventManager();
+        this.eventManager.registerListeners();
         MapartPlugin.getLogManager().info("Successfully Initialized event manager");
 
 
@@ -171,8 +175,8 @@ public final class MapartPlugin extends JavaPlugin {
 
 
         MapartPlugin.getLogManager().info("Initializing command manager...");
-        MapartPlugin.COMMAND_MANAGER = new MapartCommandManager(this);
-        MapartPlugin.COMMAND_MANAGER.registerCommands();
+        this.commandManager = new MapartCommandManager(this);
+        this.commandManager.registerCommands();
         MapartPlugin.getLogManager().info("Successfully Initialized command manager");
 
 

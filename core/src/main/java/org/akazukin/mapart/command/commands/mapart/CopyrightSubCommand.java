@@ -25,25 +25,25 @@ public class CopyrightSubCommand extends SubCommand {
 
         final ItemStack handItem = p.getInventory().getItemInMainHand();
         if (handItem.getType() == Material.AIR) {
-            MapartPlugin.MESSAGE_HELPER.sendMessage(sender, I18n.of("mapart.command.copyright.mustHaveInHand"));
+            MapartPlugin.getPlugin().getMessageHelper().sendMessage(sender, I18n.of("mapart.command.copyright.mustHaveInHand"));
         } else if (CopyrightManager.hasCopyright(handItem)) {
             if (!CopyrightManager.isOwner(handItem, p.getUniqueId())) {
-                MapartPlugin.MESSAGE_HELPER.sendMessage(sender, I18n.of("mapart.command.copyright.mustBeOwner"));
+                MapartPlugin.getPlugin().getMessageHelper().sendMessage(sender, I18n.of("mapart.command.copyright.mustBeOwner"));
             } else {
                 final ItemStack item = CopyrightManager.removeCopyright(handItem);
                 if (item == null) {
-                    MapartPlugin.MESSAGE_HELPER.sendMessage(sender, I18n.of("mapart.command.copyright.failedRemoving"));
+                    MapartPlugin.getPlugin().getMessageHelper().sendMessage(sender, I18n.of("mapart.command.copyright.failedRemoving"));
                 } else {
                     p.getInventory().setItemInMainHand(item);
-                    MapartPlugin.MESSAGE_HELPER.sendMessage(sender, I18n.of("mapart.command.copyright.removed"));
+                    MapartPlugin.getPlugin().getMessageHelper().sendMessage(sender, I18n.of("mapart.command.copyright.removed"));
                 }
             }
         } else if (!ItemUtils.getLore(handItem).isEmpty()) {
-            MapartPlugin.MESSAGE_HELPER.sendMessage(sender, I18n.of("mapart.command.copyright.invalid"));
+            MapartPlugin.getPlugin().getMessageHelper().sendMessage(sender, I18n.of("mapart.command.copyright.invalid"));
         } else {
             final ItemStack item = CopyrightManager.setCopyright(handItem, p);
             p.getInventory().setItemInMainHand(item);
-            MapartPlugin.MESSAGE_HELPER.sendMessage(sender, I18n.of("mapart.command.copyright.added"));
+            MapartPlugin.getPlugin().getMessageHelper().sendMessage(sender, I18n.of("mapart.command.copyright.added"));
         }
     }
 }
