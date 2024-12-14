@@ -42,7 +42,7 @@ runServer {
     runDirectory.set(file(Paths.get(parent.parent.projectDir.path, "run/${project.minecraft_version}")))
     downloadPlugins {
         url("https://github.com/Test-Account666/PlugManX/releases/download/2.4.1/PlugManX-2.4.1.jar")
-        url("https://download.luckperms.net/1552/bukkit/loader/LuckPerms-Bukkit-5.4.137.jar")
+        url("https://cdn.modrinth.com/data/Vebnzrzj/versions/cfNN7sys/LuckPerms-Bukkit-5.4.145.jar")
         url("https://cdn.modrinth.com/data/fRQREgAc/versions/QtTWJjW6/Dynmap-3.7-beta-6-spigot.jar")
         url("https://mediafilez.forgecdn.net/files/3635/984/Dynmap-WorldGuard-1.4-beta-1.jar")
     }
