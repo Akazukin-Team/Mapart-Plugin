@@ -21,7 +21,7 @@ import org.bukkit.inventory.ItemStack;
 
 public class CopyrightManager implements Listenable {
     public static ItemStack setCopyright(final ItemStack itemStack, final Player player) {
-        final String lore = MapartPlugin.MESSAGE_HELPER.get(BukkitMessageHelper.getLocale(player),
+        final String lore = MapartPlugin.getPlugin().getMessageHelper().get(BukkitMessageHelper.getLocale(player),
                 I18n.of("mapart.copyright.lore", player.getName()));
         ItemStack item = LibraryPlugin.COMPAT.setPlData(itemStack, "AKZ_MAPART_COPYRIGHT_OWNER",
                 String.valueOf(player.getUniqueId()));

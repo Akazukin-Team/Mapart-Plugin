@@ -17,7 +17,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 
 public class GuiManageMapartUsers extends GuiPagedSinglePlayerSelector {
     public GuiManageMapartUsers(final Player player, final GuiBase prevGui) {
-        super(MapartPlugin.MESSAGE_HELPER.get(BukkitMessageHelper.getLocale(player), I18n.of("mapart.panel.manage.users.gui")),
+        super(MapartPlugin.getPlugin().getMessageHelper().get(BukkitMessageHelper.getLocale(player), I18n.of("mapart.panel.manage.users.gui")),
                 6, 6, player,
                 MapartSQLConfig.singleton().getTransactionManager().required(MapartUserRepo::selectAll)
                         .parallelStream()

@@ -28,7 +28,7 @@ public final class MapartCommand extends Command {
     @Override
     public void run(final ICmdSender sender, final String[] args, final String[] args2) {
         if (!this.runSubCommand(sender, args, args2)) {
-            MapartPlugin.MESSAGE_HELPER.sendMessage(sender, I18n.of("mapart.command.notFound"));
+            MapartPlugin.getPlugin().getMessageHelper().sendMessage(sender, I18n.of("mapart.command.notFound"));
         }
     }
 }

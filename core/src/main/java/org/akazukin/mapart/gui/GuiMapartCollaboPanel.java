@@ -23,7 +23,7 @@ public class GuiMapartCollaboPanel extends GuiPagedSinglePlayerSelector {
     private final ItemStack myMapartsItem;
 
     public GuiMapartCollaboPanel(final Player player, final GuiBase prevGui) {
-        super(MapartPlugin.MESSAGE_HELPER.get(BukkitMessageHelper.getLocale(player), I18n.of("mapart.panel.gui.collaboration")),
+        super(MapartPlugin.getPlugin().getMessageHelper().get(BukkitMessageHelper.getLocale(player), I18n.of("mapart.panel.gui.collaboration")),
                 6, 6, player,
                 Arrays.stream(MapartSQLConfig.singleton().getTransactionManager().required(() ->
                                 RepoUtils.getMapartLandsByCollaborator(player.getUniqueId())

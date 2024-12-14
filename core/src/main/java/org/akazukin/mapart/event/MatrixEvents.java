@@ -11,7 +11,7 @@ import org.bukkit.event.Listener;
 public class MatrixEvents implements Listener {
     @EventHandler(priority = EventPriority.HIGH)
     public void onPlayerViolation(final PlayerViolationEvent event) {
-        MapartPlugin.EVENT_MANAGER.callEvent(PlayerViolationEvent.class, event,
+        MapartPlugin.getPlugin().getEventManager().callEvent(PlayerViolationEvent.class, event,
                 org.akazukin.library.event.EventPriority.HIGH);
     }
 }

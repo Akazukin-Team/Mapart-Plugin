@@ -18,13 +18,13 @@ public class HelpSubCommand extends SubCommand {
                                   final String[] args, final String[] args2) {
 
         if (args2.length <= 1) {
-            return MapartPlugin.COMMAND_MANAGER.getCommands().stream()
+            return MapartPlugin.getPlugin().getCommandManager().getCommands().stream()
                     .map(Command::getName)
                     .filter(s -> s.toLowerCase().startsWith(StringUtils.toStringOrEmpty(ArrayUtils.getIndex(args2,
                             0)).toLowerCase()))
                     .toArray(String[]::new);
         } else {
-            Command cmD = MapartPlugin.COMMAND_MANAGER.getCommand(args2[0]);
+            Command cmD = MapartPlugin.getPlugin().getCommandManager().getCommand(args2[0]);
             if (cmD == null) {
                 return null;
             }
@@ -46,13 +46,13 @@ public class HelpSubCommand extends SubCommand {
     @Override
     public void run(final ICmdSender sender, final String[] args, final String[] args2) {
         if (args.length == 1) {
-            MapartPlugin.COMMAND_MANAGER.getCommands().forEach(cmd ->
-                    MapartPlugin.MESSAGE_HELPER.sendMessage(sender,
+            MapartPlugin.getPlugin().getCommandManager().getCommands().forEach(cmd ->
+                    MapartPlugin.getPlugin().getMessageHelper().sendMessage(sender,
                             I18n.of("mapart.command.help.commands." + cmd.getName())));
         } else {
-            Command cmd = MapartPlugin.COMMAND_MANAGER.getCommand(args[1]);
+            Command cmd = MapartPlugin.getPlugin().getCommandManager().getCommand(args[1]);
             if (cmd == null) {
-                MapartPlugin.MESSAGE_HELPER.sendMessage(sender, I18n.of("library.command.help.notFound"));
+                MapartPlugin.getPlugin().getMessageHelper().sendMessage(sender, I18n.of("library.command.help.notFound"));
                 return;
             }
 
@@ -60,16 +60,16 @@ public class HelpSubCommand extends SubCommand {
             for (int i = 2; i < Math.min(args.length, 10); i++) {
                 cmd = cmd.getSubCommand(args[i]);
                 if (cmd == null) {
-                    MapartPlugin.MESSAGE_HELPER.sendMessage(sender, I18n.of("library.command.help.notFound"));
+                    MapartPlugin.getPlugin().getMessageHelper().sendMessage(sender, I18n.of("library.command.help.notFound"));
                     return;
                 }
                 id.append(".").append(cmd.getName());
             }
 
-            MapartPlugin.MESSAGE_HELPER.sendMessage(sender, I18n.of(id.toString()));
+            MapartPlugin.getPlugin().getMessageHelper().sendMessage(sender, I18n.of(id.toString()));
             final SubCommand[] subCmds = cmd.getSubCommands();
             Arrays.stream(subCmds).forEach(cmd_ ->
-                    MapartPlugin.MESSAGE_HELPER.sendMessage(sender,
+                    MapartPlugin.getPlugin().getMessageHelper().sendMessage(sender,
                             I18n.of((id + ((org.akazukin.util.utils.StringUtils.getLength(cmd_.getName()) > 0) ? "." + cmd_.getName() : "")))));
         }
     }

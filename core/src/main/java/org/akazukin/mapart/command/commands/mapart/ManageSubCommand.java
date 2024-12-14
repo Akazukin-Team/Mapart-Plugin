@@ -17,7 +17,7 @@ import org.bukkit.entity.Player;
 public class ManageSubCommand extends SubCommand {
     @Override
     public void run(final ICmdSender sender, final String[] args, final String[] args2) {
-        //MapartPlugin.COMPAT.test();
+        //MapartPlugin.getPlugin().getCompat().test();
         final Player p = Bukkit.getPlayer(((IPlayerCmdSender) sender).getUniqueId());
         GuiManager.singleton().setScreen(p, () -> new GuiManageMapartUsers(p, null));
     }
