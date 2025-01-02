@@ -1,12 +1,5 @@
 package org.akazukin.mapart.gui;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
 import org.akazukin.i18n.I18n;
 import org.akazukin.library.LibraryPlugin;
 import org.akazukin.library.gui.GuiManager;
@@ -27,6 +20,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class GuiMapartPanel extends GuiPagedSingleSelector {
     private final UUID guiUserUuid;
@@ -94,7 +95,7 @@ public class GuiMapartPanel extends GuiPagedSingleSelector {
                                                     (milliSec >= 100 ? "" : (milliSec >= 10 ? "0" : "00")) + milliSec
                                             )));
                             ItemUtils.setLore(landItem, lore);
-                            return LibraryPlugin.COMPAT.setPlData(landItem, "landId", land.getLandId());
+                            return LibraryPlugin.getPlugin().getCompat().setPlData(landItem, "landId", land.getLandId());
                         }).toArray(ItemStack[]::new),
                 prevGui);
 
@@ -152,10 +153,10 @@ public class GuiMapartPanel extends GuiPagedSingleSelector {
         }
 
         if (event.getCurrentItem().getType() == Material.getMaterial("PAPER") &&
-                LibraryPlugin.COMPAT.containsPlData(event.getCurrentItem(), "landId")
+                LibraryPlugin.getPlugin().getCompat().containsPlData(event.getCurrentItem(), "landId")
         ) {
             final MapartLandDto land = MapartSQLConfig.singleton().getTransactionManager().required(() -> {
-                final Long landId = LibraryPlugin.COMPAT.getPlDataLong(event.getCurrentItem(), "landId");
+                final Long landId = LibraryPlugin.getPlugin().getCompat().getPlDataLong(event.getCurrentItem(), "landId");
                 return landId != null ? MapartLandRepo.selectByLand(landId) : null;
             });
             if (land == null) {

@@ -3,24 +3,12 @@ package org.akazukin.mapart.manager;
 import com.sk89q.worldguard.protection.flags.Flags;
 import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-import java.sql.Timestamp;
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-import javax.annotation.Nullable;
 import lombok.Getter;
+import org.akazukin.event.EventTarget;
+import org.akazukin.event.Listenable;
 import org.akazukin.i18n.I18n;
 import org.akazukin.library.LibraryPlugin;
 import org.akazukin.library.compat.worldguard.WorldGuardCompat;
-import org.akazukin.library.event.EventTarget;
-import org.akazukin.library.event.Listenable;
 import org.akazukin.library.manager.PlayerManager;
 import org.akazukin.library.utils.WorldUtils;
 import org.akazukin.library.world.WorldData;
@@ -66,6 +54,19 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.annotation.Nullable;
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class MapartManager implements Listenable {
     public final static Map<Integer, MapartManager> singletons = new ConcurrentHashMap<>();
@@ -295,7 +296,7 @@ public class MapartManager implements Listenable {
         });
 
 
-        final int minY = LibraryPlugin.COMPAT.getMinHeight(this.getWorld());
+        final int minY = LibraryPlugin.getPlugin().getCompat().getMinHeight(this.getWorld());
         final int maxY = this.getWorld().getMaxHeight();
 
         int i2 = (int) Math.sqrt(landData.getLandId());
@@ -419,7 +420,7 @@ public class MapartManager implements Listenable {
     public void resetLand(final long locId) {
         final int[] loc = MapartManager.getLocation(locId);
         final World w = this.getWorld();
-        final int min = LibraryPlugin.COMPAT.getMinHeight(w);
+        final int min = LibraryPlugin.getPlugin().getCompat().getMinHeight(w);
 
         final Vec3i maxLoc_ = new Vec3i(
                 ((loc[0] * (this.size * MapartManager.MAP_SIZE)) - 4) * 16,
@@ -441,7 +442,7 @@ public class MapartManager implements Listenable {
                 w);
         session.setBlock(
                 new Region<>(new Vec3i(maxLoc_), new Vec3i(minLoc_)),
-                LibraryPlugin.COMPAT.getNMSNewBlockData(Material.AIR, (byte) 0)
+                LibraryPlugin.getPlugin().getCompat().getNMSNewBlockData(Material.AIR, (byte) 0)
         );
         session.complete();
     }
@@ -477,7 +478,7 @@ public class MapartManager implements Listenable {
                 new Location(
                         w,
                         ((loc[0] * (this.size * MapartManager.MAP_SIZE)) - 4) * 16 - 0.5,
-                        LibraryPlugin.COMPAT.getMinHeight(w) + 1,
+                        LibraryPlugin.getPlugin().getCompat().getMinHeight(w) + 1,
                         ((loc[1] * (this.size * MapartManager.MAP_SIZE)) - 4) * 16 - 0.5
                 )
         );
@@ -493,7 +494,7 @@ public class MapartManager implements Listenable {
         event.getPlayer().setAllowFlight(true);
     }
 
-    @EventTarget(bktPriority = org.akazukin.library.event.EventPriority.HIGH)
+    @EventTarget(libraryPriority = 3)
     public void onVehicleEnter(final VehicleEnterEvent event) {
         if (this.getWorld() == null || event.getEntered().getWorld().getUID() != this.getWorld().getUID()) {
             return;
@@ -535,17 +536,17 @@ public class MapartManager implements Listenable {
         }
     }
 
-    @EventTarget(bktPriority = org.akazukin.library.event.EventPriority.HIGH)
+    @EventTarget(libraryPriority = 3)
     public void onBlockBreak(final BlockBreakEvent event) {
         if (this.getWorld() == null || event.getBlock().getWorld().getUID() != this.getWorld().getUID()) {
             return;
         }
-        if (event.getBlock().getY() == LibraryPlugin.COMPAT.getMinHeight(this.getWorld())) {
+        if (event.getBlock().getY() == LibraryPlugin.getPlugin().getCompat().getMinHeight(this.getWorld())) {
             event.setCancelled(true);
         }
     }
 
-    @EventTarget(bktPriority = org.akazukin.library.event.EventPriority.HIGH)
+    @EventTarget(libraryPriority = 3)
     public void onBlockExplode(final ExplosionPrimeEvent event) {
         if (this.getWorld() == null || event.getEntity().getWorld().getUID() != this.getWorld().getUID()) {
             return;
@@ -553,7 +554,7 @@ public class MapartManager implements Listenable {
         event.setCancelled(true);
     }
 
-    @EventTarget(bktPriority = org.akazukin.library.event.EventPriority.HIGH)
+    @EventTarget(libraryPriority = 3)
     public void onEntityRegainHealth(final EntityRegainHealthEvent event) {
         if (this.getWorld() == null || event.getEntity().getWorld().getUID() != this.getWorld().getUID()) {
             return;
@@ -561,7 +562,7 @@ public class MapartManager implements Listenable {
         event.setCancelled(true);
     }
 
-    @EventTarget(bktPriority = org.akazukin.library.event.EventPriority.HIGH)
+    @EventTarget(libraryPriority = 3)
     public void onEntityDamage(final EntityDamageEvent event) {
         if (this.getWorld() == null || event.getEntity().getWorld().getUID() != this.getWorld().getUID()) {
             return;
@@ -571,7 +572,7 @@ public class MapartManager implements Listenable {
         }
     }
 
-    @EventTarget(bktPriority = org.akazukin.library.event.EventPriority.HIGH)
+    @EventTarget(libraryPriority = 3)
     public void onEntitySpawn(final EntitySpawnEvent event) {
         if (this.getWorld() == null || event.getEntity().getWorld().getUID() != this.getWorld().getUID()) {
             return;
@@ -582,21 +583,21 @@ public class MapartManager implements Listenable {
         event.setCancelled(true);
     }
 
-    /*@EventTarget(bktPriority = org.akazukin.library.event.EventPriority.HIGH)
+    /*@EventTarget(libraryPriority = 3)
     public void onBlockRedstone(final BlockRedstoneEvent event) {
         if (event.getBlock().getWorld().getUID() != getWorld().getUID()) return;
 
         event.setNewCurrent(event.getOldCurrent());
     }
 
-    @EventTarget(bktPriority = org.akazukin.library.event.EventPriority.HIGH)
+    @EventTarget(libraryPriority = 3)
     public void onBlockPiston(final BlockPistonEvent event) {
         if (event.getBlock().getWorld().getUID() != getWorld().getUID()) return;
 
         event.setCancelled(true);
     }*/
 
-    @EventTarget(bktPriority = org.akazukin.library.event.EventPriority.HIGH)
+    @EventTarget(libraryPriority = 3)
     public void onBlockPhysics(final BlockPhysicsEvent event) {
         if (this.getWorld() == null || event.getBlock().getWorld().getUID() != this.getWorld().getUID()) {
             return;
@@ -604,7 +605,7 @@ public class MapartManager implements Listenable {
         event.setCancelled(true);
     }
 
-    @EventTarget(bktPriority = org.akazukin.library.event.EventPriority.HIGH)
+    @EventTarget(libraryPriority = 3)
     public void onBlockIgnite(final BlockIgniteEvent event) {
         if (this.getWorld() == null || event.getBlock().getWorld().getUID() != this.getWorld().getUID()) {
             return;
@@ -612,7 +613,7 @@ public class MapartManager implements Listenable {
         event.setCancelled(true);
     }
 
-    @EventTarget(bktPriority = org.akazukin.library.event.EventPriority.HIGH)
+    @EventTarget(libraryPriority = 3)
     public void onBlockFrom(final BlockFormEvent event) {
         if (this.getWorld() == null || event.getBlock().getWorld().getUID() != this.getWorld().getUID()) {
             return;
@@ -620,7 +621,7 @@ public class MapartManager implements Listenable {
         event.setCancelled(true);
     }
 
-    @EventTarget(bktPriority = org.akazukin.library.event.EventPriority.HIGH)
+    @EventTarget(libraryPriority = 3)
     public void onEntityPlace(final EntityPlaceEvent event) {
         if (this.getWorld() == null || event.getBlock().getWorld().getUID() != this.getWorld().getUID()) {
             return;
@@ -628,7 +629,7 @@ public class MapartManager implements Listenable {
         event.setCancelled(true);
     }
 
-    @EventTarget(bktPriority = org.akazukin.library.event.EventPriority.HIGH)
+    @EventTarget(libraryPriority = 3)
     public void onEntityBlockForm(final EntityBlockFormEvent event) {
         if (this.getWorld() == null || event.getBlock().getWorld().getUID() != this.getWorld().getUID()) {
             return;
@@ -636,7 +637,7 @@ public class MapartManager implements Listenable {
         event.setCancelled(true);
     }
 
-    @EventTarget(bktPriority = org.akazukin.library.event.EventPriority.HIGH)
+    @EventTarget(libraryPriority = 3)
     public void onPlayerInteract(final PlayerInteractEvent event) {
         if (this.getWorld() == null || event.getClickedBlock() == null || event.getClickedBlock().getWorld().getUID() != this.getWorld().getUID()) {
             return;
@@ -673,7 +674,7 @@ public class MapartManager implements Listenable {
         }
     }
 
-    @EventTarget(bktPriority = org.akazukin.library.event.EventPriority.HIGH)
+    @EventTarget(libraryPriority = 3)
     public void onBlockCanBuild(final BlockCanBuildEvent event) {
         if (this.getWorld() == null || event.getBlock().getWorld().getUID() != this.getWorld().getUID()) {
             return;
@@ -688,7 +689,7 @@ public class MapartManager implements Listenable {
 
         if (event.getBlock().getY() >
                 MapartPlugin.getPlugin().getConfigUtils().getConfig("config.yaml").getInt("land.height") +
-                        LibraryPlugin.COMPAT.getMinHeight(event.getBlock().getWorld())
+                        LibraryPlugin.getPlugin().getCompat().getMinHeight(event.getBlock().getWorld())
         ) {
             event.setBuildable(false);
             return;

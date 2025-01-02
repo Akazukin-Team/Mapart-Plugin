@@ -3,7 +3,7 @@
 lombok = "1.18.34"
 gson = "2.11.0"
 doma = "2.60.1"
-akz-libs = "2.0.0"
+akz-libs = "3.0.0"
 slf4j = "1.7.36"
 towny = "0.100.2.0"
 grimac = "9f5aaef74b"

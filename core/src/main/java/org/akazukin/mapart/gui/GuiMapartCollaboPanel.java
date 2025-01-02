@@ -1,7 +1,5 @@
 package org.akazukin.mapart.gui;
 
-import java.util.Arrays;
-import java.util.UUID;
 import org.akazukin.i18n.I18n;
 import org.akazukin.library.LibraryPlugin;
 import org.akazukin.library.gui.GuiManager;
@@ -18,6 +16,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+
+import java.util.Arrays;
+import java.util.UUID;
 
 public class GuiMapartCollaboPanel extends GuiPagedSinglePlayerSelector {
     private final ItemStack myMapartsItem;
@@ -56,7 +57,7 @@ public class GuiMapartCollaboPanel extends GuiPagedSinglePlayerSelector {
             return true;
         } else if (result && this.selectedPlayer != null) {
             GuiManager.singleton().setScreen(this.player, () -> new GuiMapartPanel(this.player,
-                    UUID.fromString(LibraryPlugin.COMPAT.getPlDataString(event.getCurrentItem(), "HEAD_UUID")), false,
+                    UUID.fromString(LibraryPlugin.getPlugin().getCompat().getPlDataString(event.getCurrentItem(), "HEAD_UUID")), false,
                     this));
             return true;
         }

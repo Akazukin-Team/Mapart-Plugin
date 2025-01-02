@@ -1,13 +1,9 @@
 package org.akazukin.mapart.manager;
 
-import java.util.List;
-import java.util.UUID;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.akazukin.event.EventTarget;
+import org.akazukin.event.Listenable;
 import org.akazukin.i18n.I18n;
 import org.akazukin.library.LibraryPlugin;
-import org.akazukin.library.event.EventTarget;
-import org.akazukin.library.event.Listenable;
 import org.akazukin.library.manager.BukkitMessageHelper;
 import org.akazukin.library.utils.ItemUtils;
 import org.akazukin.library.utils.UUIDUtils;
@@ -19,13 +15,18 @@ import org.bukkit.event.inventory.PrepareAnvilEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.inventory.ItemStack;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.List;
+import java.util.UUID;
+
 public class CopyrightManager implements Listenable {
     public static ItemStack setCopyright(final ItemStack itemStack, final Player player) {
         final String lore = MapartPlugin.getPlugin().getMessageHelper().get(BukkitMessageHelper.getLocale(player),
                 I18n.of("mapart.copyright.lore", player.getName()));
-        ItemStack item = LibraryPlugin.COMPAT.setPlData(itemStack, "AKZ_MAPART_COPYRIGHT_OWNER",
+        ItemStack item = LibraryPlugin.getPlugin().getCompat().setPlData(itemStack, "AKZ_MAPART_COPYRIGHT_OWNER",
                 String.valueOf(player.getUniqueId()));
-        item = LibraryPlugin.COMPAT.setPlData(item, "AKZ_MAPART_COPYRIGHT_LORE", lore);
+        item = LibraryPlugin.getPlugin().getCompat().setPlData(item, "AKZ_MAPART_COPYRIGHT_LORE", lore);
         final List<String> lores = ItemUtils.getLore(itemStack);
         lores.add(lore);
         ItemUtils.setLore(item, lores);
@@ -34,23 +35,23 @@ public class CopyrightManager implements Listenable {
 
     @Nullable
     public static ItemStack removeCopyright(final ItemStack itemStack) {
-        if (!LibraryPlugin.COMPAT.containsPlData(itemStack, "AKZ_MAPART_COPYRIGHT_LORE") ||
-                !LibraryPlugin.COMPAT.containsPlData(itemStack, "AKZ_MAPART_COPYRIGHT_OWNER")) {
+        if (!LibraryPlugin.getPlugin().getCompat().containsPlData(itemStack, "AKZ_MAPART_COPYRIGHT_LORE") ||
+                !LibraryPlugin.getPlugin().getCompat().containsPlData(itemStack, "AKZ_MAPART_COPYRIGHT_OWNER")) {
             return null;
         }
 
         final List<String> lores = ItemUtils.getLore(itemStack);
-        if (lores.contains(LibraryPlugin.COMPAT.getPlDataString(itemStack, "AKZ_MAPART_COPYRIGHT_LORE"))) {
-            lores.remove(LibraryPlugin.COMPAT.getPlDataString(itemStack, "AKZ_MAPART_COPYRIGHT_LORE"));
-            ItemStack item = LibraryPlugin.COMPAT.removePlData(itemStack, "AKZ_MAPART_COPYRIGHT_LORE");
-            item = LibraryPlugin.COMPAT.removePlData(item, "AKZ_MAPART_COPYRIGHT_OWNER");
+        if (lores.contains(LibraryPlugin.getPlugin().getCompat().getPlDataString(itemStack, "AKZ_MAPART_COPYRIGHT_LORE"))) {
+            lores.remove(LibraryPlugin.getPlugin().getCompat().getPlDataString(itemStack, "AKZ_MAPART_COPYRIGHT_LORE"));
+            ItemStack item = LibraryPlugin.getPlugin().getCompat().removePlData(itemStack, "AKZ_MAPART_COPYRIGHT_LORE");
+            item = LibraryPlugin.getPlugin().getCompat().removePlData(item, "AKZ_MAPART_COPYRIGHT_OWNER");
             ItemUtils.setLore(item, lores);
             return item;
         }
         return null;
     }
 
-    @EventTarget(bktPriority = org.akazukin.library.event.EventPriority.HIGH, ignoreSuperClasses = false)
+    @EventTarget(libraryPriority = 3, ignoreSuperClasses = false)
     public void onInventoryClick(final InventoryClickEvent event) {
         if (event.getClickedInventory() instanceof org.bukkit.inventory.CartographyInventory) {
             final ItemStack result = event.getInventory().getItem(2);
@@ -61,23 +62,23 @@ public class CopyrightManager implements Listenable {
     }
 
     public static boolean hasCopyright(final ItemStack itemStack) {
-        return LibraryPlugin.COMPAT.containsPlData(itemStack, "AKZ_MAPART_COPYRIGHT_OWNER") && LibraryPlugin.COMPAT.containsPlData(itemStack, "AKZ_MAPART_COPYRIGHT_LORE") &&
-                UUIDUtils.isUUID(LibraryPlugin.COMPAT.getPlDataString(itemStack, "AKZ_MAPART_COPYRIGHT_OWNER"));
+        return LibraryPlugin.getPlugin().getCompat().containsPlData(itemStack, "AKZ_MAPART_COPYRIGHT_OWNER") && LibraryPlugin.getPlugin().getCompat().containsPlData(itemStack, "AKZ_MAPART_COPYRIGHT_LORE") &&
+                UUIDUtils.isUUID(LibraryPlugin.getPlugin().getCompat().getPlDataString(itemStack, "AKZ_MAPART_COPYRIGHT_OWNER"));
     }
 
     public static boolean isOwner(final ItemStack itemStack, @Nonnull final UUID player) {
-        return player.equals(UUIDUtils.toUuid(LibraryPlugin.COMPAT.getPlDataString(itemStack,
+        return player.equals(UUIDUtils.toUuid(LibraryPlugin.getPlugin().getCompat().getPlDataString(itemStack,
                 "AKZ_MAPART_COPYRIGHT_OWNER")));
     }
 
-    @EventTarget(bktPriority = org.akazukin.library.event.EventPriority.HIGH)
+    @EventTarget(libraryPriority = 3)
     public void onPrepareItemCraft(final PrepareItemCraftEvent event) {
         if (event.getInventory().getResult() != null && hasCopyright(event.getInventory().getResult()) && isOwner(event.getInventory().getResult(), event.getView().getPlayer().getUniqueId())) {
             event.getInventory().setResult(null);
         }
     }
 
-    @EventTarget(bktPriority = org.akazukin.library.event.EventPriority.HIGH)
+    @EventTarget(libraryPriority = 3)
     public void onPrepareAnvil(final PrepareAnvilEvent event) {
         if (event.getResult() != null && hasCopyright(event.getResult()) && isOwner(event.getResult(),
                 event.getView().getPlayer().getUniqueId())) {
@@ -85,7 +86,7 @@ public class CopyrightManager implements Listenable {
         }
     }
 
-    @EventTarget(bktPriority = org.akazukin.library.event.EventPriority.HIGH)
+    @EventTarget(libraryPriority = 3)
     public void onPrepareEnch(final PrepareItemEnchantEvent event) {
         if (event.isCancelled()) {
             return;
