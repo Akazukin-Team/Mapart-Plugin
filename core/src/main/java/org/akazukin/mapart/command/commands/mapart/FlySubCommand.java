@@ -17,7 +17,7 @@ public class FlySubCommand extends SubCommand {
     public void run(final ICmdSender sender, final String[] args, final String[] args2) {
         final Player p = Bukkit.getPlayer(((IPlayerCmdSender) sender).getUniqueId());
         if (MapartManager.isMapartWorld(p.getWorld())) {
-            p.setAllowFlight(((Player) sender).getAllowFlight());
+            p.setAllowFlight(p.getAllowFlight());
             MapartPlugin.getPlugin().getMessageHelper().sendMessage(sender, I18n.of("mapart.command.fly.toggled"));
         } else {
             MapartPlugin.getPlugin().getMessageHelper().sendMessage(sender, I18n.of("mapart.command.fly.onlyMapartWorld"));
