@@ -9,3 +9,10 @@ dependencies {
 
 jar.dependsOn(":core:jar")
 jar.dependsOn(":module:1_17_to_1_20:jar")
+
+runServer {
+    downloadPlugins {
+        url("https://cdn.modrinth.com/data/z4HZZnLr/versions/N86xPK8R/FastAsyncWorldEdit-Bukkit-2.12.2.jar")
+        url("https://mediafilez.forgecdn.net/files/5344/377/worldguard-bukkit-7.0.10-dist.jar")
+    }
+}
