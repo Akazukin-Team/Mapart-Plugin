@@ -3,15 +3,15 @@ package org.akazukin.mapart.manager.ac;
 import me.rerere.matrix.api.HackType;
 import me.rerere.matrix.api.MatrixAPIProvider;
 import me.rerere.matrix.api.events.PlayerViolationEvent;
-import org.akazukin.library.event.EventTarget;
-import org.akazukin.library.event.Listenable;
+import org.akazukin.event.EventTarget;
+import org.akazukin.event.Listenable;
 import org.akazukin.mapart.manager.MapartManager;
 import org.bukkit.Bukkit;
 import org.bukkit.event.player.PlayerMoveEvent;
 
 public class MatrixAdaptor implements Listenable {
 
-    @EventTarget(bktPriority = org.akazukin.library.event.EventPriority.HIGH)
+    @EventTarget(libraryPriority = 3)
     public void onPlayerViolation(final PlayerViolationEvent event) {
         if (!MapartManager.isMapartWorld(event.getPlayer().getWorld())) {
             return;

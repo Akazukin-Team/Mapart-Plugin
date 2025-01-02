@@ -1,6 +1,5 @@
 package org.akazukin.mapart.gui;
 
-import java.util.UUID;
 import org.akazukin.i18n.I18n;
 import org.akazukin.library.LibraryPlugin;
 import org.akazukin.library.gui.GuiManager;
@@ -14,6 +13,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
+
+import java.util.UUID;
 
 public class GuiManageMapartUsers extends GuiPagedSinglePlayerSelector {
     public GuiManageMapartUsers(final Player player, final GuiBase prevGui) {
@@ -37,7 +38,7 @@ public class GuiManageMapartUsers extends GuiPagedSinglePlayerSelector {
         if (result && this.selectedPlayer != null) {
             GuiManager.singleton().setScreen(this.player, () ->
                     new GuiMapartManageUser(this.player,
-                            UUID.fromString(LibraryPlugin.COMPAT.getPlDataString(event.getCurrentItem(), "HEAD_UUID")),
+                            UUID.fromString(LibraryPlugin.getPlugin().getCompat().getPlDataString(event.getCurrentItem(), "HEAD_UUID")),
                             this));
             return true;
         }

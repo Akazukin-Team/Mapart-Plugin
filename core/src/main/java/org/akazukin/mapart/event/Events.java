@@ -1,5 +1,6 @@
 package org.akazukin.mapart.event;
 
+import org.akazukin.event.IEvents;
 import org.akazukin.mapart.MapartPlugin;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
@@ -28,124 +29,123 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
 
-public class Events implements Listener {
-    @EventHandler(priority = EventPriority.HIGH)
-    public void onBlockBreak(final BlockBreakEvent event) {
-        this.callEvent(BlockBreakEvent.class, event, org.akazukin.library.event.EventPriority.HIGH);
+public class Events extends IEvents<Event> implements Listener {
+    public Events() {
+        super(MapartPlugin.getPlugin().getEventManager());
     }
 
-    private <T extends Event> void callEvent(final Class<T> clazz, final T event,
-                                             final org.akazukin.library.event.EventPriority priority) {
-        MapartPlugin.getPlugin().getEventManager().callEvent(clazz, event, priority);
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onBlockBreak(final BlockBreakEvent event) {
+        this.callEvent(BlockBreakEvent.class, event, EventPriority.HIGH.getSlot());
     }
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onEntityDamage(final EntityDamageEvent event) {
-        this.callEvent(EntityDamageEvent.class, event, org.akazukin.library.event.EventPriority.HIGH);
+        this.callEvent(EntityDamageEvent.class, event, EventPriority.HIGH.getSlot());
     }
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onEntityRegainHealth(final EntityRegainHealthEvent event) {
-        this.callEvent(EntityRegainHealthEvent.class, event, org.akazukin.library.event.EventPriority.HIGH);
+        this.callEvent(EntityRegainHealthEvent.class, event, EventPriority.HIGH.getSlot());
     }
 
     @EventHandler
     public void onPlayerJoin(final PlayerJoinEvent event) {
-        this.callEvent(PlayerJoinEvent.class, event, org.akazukin.library.event.EventPriority.NORMAL);
+        this.callEvent(PlayerJoinEvent.class, event, EventPriority.NORMAL.getSlot());
     }
 
     @EventHandler
     public void onPlayerWorldChanged(final PlayerChangedWorldEvent event) {
-        this.callEvent(PlayerChangedWorldEvent.class, event, org.akazukin.library.event.EventPriority.NORMAL);
+        this.callEvent(PlayerChangedWorldEvent.class, event, EventPriority.NORMAL.getSlot());
     }
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onEntityBlockForm(final EntityBlockFormEvent event) {
-        this.callEvent(EntityBlockFormEvent.class, event, org.akazukin.library.event.EventPriority.HIGH);
+        this.callEvent(EntityBlockFormEvent.class, event, EventPriority.HIGH.getSlot());
     }
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onEntityPlace(final EntityPlaceEvent event) {
-        this.callEvent(EntityPlaceEvent.class, event, org.akazukin.library.event.EventPriority.HIGH);
+        this.callEvent(EntityPlaceEvent.class, event, EventPriority.HIGH.getSlot());
     }
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onBlockFrom(final BlockFormEvent event) {
-        this.callEvent(BlockFormEvent.class, event, org.akazukin.library.event.EventPriority.HIGH);
+        this.callEvent(BlockFormEvent.class, event, EventPriority.HIGH.getSlot());
     }
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onEntitySpawn(final EntitySpawnEvent event) {
-        this.callEvent(EntitySpawnEvent.class, event, org.akazukin.library.event.EventPriority.HIGH);
+        this.callEvent(EntitySpawnEvent.class, event, EventPriority.HIGH.getSlot());
     }
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onBlockPhysics(final BlockPhysicsEvent event) {
-        this.callEvent(BlockPhysicsEvent.class, event, org.akazukin.library.event.EventPriority.HIGH);
+        this.callEvent(BlockPhysicsEvent.class, event, EventPriority.HIGH.getSlot());
     }
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onBlockIgnite(final BlockIgniteEvent event) {
-        this.callEvent(BlockIgniteEvent.class, event, org.akazukin.library.event.EventPriority.HIGH);
+        this.callEvent(BlockIgniteEvent.class, event, EventPriority.HIGH.getSlot());
     }
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onPrepareAnvil(final PrepareAnvilEvent event) {
-        this.callEvent(PrepareAnvilEvent.class, event, org.akazukin.library.event.EventPriority.HIGH);
+        this.callEvent(PrepareAnvilEvent.class, event, EventPriority.HIGH.getSlot());
     }
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onPrepareItemCraft(final PrepareItemCraftEvent event) {
-        this.callEvent(PrepareItemCraftEvent.class, event, org.akazukin.library.event.EventPriority.HIGH);
+        this.callEvent(PrepareItemCraftEvent.class, event, EventPriority.HIGH.getSlot());
     }
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onInventoryClick(final InventoryClickEvent event) {
-        this.callEvent(InventoryClickEvent.class, event, org.akazukin.library.event.EventPriority.HIGH);
+        this.callEvent(InventoryClickEvent.class, event, EventPriority.HIGH.getSlot());
     }
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onBlockCanBuild(final BlockCanBuildEvent event) {
-        this.callEvent(BlockCanBuildEvent.class, event, org.akazukin.library.event.EventPriority.HIGH);
+        this.callEvent(BlockCanBuildEvent.class, event, EventPriority.HIGH.getSlot());
     }
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onPlayerInteract(final PlayerInteractEvent event) {
-        this.callEvent(PlayerInteractEvent.class, event, org.akazukin.library.event.EventPriority.HIGH);
+        this.callEvent(PlayerInteractEvent.class, event, EventPriority.HIGH.getSlot());
     }
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onPrepareItemEnchant(final PrepareItemEnchantEvent event) {
-        this.callEvent(PrepareItemEnchantEvent.class, event, org.akazukin.library.event.EventPriority.HIGH);
+        this.callEvent(PrepareItemEnchantEvent.class, event, EventPriority.HIGH.getSlot());
     }
 
     @EventHandler
     public void onPlayerJoinNormal(final PlayerJoinEvent event) {
-        this.callEvent(PlayerJoinEvent.class, event, org.akazukin.library.event.EventPriority.NORMAL);
+        this.callEvent(PlayerJoinEvent.class, event, EventPriority.NORMAL.getSlot());
     }
 
     @EventHandler
     public void onPlayerQuit(final PlayerQuitEvent event) {
-        this.callEvent(PlayerQuitEvent.class, event, org.akazukin.library.event.EventPriority.NORMAL);
+        this.callEvent(PlayerQuitEvent.class, event, EventPriority.NORMAL.getSlot());
     }
 
     @EventHandler
     public void onPlayerMove(final PlayerMoveEvent event) {
-        this.callEvent(PlayerMoveEvent.class, event, org.akazukin.library.event.EventPriority.NORMAL);
+        this.callEvent(PlayerMoveEvent.class, event, EventPriority.NORMAL.getSlot());
     }
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onVehicleEnter(final VehicleEnterEvent event) {
-        this.callEvent(VehicleEnterEvent.class, event, org.akazukin.library.event.EventPriority.HIGH);
+        this.callEvent(VehicleEnterEvent.class, event, EventPriority.HIGH.getSlot());
     }
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onExplosionPrime(final ExplosionPrimeEvent event) {
-        this.callEvent(ExplosionPrimeEvent.class, event, org.akazukin.library.event.EventPriority.HIGH);
+        this.callEvent(ExplosionPrimeEvent.class, event, EventPriority.HIGH.getSlot());
     }
 
     @EventHandler
     public void onPlayerTeleport(final PlayerTeleportEvent event) {
-        this.callEvent(PlayerTeleportEvent.class, event, org.akazukin.library.event.EventPriority.NORMAL);
+        this.callEvent(PlayerTeleportEvent.class, event, EventPriority.NORMAL.getSlot());
     }
 }

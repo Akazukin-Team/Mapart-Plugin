@@ -11,7 +11,6 @@ import org.bukkit.event.Listener;
 public class ThemisEvents implements Listener {
     @EventHandler(priority = EventPriority.HIGH)
     public void onViolation(final ViolationEvent event) {
-        MapartPlugin.getPlugin().getEventManager().callEvent(ViolationEvent.class, event,
-                org.akazukin.library.event.EventPriority.HIGH);
+        MapartPlugin.getPlugin().getEventManager().callEvent(ViolationEvent.class, event, EventPriority.HIGH.getSlot());
     }
 }

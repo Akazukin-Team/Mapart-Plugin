@@ -1,6 +1,6 @@
 package org.akazukin.mapart.event;
 
-import org.akazukin.library.event.EventManager;
+import org.akazukin.event.EventManager;
 import org.akazukin.mapart.manager.CopyrightManager;
 import org.akazukin.mapart.manager.TownyAdaptor;
 import org.akazukin.mapart.manager.ac.GrimACAdaptor;
@@ -11,7 +11,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.Event;
 
 public final class MapartEventManager extends EventManager<Event> {
-    @Override
     public void registerListeners() {
         this.registerListeners(
                 new CopyrightManager()
