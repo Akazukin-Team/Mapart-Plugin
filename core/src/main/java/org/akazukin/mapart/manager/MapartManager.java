@@ -486,7 +486,7 @@ public class MapartManager implements Listenable {
         return true;
     }
 
-    @EventTarget
+    @EventTarget(libraryPriority = 2)
     public void onPlayerJoin(final PlayerJoinEvent event) {
         if (this.getWorld() == null || event.getPlayer().getWorld().getUID() != this.getWorld().getUID()) {
             return;
@@ -502,7 +502,7 @@ public class MapartManager implements Listenable {
         event.setCancelled(true);
     }
 
-    @EventTarget
+    @EventTarget(libraryPriority = 2)
     public void onPlayerTeleport(final PlayerTeleportEvent event) {
         if (this.getWorld() == null) {
             return;
@@ -520,7 +520,7 @@ public class MapartManager implements Listenable {
         }
     }
 
-    @EventTarget
+    @EventTarget(libraryPriority = 2)
     public void onWorldChange(final PlayerChangedWorldEvent event) {
         if (this.getWorld() == null) {
             return;
@@ -863,7 +863,7 @@ public class MapartManager implements Listenable {
         }
     }
 
-    @EventTarget
+    @EventTarget(libraryPriority = 2)
     public void onPlayerQuit(final PlayerQuitEvent event) {
         if (this.getWorld() == null || event.getPlayer().getWorld().getUID() != this.getWorld().getUID()) {
             return;
