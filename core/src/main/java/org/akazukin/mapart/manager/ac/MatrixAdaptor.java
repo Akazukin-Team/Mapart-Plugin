@@ -26,7 +26,7 @@ public class MatrixAdaptor implements Listenable {
         event.setCancelled(true);
     }
 
-    @EventTarget
+    @EventTarget(libraryPriority = 2)
     public void onPlayerMove(final PlayerMoveEvent event) {
         if (!MapartManager.isMapartWorld(event.getPlayer().getWorld())) {
             return;
