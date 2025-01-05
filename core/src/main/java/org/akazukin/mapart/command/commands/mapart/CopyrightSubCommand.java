@@ -38,7 +38,7 @@ public class CopyrightSubCommand extends SubCommand {
                     MapartPlugin.getPlugin().getMessageHelper().sendMessage(sender, I18n.of("mapart.command.copyright.removed"));
                 }
             }
-        } else if (!ItemUtils.getLore(handItem).isEmpty()) {
+        } else if (ItemUtils.getLore(handItem) != null && !ItemUtils.getLore(handItem).isEmpty()) {
             MapartPlugin.getPlugin().getMessageHelper().sendMessage(sender, I18n.of("mapart.command.copyright.invalid"));
         } else {
             final ItemStack item = CopyrightManager.setCopyright(handItem, p);
