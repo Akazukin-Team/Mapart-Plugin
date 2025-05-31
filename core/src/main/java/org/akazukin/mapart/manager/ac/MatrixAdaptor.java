@@ -5,11 +5,11 @@ import me.rerere.matrix.api.MatrixAPIProvider;
 import me.rerere.matrix.api.events.PlayerViolationEvent;
 import org.akazukin.event.EventTarget;
 import org.akazukin.event.Listenable;
-import org.akazukin.mapart.manager.MapartManager;
+import org.akazukin.mapart.manager.mapart.MapartManager;
 import org.bukkit.Bukkit;
 import org.bukkit.event.player.PlayerMoveEvent;
 
-public class MatrixAdaptor implements Listenable {
+public final class MatrixAdaptor implements Listenable {
 
     @EventTarget(libraryPriority = 3)
     public void onPlayerViolation(final PlayerViolationEvent event) {

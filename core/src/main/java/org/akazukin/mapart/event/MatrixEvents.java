@@ -8,7 +8,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
 @Getter
-public class MatrixEvents implements Listener {
+public final class MatrixEvents implements Listener {
     @EventHandler(priority = EventPriority.HIGH)
     public void onPlayerViolation(final PlayerViolationEvent event) {
         MapartPlugin.getPlugin().getEventManager().callEvent(PlayerViolationEvent.class, event, EventPriority.HIGH.getSlot());

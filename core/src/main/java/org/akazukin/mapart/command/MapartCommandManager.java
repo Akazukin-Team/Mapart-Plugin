@@ -11,7 +11,7 @@ public final class MapartCommandManager extends BukkitCommandManager {
 
     public void registerCommands() {
         this.registerCommands(
-                MapartCommand.class
+                new MapartCommand()
         );
     }
 }

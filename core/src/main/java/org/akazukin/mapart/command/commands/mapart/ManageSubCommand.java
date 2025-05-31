@@ -14,7 +14,7 @@ import org.bukkit.entity.Player;
         name = "manage", description = "management user's data", permission = "akazukin.mapart.command.mapart.manage",
         executor = CommandExecutor.PLAYER
 )
-public class ManageSubCommand extends SubCommand {
+public final class ManageSubCommand extends SubCommand<ICmdSender> {
     @Override
     public void run(final ICmdSender sender, final String[] args, final String[] args2) {
         //MapartPlugin.getPlugin().getCompat().test();

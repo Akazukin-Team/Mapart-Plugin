@@ -3,10 +3,10 @@ package org.akazukin.mapart.manager.ac;
 import ac.grim.grimac.api.events.FlagEvent;
 import org.akazukin.event.EventTarget;
 import org.akazukin.event.Listenable;
-import org.akazukin.mapart.manager.MapartManager;
+import org.akazukin.mapart.manager.mapart.MapartManager;
 import org.bukkit.Bukkit;
 
-public class GrimACAdaptor implements Listenable {
+public final class GrimACAdaptor implements Listenable {
 
     @EventTarget(libraryPriority = 3)
     public void onFlag(final FlagEvent event) {

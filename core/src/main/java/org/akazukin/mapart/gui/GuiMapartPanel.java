@@ -12,7 +12,7 @@ import org.akazukin.mapart.MapartPlugin;
 import org.akazukin.mapart.doma.MapartSQLConfig;
 import org.akazukin.mapart.doma.dto.MapartLandDto;
 import org.akazukin.mapart.doma.repo.MapartLandRepo;
-import org.akazukin.mapart.manager.MapartManager;
+import org.akazukin.mapart.manager.mapart.MapartManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-public class GuiMapartPanel extends GuiPagedSingleSelector {
+public final class GuiMapartPanel extends GuiPagedSingleSelector {
     private final UUID guiUserUuid;
     private final ItemStack createItem;
     private final ItemStack myMapartsItem;

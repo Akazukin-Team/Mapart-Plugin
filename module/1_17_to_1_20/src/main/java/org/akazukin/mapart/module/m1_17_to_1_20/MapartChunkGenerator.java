@@ -1,13 +1,14 @@
 package org.akazukin.mapart.module.m1_17_to_1_20;
 
-import java.util.Random;
-import javax.annotation.Nonnull;
-import org.akazukin.mapart.manager.MapartManager;
+import org.akazukin.mapart.manager.mapart.MapartManager;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.generator.WorldInfo;
+
+import javax.annotation.Nonnull;
+import java.util.Random;
 
 public class MapartChunkGenerator extends ChunkGenerator {
     private Integer size;

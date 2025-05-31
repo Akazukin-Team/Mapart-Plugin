@@ -7,12 +7,12 @@ import org.akazukin.library.command.ICmdSender;
 import org.akazukin.library.command.IPlayerCmdSender;
 import org.akazukin.library.command.SubCommand;
 import org.akazukin.mapart.MapartPlugin;
-import org.akazukin.mapart.manager.MapartManager;
+import org.akazukin.mapart.manager.mapart.MapartManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 @CommandInfo(name = "fly", description = "Toggle flight at mapart world", executor = CommandExecutor.PLAYER)
-public class FlySubCommand extends SubCommand {
+public final class FlySubCommand extends SubCommand<ICmdSender> {
     @Override
     public void run(final ICmdSender sender, final String[] args, final String[] args2) {
         final Player p = Bukkit.getPlayer(((IPlayerCmdSender) sender).getUniqueId());

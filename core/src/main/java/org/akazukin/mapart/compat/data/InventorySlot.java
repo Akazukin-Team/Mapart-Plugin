@@ -2,7 +2,7 @@ package org.akazukin.mapart.compat.data;
 
 import lombok.Getter;
 
-public class InventorySlot {
+public final class InventorySlot {
     /*public static InventorySlot OFF_HAND = new InventorySlot(-500);
 
     public static InventorySlot HELMET = new InventorySlot(-1000);

@@ -1,7 +1,8 @@
 package org.akazukin.mapart.doma.dto;
 
-import java.util.UUID;
 import lombok.Data;
+
+import java.util.UUID;
 
 @Data
 public class MapartUserDto {

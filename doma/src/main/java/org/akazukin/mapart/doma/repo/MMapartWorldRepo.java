@@ -1,10 +1,11 @@
 package org.akazukin.mapart.doma.repo;
 
-import java.util.List;
 import org.akazukin.mapart.doma.MapartSQLConfig;
 import org.akazukin.mapart.doma.dao.MMapartWorldDao;
 import org.akazukin.mapart.doma.dao.MMapartWorldDaoImpl;
 import org.akazukin.mapart.doma.entity.MMapartWorld;
+
+import java.util.List;
 
 public class MMapartWorldRepo {
     private static final MMapartWorldDao M_MAPART_WORLD_DAO = new MMapartWorldDaoImpl(MapartSQLConfig.singleton());

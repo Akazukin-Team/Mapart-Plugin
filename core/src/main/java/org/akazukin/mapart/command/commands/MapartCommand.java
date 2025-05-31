@@ -13,15 +13,16 @@ import org.akazukin.mapart.command.commands.mapart.ManageSubCommand;
 import org.akazukin.mapart.command.commands.mapart.NoArgsSubCommand;
 
 @CommandInfo(name = "mapart", description = "mapart command")
-public final class MapartCommand extends Command {
+public final class MapartCommand extends Command<ICmdSender> {
 
     public MapartCommand() {
-        this.addSubCommands(NoArgsSubCommand.class,
-                CopyrightSubCommand.class,
-                GuiSubCommand.class,
-                FlySubCommand.class,
-                ManageSubCommand.class,
-                HelpSubCommand.class
+        this.addSubCommands(
+                new NoArgsSubCommand(),
+                new CopyrightSubCommand(),
+                new GuiSubCommand(),
+                new FlySubCommand(),
+                new ManageSubCommand(),
+                new HelpSubCommand()
         );
     }
 

@@ -7,7 +7,7 @@ import org.akazukin.library.command.SubCommand;
 import org.akazukin.mapart.MapartPlugin;
 
 @CommandInfo(name = "", description = "Show information", permission = "", executor = CommandExecutor.PLAYER)
-public class NoArgsSubCommand extends SubCommand {
+public final class NoArgsSubCommand extends SubCommand<ICmdSender> {
     @Override
     public void run(final ICmdSender sender, final String[] args, final String[] args2) {
         sender.sendMessage("§6§l" + MapartPlugin.getPlugin().getName());

@@ -17,17 +17,21 @@ import org.bukkit.inventory.ItemStack;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class CopyrightManager implements Listenable {
+public final class CopyrightManager implements Listenable {
     public static ItemStack setCopyright(final ItemStack itemStack, final Player player) {
         final String lore = MapartPlugin.getPlugin().getMessageHelper().get(BukkitMessageHelper.getLocale(player),
                 I18n.of("mapart.copyright.lore", player.getName()));
         ItemStack item = LibraryPlugin.getPlugin().getCompat().setPlData(itemStack, "AKZ_MAPART_COPYRIGHT_OWNER",
                 String.valueOf(player.getUniqueId()));
         item = LibraryPlugin.getPlugin().getCompat().setPlData(item, "AKZ_MAPART_COPYRIGHT_LORE", lore);
-        final List<String> lores = ItemUtils.getLore(itemStack);
+        List<String> lores = ItemUtils.getLore(itemStack);
+        if (lores == null) {
+            lores = new ArrayList<>();
+        }
         lores.add(lore);
         ItemUtils.setLore(item, lores);
         return item;

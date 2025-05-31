@@ -14,7 +14,7 @@ import org.bukkit.entity.Player;
         name = "gui", description = "Open mapart gui", permission = "akazukin.mapart.command.mapart.gui",
         executor = CommandExecutor.PLAYER
 )
-public class GuiSubCommand extends SubCommand {
+public final class GuiSubCommand extends SubCommand<ICmdSender> {
     @Override
     public void run(final ICmdSender sender, final String[] args, final String[] args2) {
         final Player p = Bukkit.getPlayer(((IPlayerCmdSender) sender).getUniqueId());
