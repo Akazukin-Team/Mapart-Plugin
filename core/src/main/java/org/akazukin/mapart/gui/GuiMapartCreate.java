@@ -1,7 +1,5 @@
 package org.akazukin.mapart.gui;
 
-import java.util.Arrays;
-import java.util.stream.Collectors;
 import org.akazukin.i18n.I18n;
 import org.akazukin.library.gui.GuiManager;
 import org.akazukin.library.gui.screens.chest.ChestGuiBase;
@@ -18,7 +16,7 @@ import org.akazukin.mapart.doma.entity.MMapartLand;
 import org.akazukin.mapart.doma.entity.MMapartUser;
 import org.akazukin.mapart.doma.repo.MMapartLandRepo;
 import org.akazukin.mapart.doma.repo.MMapartUserRepo;
-import org.akazukin.mapart.manager.MapartManager;
+import org.akazukin.mapart.manager.mapart.MapartManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -28,7 +26,10 @@ import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-public class GuiMapartCreate extends ChestGuiBase {
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
+public final class GuiMapartCreate extends ChestGuiBase {
     private final GuiSizeSelector heightSelector;
     private final GuiSizeSelector widthSelector;
     private final ItemStack nameItem;

@@ -1,12 +1,6 @@
 package org.akazukin.mapart.gui;
 
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
 import org.akazukin.i18n.I18n;
 import org.akazukin.library.compat.worldguard.WorldGuardCompat;
 import org.akazukin.library.gui.GuiManager;
@@ -27,7 +21,8 @@ import org.akazukin.mapart.doma.dto.MapartLandDto;
 import org.akazukin.mapart.doma.entity.MMapartLand;
 import org.akazukin.mapart.doma.repo.MMapartLandRepo;
 import org.akazukin.mapart.doma.repo.MapartLandRepo;
-import org.akazukin.mapart.manager.MapartManager;
+import org.akazukin.mapart.manager.mapart.MapartManager;
+import org.akazukin.mapart.manager.mapart.MapartWorldListener;
 import org.akazukin.util.utils.ListUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -38,7 +33,14 @@ import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-public class MapartLandGui extends ChestGuiBase {
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+public final class MapartLandGui extends ChestGuiBase {
     private final long landId;
 
     private final SignStringSelectorGui nameSelector = new SignStringSelectorGui(this.player, this);
@@ -54,8 +56,8 @@ public class MapartLandGui extends ChestGuiBase {
     private final ItemStack removeCollaboGuiItem;
     private final ItemStack heightItem;
     private final ItemStack widthItem;
-    private GuiPagedMultiPlayerSelector addCollaboGui = null;
-    private GuiPagedMultiPlayerSelector removeCollaboGui = null;
+    private GuiPagedMultiPlayerSelector addCollaboGui;
+    private GuiPagedMultiPlayerSelector removeCollaboGui;
     private boolean isWaiting;
 
     public MapartLandGui(final Player player, final long landId, final GuiBase prevGui) {
@@ -142,7 +144,7 @@ public class MapartLandGui extends ChestGuiBase {
 
         final MapartManager mgr = MapartManager.singleton(land.getSize());
 
-        final String lines = ListUtils.join("", this.nameSelector.getResult());
+        final String lines = org.akazukin.util.utils.ArrayUtils.join("", this.nameSelector.getResult());
         if (0 < org.akazukin.util.utils.StringUtils.getLength(lines) && org.akazukin.util.utils.StringUtils.getLength(lines) < 30) {
             MapartSQLConfig.singleton().getTransactionManager().required(() -> {
                 final MMapartLand land_ = MMapartLandRepo.selectByLand(this.landId);
@@ -227,7 +229,7 @@ public class MapartLandGui extends ChestGuiBase {
                         .contains(player.getLocation().getBlockX(), player.getLocation().getBlockY(),
                                 player.getLocation()
                                         .getBlockZ())).forEach(player -> {
-                    if (!MapartManager.teleportLastPos(player)) {
+                    if (!MapartWorldListener.teleportLastPos(player)) {
                         if (player.getBedSpawnLocation() != null) {
                             player.teleport(player.getBedSpawnLocation());
                         } else {

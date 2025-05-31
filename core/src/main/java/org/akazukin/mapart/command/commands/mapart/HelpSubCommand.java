@@ -1,6 +1,5 @@
 package org.akazukin.mapart.command.commands.mapart;
 
-import java.util.Arrays;
 import org.akazukin.i18n.I18n;
 import org.akazukin.library.command.Command;
 import org.akazukin.library.command.CommandInfo;
@@ -9,10 +8,11 @@ import org.akazukin.library.command.SubCommand;
 import org.akazukin.library.utils.ArrayUtils;
 import org.akazukin.library.utils.StringUtils;
 import org.akazukin.mapart.MapartPlugin;
-import org.akazukin.util.utils.ListUtils;
+
+import java.util.Arrays;
 
 @CommandInfo(name = "help", description = "Show list of commands and descriptions")
-public class HelpSubCommand extends SubCommand {
+public final class HelpSubCommand extends SubCommand<ICmdSender> {
     @Override
     public String[] getCompletion(final ICmdSender sender, final String cmdName,
                                   final String[] args, final String[] args2) {
@@ -20,11 +20,11 @@ public class HelpSubCommand extends SubCommand {
         if (args2.length <= 1) {
             return MapartPlugin.getPlugin().getCommandManager().getCommands().stream()
                     .map(Command::getName)
-                    .filter(s -> s.toLowerCase().startsWith(StringUtils.toStringOrEmpty(ArrayUtils.getIndex(args2,
-                            0)).toLowerCase()))
+                    .filter(s -> s.toLowerCase().startsWith(
+                            StringUtils.toStringOrEmpty(ArrayUtils.getIndex(args2, 0)).toLowerCase()))
                     .toArray(String[]::new);
         } else {
-            Command cmD = MapartPlugin.getPlugin().getCommandManager().getCommand(args2[0]);
+            Command<? super ICmdSender> cmD = MapartPlugin.getPlugin().getCommandManager().getCommand(args2[0]);
             if (cmD == null) {
                 return null;
             }
@@ -39,7 +39,7 @@ public class HelpSubCommand extends SubCommand {
             }
 
             return cmD.getCompletion(sender, cmdName, args,
-                    ListUtils.copy(Arrays.asList(args2), 1, args2.length - 2 - lastIndex).toArray(new String[0]));
+                    org.akazukin.util.utils.ArrayUtils.copyOfRange(args2, 1, args2.length - lastIndex - 1));
         }
     }
 

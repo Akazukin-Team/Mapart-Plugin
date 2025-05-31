@@ -1,11 +1,12 @@
 package org.akazukin.mapart.doma.repo;
 
-import java.util.List;
-import java.util.UUID;
 import org.akazukin.mapart.doma.MapartSQLConfig;
 import org.akazukin.mapart.doma.dao.DMapartLandCollaboratorDao;
 import org.akazukin.mapart.doma.dao.DMapartLandCollaboratorDaoImpl;
 import org.akazukin.mapart.doma.entity.DMapartLandCollaborator;
+
+import java.util.List;
+import java.util.UUID;
 
 public class DMapartLandCollaboratorRepo {
     private static final DMapartLandCollaboratorDao D_MAPART_LAND_COLLABORATOR_DAO = new DMapartLandCollaboratorDaoImpl(MapartSQLConfig.singleton());

@@ -29,7 +29,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
 
-public class Events extends IEvents<Event> implements Listener {
+public final class Events extends IEvents<Event> implements Listener {
     public Events() {
         super(MapartPlugin.getPlugin().getEventManager());
     }

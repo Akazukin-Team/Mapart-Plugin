@@ -1,10 +1,10 @@
 package org.akazukin.mapart.compat;
 
-import org.akazukin.mapart.manager.MapartManager;
+import org.akazukin.mapart.manager.mapart.MapartWorldData;
 import org.bukkit.World;
 
 public interface Compat {
-    World createMapartWorld(MapartManager mgr);
+    World createMapartWorld(MapartWorldData mapartWorldData);
 
     void test();
 }

@@ -6,7 +6,7 @@ doma = "2.60.1"
 akz-libs = "3.0.0"
 slf4j = "1.7.36"
 towny = "0.100.2.0"
-grimac = "9f5aaef74b"
+grimac = "master"
 ncp = "3.16.1-SNAPSHOT"
 
 #Test Modules
@@ -29,7 +29,7 @@ doma-processor = { module = "org.seasar.doma:doma-processor", version.ref = "dom
 akz-libs = { module = "org.akazukin:plugin-library", version.ref = "akz-libs" }
 slf4j = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
 towny = { module = "com.palmergames.bukkit.towny:towny", version.ref = "towny" }
-grimac = { module = "com.github.MWHunter:GrimAPI", version.ref = "grimac" }
+grimac = { module = "com.github.GrimAnticheat:GrimAPI", version.ref = "grimac" }
 ncp = { module = "fr.neatmonster:nocheatplus", version.ref = "ncp" }
 
 

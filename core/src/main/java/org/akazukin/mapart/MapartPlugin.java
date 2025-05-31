@@ -1,15 +1,5 @@
 package org.akazukin.mapart;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.nio.file.Files;
-import java.util.logging.Handler;
-import java.util.logging.Level;
-import java.util.logging.LogRecord;
-import java.util.logging.Logger;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
@@ -32,11 +22,23 @@ import org.akazukin.mapart.event.MapartEventManager;
 import org.akazukin.mapart.event.MatrixEvents;
 import org.akazukin.mapart.event.ThemisEvents;
 import org.akazukin.mapart.event.TownyEvents;
-import org.akazukin.mapart.manager.MapartManager;
+import org.akazukin.mapart.manager.mapart.MapartManager;
+import org.akazukin.mapart.manager.mapart.MapartWorldListener;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 
 @Getter
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -114,7 +116,7 @@ public final class MapartPlugin extends JavaPlugin {
     public void onDisable() {
         this.getServer().getOnlinePlayers().stream()
                 .filter(p -> MapartManager.isMapartWorld(p.getWorld()))
-                .forEach(MapartManager::teleportLastPos);
+                .forEach(MapartWorldListener::teleportLastPos);
     }
 
     @Override

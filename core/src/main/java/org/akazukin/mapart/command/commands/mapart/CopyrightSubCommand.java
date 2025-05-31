@@ -18,7 +18,7 @@ import org.bukkit.inventory.ItemStack;
         name = "copyright", description = "Toggle flight at mapart world",
         permission = "akazukin.mapart.command.mapart.copyright", executor = CommandExecutor.PLAYER
 )
-public class CopyrightSubCommand extends SubCommand {
+public final class CopyrightSubCommand extends SubCommand<ICmdSender> {
     @Override
     public void run(final ICmdSender sender, final String[] args, final String[] args2) {
         final Player p = Bukkit.getPlayer(((IPlayerCmdSender) sender).getUniqueId());

@@ -16,7 +16,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 
 import java.util.UUID;
 
-public class GuiManageMapartUsers extends GuiPagedSinglePlayerSelector {
+public final class GuiManageMapartUsers extends GuiPagedSinglePlayerSelector {
     public GuiManageMapartUsers(final Player player, final GuiBase prevGui) {
         super(MapartPlugin.getPlugin().getMessageHelper().get(BukkitMessageHelper.getLocale(player), I18n.of("mapart.panel.manage.users.gui")),
                 6, 6, player,

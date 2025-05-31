@@ -1,8 +1,5 @@
 package org.akazukin.mapart.gui;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
 import org.akazukin.i18n.I18n;
 import org.akazukin.library.gui.GuiManager;
 import org.akazukin.library.gui.screens.chest.ChestGuiBase;
@@ -27,7 +24,11 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-public class GuiMapartManageUser extends ChestGuiBase {
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
+
+public final class GuiMapartManageUser extends ChestGuiBase {
     private final GuiSizeSelector maxLandSelector;
     private final ItemStack headItem;
     private final ItemStack maxLandItem;

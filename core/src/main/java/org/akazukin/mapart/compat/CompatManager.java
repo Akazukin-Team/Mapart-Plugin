@@ -1,12 +1,13 @@
 package org.akazukin.mapart.compat;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.logging.Level;
 import lombok.Getter;
 import org.akazukin.mapart.MapartPlugin;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.logging.Level;
+
 @Getter
-public class CompatManager {
+public final class CompatManager {
     public static Compat initCompat() {
         return getCompat("org.akazukin.mapart.compat.compats.Compat_" + org.akazukin.library.compat.minecraft.CompatManager.getMappingVersion());
     }

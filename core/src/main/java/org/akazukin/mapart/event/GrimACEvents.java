@@ -8,7 +8,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
 @Getter
-public class GrimACEvents implements Listener {
+public final class GrimACEvents implements Listener {
     @EventHandler(priority = EventPriority.HIGH)
     public void onFlag(final FlagEvent event) {
         MapartPlugin.getPlugin().getEventManager().callEvent(FlagEvent.class, event, EventPriority.HIGH.getSlot());
